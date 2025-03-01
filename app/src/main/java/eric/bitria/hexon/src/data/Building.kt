@@ -1,5 +1,5 @@
 package eric.bitria.hexon.src.data
 
-enum class BuildingType {
+enum class Building {
     NONE, ROAD, SETTLEMENT, CITY
 }

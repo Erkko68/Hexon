@@ -2,35 +2,61 @@ package eric.bitria.hexon.src.board
 
 import eric.bitria.hexon.src.board.tile.Tile
 
-class Board() {
+// Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
+class Board {
+    private val tiles: HashMap<Pair<Int, Int>, Tile> = HashMap()
 
     /**
-     * Links two tiles together, where tile2 is placed around tile1 on a specified edge.
+     * Adds a tile to the board at the given axial coordinates (q, r).
      *
-     * @param tile1 The center tile that tile2 will be placed around.
-     * @param tile2 The tile being placed around tile1.
-     * @param edgeIndex The index of the edge in tile1 where tile2 will be placed (from 0 to 5).
-     *
-     * This function will:
-     * - Place tile2 adjacent to tile1 at the specified edge of tile1. (Tile2 edge will be replaced with tile1 edge)
-     * - Replace the references from tile2's edges and vertices with tile1's edge and vertices. (Tile2 vertices will be replaced with tile1 vertices)
+     * @param q Axial coordinate q
+     * @param r Axial coordinate r
+     * @param tile The tile to place on the board
      */
-    fun linkTiles(tile1: Tile, tile2: Tile, edgeIndex: Int) {
-        if (edgeIndex !in 0..5) throw IllegalArgumentException("Edge index must be between 0 and 5.")
+    fun addTile(q: Int, r: Int, tile: Tile) {
+        val surroundingCoordinates = listOf(
+            Pair(q + 1, r - 1),   // Top-right
+            Pair(q + 1, r),   // Right
+            Pair(q, r + 1), // Bottom-right
+            Pair(q - 1, r + 1),   // Bottom-left
+            Pair(q - 1, r),   // Left
+            Pair(q, r - 1)  // Top-left
+        )
 
-        // Get the opposite edge index
-        val oppositeEdgeIndex = (edgeIndex + 3) % 6
-        val oppositeVertexIndex = (edgeIndex + 2) % 6
+        // Check each surrounding tile and link if it exists
+        surroundingCoordinates.forEachIndexed { index, cords ->
+            val adjacentTile = tiles[cords] // Check if there's an existing tile
+            if (adjacentTile != null) {
+                // Link the new tile to the adjacent tile
+                val oppositeEdge = (index + 3) % 6
+                adjacentTile.linkTile(tile, oppositeEdge)
+            }
+        }
 
-        // Set tile1's edge into tile2's opposite edge
-        tile2.edges[oppositeEdgeIndex] = tile1.edges[edgeIndex]
-
-        // Set tile1's vertices into tile2's vertices
-        tile2.vertices[oppositeVertexIndex] = tile1.vertices[edgeIndex]
-        tile2.vertices[(oppositeVertexIndex + 1) % 6] = tile1.vertices[(edgeIndex + 5) % 6]
-
-        // Set tile1's edge neighbor as tile2
-        tile1.edges[edgeIndex].tiles[1] = tile2
+        // Add the new tile to the board
+        tiles[Pair(q, r)] = tile
     }
 
+
+    /**
+     * Retrieves a tile from the board at the given coordinates.
+     *
+     * @param q Axial coordinate q
+     * @param r Axial coordinate r
+     * @return The tile at (q, r), or null if no tile is present.
+     */
+    fun getTile(q: Int, r: Int): Tile? {
+        return tiles[Pair(q, r)]
+    }
+
+    /**
+     * Checks if a tile exists at the given coordinates.
+     *
+     * @param q Axial coordinate q
+     * @param r Axial coordinate r
+     * @return True if a tile exists at (q, r), false otherwise.
+     */
+    fun hasTile(q: Int, r: Int): Boolean {
+        return tiles.containsKey(Pair(q, r))
+    }
 }

@@ -1,8 +1,8 @@
 package eric.bitria.hexon.src.board.tile
 
-import eric.bitria.hexon.src.data.BuildingType
+import eric.bitria.hexon.src.data.Building
 
 // Vertex Holds the building value
 data class Vertex(
-    var building: BuildingType = BuildingType.NONE
+    var building: Building = Building.NONE
 )
