@@ -4,7 +4,7 @@ import eric.bitria.hexon.src.board.tile.Tile
 
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
 class Board {
-    private val tiles: HashMap<Pair<Int, Int>, Tile> = HashMap()
+    val tiles: HashMap<Pair<Int, Int>, Tile> = HashMap()
 
     /**
      * Adds a tile to the board at the given axial coordinates (q, r).

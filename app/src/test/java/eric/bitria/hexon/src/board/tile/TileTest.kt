@@ -1,6 +1,6 @@
 package eric.bitria.hexon.src.board.tile
 
-import eric.bitria.hexon.src.board.Board
+import eric.bitria.hexon.ui.board.Board
 import eric.bitria.hexon.src.data.Building
 import eric.bitria.hexon.src.data.Resource
 import org.junit.jupiter.api.Assertions.*
