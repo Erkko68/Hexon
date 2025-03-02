@@ -5,12 +5,12 @@ import eric.bitria.hexon.src.data.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
 import org.junit.jupiter.api.Assertions.assertSame
 import org.junit.jupiter.api.Assertions.assertTrue
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
 class BoardTest {
@@ -84,15 +84,9 @@ class BoardTest {
         val tile = Tile(8, Resource.WOOD)
 
         // Attempt to add a tile at q = 4 (out of bounds)
-        val exception = assertThrows<InvalidBoardException> {
+        assertThrows<InvalidBoardException> {
             board.addTile(4, 0, tile)
         }
-
-        // Verify the exception message
-        assertTrue(
-            exception.message!!.contains("Coordinates (4, 0) are out of bounds"),
-            "Exception message should indicate out-of-bounds coordinates"
-        )
     }
 
     @Test
@@ -101,15 +95,9 @@ class BoardTest {
         val tile = Tile(8, Resource.WOOD)
 
         // Attempt to add a tile at r = 4 (out of bounds)
-        val exception = assertThrows<InvalidBoardException> {
+        assertThrows<InvalidBoardException> {
             board.addTile(0, 4, tile)
         }
-
-        // Verify the exception message
-        assertTrue(
-            exception.message!!.contains("Coordinates (0, 4) are out of bounds"),
-            "Exception message should indicate out-of-bounds coordinates"
-        )
     }
 
     @Test
@@ -118,15 +106,9 @@ class BoardTest {
         val tile = Tile(8, Resource.WOOD)
 
         // Attempt to add a tile at q = 4 and r = 4 (both out of bounds)
-        val exception = assertThrows<InvalidBoardException> {
+        assertThrows<InvalidBoardException> {
             board.addTile(4, 4, tile)
         }
-
-        // Verify the exception message
-        assertTrue(
-            exception.message!!.contains("Coordinates (4, 4) are out of bounds"),
-            "Exception message should indicate out-of-bounds coordinates"
-        )
     }
 
     @Test

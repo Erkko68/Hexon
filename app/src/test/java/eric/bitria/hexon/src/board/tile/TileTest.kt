@@ -2,9 +2,9 @@ package eric.bitria.hexon.src.board.tile
 
 import eric.bitria.hexon.src.data.Building
 import eric.bitria.hexon.src.data.Resource
-import org.junit.Test
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Test
 
 class TileTest {
     @Test
