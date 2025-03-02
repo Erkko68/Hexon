@@ -1,16 +1,14 @@
 package eric.bitria.hexon.src.board.tile
 
-import eric.bitria.hexon.ui.board.Board
 import eric.bitria.hexon.src.data.Building
 import eric.bitria.hexon.src.data.Resource
-import org.junit.jupiter.api.Assertions.*
 import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertNotNull
 
 class TileTest {
     @Test
     fun testCreateTile() {
-        val board = Board()
-
         // Create a tile with a specific number and resource
         val tile = Tile(8, Resource.WOOD)
         // Verify the tile properties
@@ -36,8 +34,6 @@ class TileTest {
 
     @Test
     fun testLinkTile() {
-        val board = Board()
-
         // Create two tiles with specific resources and numbers
         val tile1 = Tile(8, Resource.WOOD)
         val tile2 = Tile(10, Resource.BRICK)

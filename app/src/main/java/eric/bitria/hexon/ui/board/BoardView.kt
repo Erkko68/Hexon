@@ -9,12 +9,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import eric.bitria.hexon.src.board.Board
-import eric.bitria.hexon.src.data.Resource
 
 @Composable
 fun BoardView(
@@ -38,15 +36,8 @@ fun BoardView(
                 r = r,
                 parentWidth = parentSize.width,
                 parentHeight = parentSize.height,
-                tileSize = 50.dp,
-                color = when (tile.type) {
-                    Resource.BRICK -> Color.Red
-                    Resource.WOOD -> Color.Green
-                    Resource.SHEEP -> Color(0xFF4CAF50)
-                    Resource.WHEAT -> Color.Yellow
-                    Resource.ORE -> Color.Gray
-                    Resource.DESERT -> Color(0xFFF4D03F)
-                },
+                tileSize = 20.dp,
+                color = tile.type.color,
                 modifier = Modifier
             )
         }

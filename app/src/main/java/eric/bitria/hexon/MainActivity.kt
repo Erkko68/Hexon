@@ -18,13 +18,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // Initialize the board and add some tiles
-        val board = Board().apply {
+        val board = Board(3,3).apply {
             addTile(0, 0, Tile(5, Resource.BRICK))
             addTile(1, 0, Tile(6, Resource.WOOD))
             addTile(0, 1, Tile(8, Resource.SHEEP))
             addTile(-1, 1, Tile(9, Resource.WHEAT))
             addTile(-1, 0, Tile(10, Resource.ORE))
             addTile(0, -1, Tile(2, Resource.DESERT))
+            addTile(2, -3, Tile(2, Resource.DESERT))
+            addTile(-3, 2, Tile(2, Resource.DESERT))
         }
 
         setContent {
