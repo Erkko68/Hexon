@@ -35,12 +35,9 @@ class Board(
 
         // Check each surrounding tile and link if it exists
         surroundingCoordinates.forEachIndexed { index, cords ->
-            val adjacentTile = tiles[cords] // Check if there's an existing tile
-            if (adjacentTile != null) {
-                // Link the new tile to the adjacent tile
-                val oppositeEdge = (index + 3) % 6
-                adjacentTile.linkTile(tile, oppositeEdge)
-            }
+            val adjacentTile = tiles[cords] ?: return@forEachIndexed // Skip if null
+            val oppositeEdge = (index + 3) % 6
+            adjacentTile.linkTile(tile, oppositeEdge)
         }
 
         tiles[Pair(q, r)] = tile
