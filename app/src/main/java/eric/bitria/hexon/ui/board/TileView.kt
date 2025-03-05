@@ -19,16 +19,16 @@ import kotlin.math.sqrt
 fun TileView(
     q: Int, // Axial coordinate q
     r: Int, // Axial coordinate r
-    parentWidth: Float, // Parent width in pixels
-    parentHeight: Float, // Parent height in pixels
     tileSize: Dp,
     color: Color,
     modifier: Modifier = Modifier
 ) {
     // Convert axial coordinates to screen position
-    val (x, y) = axialToScreen(q, r, parentWidth, parentHeight, tileSize)
+    val (x, y) = axialToScreen(q, r, tileSize)
 
-    Canvas(modifier = modifier.size(tileSize * 2)) {
+    Canvas(
+        modifier = modifier.size(tileSize * 2)
+    ) {
         val radius = tileSize.toPx()
 
         // Draw the hexagon centered at (x, y)
@@ -52,8 +52,6 @@ fun TileView(
  *
  * @param q Axial coordinate q
  * @param r Axial coordinate r
- * @param parentWidth Parent width in pixels
- * @param parentHeight Parent height in pixels
  * @param tileSize Size of the tile (hexagon radius)
  * @return Pair of screen coordinates (x, y)
  */
@@ -61,19 +59,13 @@ fun TileView(
 private fun axialToScreen(
     q: Int,
     r: Int,
-    parentWidth: Float,
-    parentHeight: Float,
     tileSize: Dp
 ): Pair<Float, Float> {
     val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
 
-    // Calculate the center of the parent
-    val centerX = parentWidth / 2
-    val centerY = parentHeight / 2
-
     // Convert axial coordinates to screen coordinates
-    val x = centerX + tileSizePx * (3f / 2 * q)
-    val y = centerY + tileSizePx * (sqrt(3f) / 2 * q + sqrt(3f) * r)
+    val x = tileSizePx * (3f / 2 * q)
+    val y = tileSizePx * (sqrt(3f) / 2 * q + sqrt(3f) * r)
 
     return Pair(x, y)
 }

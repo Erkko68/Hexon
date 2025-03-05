@@ -71,4 +71,12 @@ class Board(
         }
         return tiles.containsKey(Pair(q, r))
     }
+
+    /**
+     * Retrieves the maximum axial coordinates of the board.
+     * @return A pair containing the maximum q and r values.
+     */
+    fun getSize(): Pair<Int, Int> {
+        return Pair(maxQ, maxR)
+    }
 }
