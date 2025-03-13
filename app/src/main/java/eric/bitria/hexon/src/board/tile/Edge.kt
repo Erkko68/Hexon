@@ -6,16 +6,18 @@ import eric.bitria.hexon.src.exceptions.InvalidBuildingException
 class Edge {
     private var building: Building = Building.NONE
 
+    var vertex: Array<Vertex?> = arrayOfNulls(2) // Each edge is connected to two tiles at most.
     var tiles: Array<Tile?> = arrayOfNulls(2) // Each edge can be shared by two tiles at most.
 
-    fun placeBuilding(building: Building) {
-        if (building != Building.ROAD) {
-            throw InvalidBuildingException("Only roads can be placed on an edge.")
-        }
-        this.building = building
+    fun placeRoad() {
+        this.building = Building.ROAD
     }
 
-    fun getBuilding(): Building {
-        return this.building
+    fun canPlaceRoad(): Boolean {
+        return !hasRoad()
+    }
+
+    private fun hasRoad(): Boolean {
+        return this.building == Building.ROAD
     }
 }

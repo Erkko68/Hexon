@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import eric.bitria.hexon.src.board.Board
+import eric.bitria.hexon.ui.board.elements.RenderAvailablePositions
 import eric.bitria.hexon.ui.utils.modifier.ZoomState
 import eric.bitria.hexon.ui.utils.modifier.zoomable
 
@@ -40,6 +41,7 @@ fun BoardView(
             zoomState.offsetY = centerY
         }
         RenderTiles(board, zoomState)
+        RenderAvailablePositions(board, zoomState, tileSize = (20.dp * zoomState.zoomLevel))
     }
 }
 
