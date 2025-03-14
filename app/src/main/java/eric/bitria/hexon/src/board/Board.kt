@@ -26,21 +26,29 @@ class Board(private val radius: Int) {
 
             val edgeCoords = listOf(coord, neighborCoord).sorted() // Sort edge coordinates to ensure consistent keys
             val edgePair = Pair(edgeCoords[0], edgeCoords[1])
-            val edge = edges.getOrPut(edgePair) { Edge() } // Store new edge
+            val edge = edges.getOrPut(edgePair) { Edge(edgePair) } // Store new edge
 
             // Get second vertex neighbor coordinate
             val neighborCoord1 = coord.getNeighbor(dir.next())
 
             val vertexCoords = listOf(coord, neighborCoord, neighborCoord1).sorted() // Sort vertex coordinates to ensure consistent keys
             val vertexTriple = Triple(vertexCoords[0], vertexCoords[1], vertexCoords[2])
-            val vertex = vertices.getOrPut(vertexTriple) { Vertex() }
+            val vertex = vertices.getOrPut(vertexTriple) { Vertex(vertexTriple) }
 
             tile.edges[dir] = edge
             tile.vertices[dir] = vertex
         }
     }
 
-    //fun canPlaceBuilding(coord: Coord, direction: Direction): Boolean {}
+    fun canPlaceBuilding(vertex: Vertex): Boolean {
+        // Check if the vertex already has a building
+        if (vertex.hasBuilding()) return false
+
+        // Check if any adjacent vertex has a building
+        return vertex.getAdjacentVertexTriplets().none { adjacentTriplet ->
+            vertices[adjacentTriplet]?.hasBuilding() == true
+        }
+    }
 
     fun getVertex(coord1: Coord, coord2: Coord, coord3: Coord): Vertex?{
         val vertexCoords = listOf(coord1, coord2, coord3).sorted()

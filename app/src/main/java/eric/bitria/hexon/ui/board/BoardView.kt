@@ -56,8 +56,7 @@ fun RenderTiles(
             IntOffset(zoomState.offsetX.toInt(), zoomState.offsetY.toInt())
         }
     ) {
-        /*
-        board.nodes.forEach { (coordinates, tile) ->
+        board.tiles.forEach { (coordinates, tile) ->
             val (q, r) = coordinates
             TileView(
                 q = q,
@@ -66,6 +65,5 @@ fun RenderTiles(
                 color = Color.Yellow
             )
         }
-        */
     }
 }

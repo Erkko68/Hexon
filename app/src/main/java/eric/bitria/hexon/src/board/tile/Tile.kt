@@ -11,12 +11,4 @@ class Tile(
 ) {
     val edges = mutableMapOf<Direction, Edge>()
     val vertices = mutableMapOf<Direction, Vertex>()
-
-    /**
-     * Returns a list of neighboring tile coordinates.
-     */
-    fun getNeighborCoords(): List<Coord> {
-        return Direction.entries.map { coord.getNeighbor(it) }
-    }
-
 }

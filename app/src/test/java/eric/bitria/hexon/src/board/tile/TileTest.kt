@@ -31,20 +31,4 @@ class TileTest {
     fun tileShouldHaveCorrectNumber(){
         assertEquals(8, tile.number)
     }
-
-    @Test
-    fun tileShouldReturnCorrectNeighborCoords() {
-        val expectedNeighbors = setOf(
-            Coord(1, -1), // NORTHEAST
-            Coord(1, 0),  // EAST
-            Coord(0, 1),  // SOUTHEAST
-            Coord(-1, 1), // SOUTHWEST
-            Coord(-1, 0), // WEST
-            Coord(0, -1)  // NORTHWEST
-        )
-
-        val actualNeighbors = tile.getNeighborCoords().toSet()
-        assertEquals(expectedNeighbors, actualNeighbors)
-    }
-
 }

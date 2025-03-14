@@ -1,6 +1,7 @@
 package eric.bitria.hexon.src.board
 
 import eric.bitria.hexon.src.board.tile.Tile
+import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.Coord
 import eric.bitria.hexon.src.data.Direction
 import eric.bitria.hexon.src.data.Resource
@@ -14,9 +15,7 @@ class BoardTest {
     private lateinit var board: Board
 
     @Before
-    fun setUp() {
-        board = Board(3) // Create a new board with radius 3 for each test
-    }
+    fun setUp() { board = Board(3) }
 
     @Test
     fun addTile_ShouldStoreTileAndCreateEdgesAndVertices() {
@@ -69,5 +68,56 @@ class BoardTest {
         val vertex = board.getVertex(coord1, coord2, coord3)
 
         assertNotNull("Vertex between $coord1, $coord2, and $coord3 should exist", vertex)
+    }
+
+    @Test
+    fun getAdjacentVertexCoords_ReturnsCorrectAdjacentVertices() {
+        // Create a vertex with coordinates (0,0), (1,0), (0,1)
+        val coordA = Coord(0, 0)
+        val coordB = Coord(1, 0)
+        val coordC = Coord(0, 1)
+        val vertex = Vertex(Triple(coordA, coordB, coordC))
+
+        // Get adjacent vertices' coordinates
+        val adjacentVertices = vertex.getAdjacentVertexTriplets()
+
+        // Expected adjacent vertices (sorted)
+        val expected1 = sortTriple(Triple(coordA, coordB, Coord(1, -1)))
+        val expected2 = sortTriple(Triple(coordB, coordC, Coord(1, 1)))
+        val expected3 = sortTriple(Triple(coordA, coordC, Coord(-1, 1)))
+
+        // Verify the results
+        assertEquals(3, adjacentVertices.size)
+        assertTrue(adjacentVertices.contains(expected1))
+        assertTrue(adjacentVertices.contains(expected2))
+        assertTrue(adjacentVertices.contains(expected3))
+    }
+
+    @Test
+    fun getAdjacentVertexCoords_ReturnsCorrectAdjacentVerticesSecondPosition() {
+        // Create a vertex with coordinates (0,0), (1,0), (0,1)
+        val coordA = Coord(0, 0)
+        val coordB = Coord(1, 0)
+        val coordC = Coord(1, -1)
+        val vertex = Vertex(Triple(coordA, coordB, coordC))
+
+        // Get adjacent vertices' coordinates
+        val adjacentVertices = vertex.getAdjacentVertexTriplets()
+
+        // Expected adjacent vertices (sorted)
+        val expected1 = sortTriple(Triple(coordA, coordB, Coord(0, 1)))
+        val expected2 = sortTriple(Triple(coordB, coordC, Coord(2, -1)))
+        val expected3 = sortTriple(Triple(coordA, coordC, Coord(0, -1)))
+
+        // Verify the results
+        assertEquals(3, adjacentVertices.size)
+        assertTrue(adjacentVertices.contains(expected1))
+        assertTrue(adjacentVertices.contains(expected2))
+        assertTrue(adjacentVertices.contains(expected3))
+    }
+
+    private fun sortTriple(triple: Triple<Coord, Coord, Coord>): Triple<Coord, Coord, Coord> {
+        val sorted = listOf(triple.first, triple.second, triple.third).sorted()
+        return Triple(sorted[0], sorted[1], sorted[2])
     }
 }
