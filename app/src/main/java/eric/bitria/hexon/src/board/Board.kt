@@ -29,7 +29,7 @@ class Board(private val radius: Int) {
             val edge = edges.getOrPut(edgePair) { Edge(edgePair) } // Store new edge
 
             // Get second vertex neighbor coordinate
-            val neighborCoord1 = coord.getNeighbor(dir.next())
+            val neighborCoord1 = coord.getNeighbor(dir.prev())
 
             val vertexCoords = listOf(coord, neighborCoord, neighborCoord1).sorted() // Sort vertex coordinates to ensure consistent keys
             val vertexTriple = Triple(vertexCoords[0], vertexCoords[1], vertexCoords[2])

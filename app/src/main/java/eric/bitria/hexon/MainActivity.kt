@@ -23,12 +23,14 @@ class MainActivity : ComponentActivity() {
         val board = Board(radius = 3).apply {
             // Add tiles with proper coordinates and resources
             val tile1 = Tile(Coord(0, 0), Resource.WOOD, 8)
-            val tile2 = Tile(Coord(1, 0), Resource.WOOD, 8)
+            val tile2 = Tile(Coord(0, 1), Resource.BRICK, 8)
+            val tile3 = Tile(Coord(-1, 1), Resource.ORE, 8)
             addTile(tile1)
             addTile(tile2)
+            addTile(tile3)
         }
 
-        board.tiles.get(Coord(0, 0))!!.vertices[Direction.EAST]!!.placeBuilding(Building.SETTLEMENT)
+        board.tiles.get(Coord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
 
 
         setContent {

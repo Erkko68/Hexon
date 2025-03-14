@@ -62,7 +62,7 @@ fun RenderTiles(
                 q = q,
                 r = r,
                 tileSize = (20.dp * zoomState.zoomLevel),
-                color = Color.Yellow
+                color = tile.resource.color
             )
         }
     }
