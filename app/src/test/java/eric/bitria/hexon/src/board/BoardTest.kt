@@ -1,14 +1,11 @@
 package eric.bitria.hexon.src.board
 
 import eric.bitria.hexon.src.board.tile.Tile
+import eric.bitria.hexon.src.data.Coord
+import eric.bitria.hexon.src.data.Direction
 import eric.bitria.hexon.src.data.Resource
-import eric.bitria.hexon.src.exceptions.InvalidBoardException
-import junit.framework.TestCase.assertEquals
-import junit.framework.TestCase.assertFalse
-import junit.framework.TestCase.assertNotNull
-import junit.framework.TestCase.assertNull
-import junit.framework.TestCase.assertSame
-import junit.framework.TestCase.assertTrue
+
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
@@ -18,132 +15,59 @@ class BoardTest {
 
     @Before
     fun setUp() {
-        // Create a new board for each test
-        board = Board(3, 3)
+        board = Board(3) // Create a new board with radius 3 for each test
     }
 
     @Test
-    fun testAddTile() {
-        val board = Board(3, 3)
+    fun addTile_ShouldStoreTileAndCreateEdgesAndVertices() {
+        val coord = Coord(0, 0)
+        val tile = Tile(coord, Resource.WOOD, 8)
 
-        // Create two tiles
-        val tile1 = Tile(8, Resource.WOOD)
-        val tile2 = Tile(5, Resource.BRICK)
+        board.addTile(tile)
 
-        // Add the first tile at (0,0)
-        board.addTile(0, 0, tile1)
-        assertTrue("Tile (0,0) should be in the board", board.hasTile(0, 0))
+        // Verify the tile is stored
+        assertEquals(tile, board.tiles[coord])
 
-        // Add a second tile at (1,0), which is to the right of (0,0)
-        board.addTile(1, 0, tile2)
-        assertTrue("Tile (1,0) should be in the board", board.hasTile(1, 0))
+        // Verify edges and vertices are created correctly
+        Direction.entries.forEach { dir ->
+            val neighborCoord = coord.getNeighbor(dir)
+            val edgeCoords = listOf(coord, neighborCoord).sorted()
+            val edgePair = Pair(edgeCoords[0], edgeCoords[1])
 
-        // Verify that tile1 and tile2 are linked correctly
-        val tile1Edge = tile1.edges[1]  // Right edge of tile1
-        val tile2Edge = tile2.edges[4]  // Left edge of tile2 (opposite edge)
+            assertNotNull("Edge should be created for direction $dir", board.getEdge(edgePair.first, edgePair.second))
 
-        assertSame("Tile1's right edge should be the same as Tile2's left edge", tile1Edge, tile2Edge)
+            val neighborCoord1 = coord.getNeighbor(dir.next())
+            val vertexCoords = listOf(coord, neighborCoord, neighborCoord1).sorted()
+            val vertexTriple = Triple(vertexCoords[0], vertexCoords[1], vertexCoords[2])
+
+            assertNotNull("Vertex should be created for direction $dir", board.getVertex(vertexTriple.first, vertexTriple.second, vertexTriple.third))
+        }
     }
 
     @Test
-    fun testAddTwoTiles() {
-        val board = Board(3, 3)
+    fun getEdge_ShouldReturnCorrectEdge() {
+        val coord1 = Coord(0, 0)
+        val coord2 = Coord(1, 0)
+        val tile = Tile(coord1, Resource.WOOD, 5)
 
-        // Create three tiles
-        val tile1 = Tile(8, Resource.WOOD)
-        val tile2 = Tile(5, Resource.BRICK)
-        val tile3 = Tile(4, Resource.SHEEP)
+        board.addTile(tile)
 
-        // Add the first tile at (0,0)
-        board.addTile(0, 0, tile1)
-        assertTrue("Tile (0,0) should be in the board", board.hasTile(0, 0))
+        val edge = board.getEdge(coord1, coord2)
 
-        // Add a second tile at (1,0), which is to the right of (0,0)
-        board.addTile(1, 0, tile2)
-        assertTrue("Tile (1,0) should be in the board", board.hasTile(1, 0))
-
-        board.addTile(-1, 0, tile3)
-        assertTrue("Tile (-1,0) should be in the board", board.hasTile(-1, 0))
-    }
-
-    @Test(expected = InvalidBoardException::class)
-    fun testAddTileQOutOfBounds() {
-        val board = Board(3, 3)
-        val tile = Tile(8, Resource.WOOD)
-
-        // Attempt to add a tile at q = 4 (out of bounds)
-        board.addTile(4, 0, tile)
-    }
-
-    @Test(expected = InvalidBoardException::class)
-    fun testAddTileROutOfBounds() {
-        val board = Board(3, 3)
-        val tile = Tile(8, Resource.WOOD)
-
-        // Attempt to add a tile at r = 4 (out of bounds)
-        board.addTile(0, 4, tile)
-    }
-
-    @Test(expected = InvalidBoardException::class)
-    fun testAddTileQAndROutOfBounds() {
-        val board = Board(3, 3)
-        val tile = Tile(8, Resource.WOOD)
-
-        // Attempt to add a tile at q = 4 and r = 4 (both out of bounds)
-        board.addTile(4, 4, tile)
+        assertNotNull("Edge between $coord1 and $coord2 should exist", edge)
     }
 
     @Test
-    fun testHasTileWhenTileExists() {
-        val board = Board(3, 3)
-        // Add a tile at (0, 0)
-        val tile = Tile(8, Resource.WOOD)
-        board.addTile(0, 0, tile)
+    fun getVertex_ShouldReturnCorrectVertex() {
+        val coord1 = Coord(0, 0)
+        val coord2 = Coord(1, 0)
+        val coord3 = Coord(0, 1)
+        val tile = Tile(coord1, Resource.WHEAT, 9)
 
-        // Verify that hasTile returns true for (0, 0)
-        assertTrue("hasTile should return true for (0, 0)", board.hasTile(0, 0))
+        board.addTile(tile)
+
+        val vertex = board.getVertex(coord1, coord2, coord3)
+
+        assertNotNull("Vertex between $coord1, $coord2, and $coord3 should exist", vertex)
     }
-
-    @Test
-    fun testHasTileWhenTileDoesNotExist() {
-        // Verify that hasTile returns false for (1, 1) (no tile added here)
-        assertFalse("hasTile should return false for (1, 1)", board.hasTile(1, 1))
-    }
-
-    @Test
-    fun testGetTileWhenTileExists() {
-        // Add a tile at (0, 0)
-        val tile = Tile(8, Resource.WOOD)
-        board.addTile(0, 0, tile)
-
-        // Verify that getTile returns the correct tile for (0, 0)
-        val retrievedTile = board.getTile(0, 0)
-        assertNotNull("getTile should return a non-null tile for (0, 0)", retrievedTile.toString())
-        assertEquals("getTile should return the correct tile for (0, 0)", tile, retrievedTile)
-    }
-
-    @Test
-    fun testGetTileWhenTileDoesNotExist() {
-        // Verify that getTile returns null for (1, 1) (no tile added here)
-        assertNull("getTile should return null for (1, 1)", board.getTile(1, 1))
-    }
-
-    @Test(expected = InvalidBoardException::class)
-    fun testGetTileOutOfBounds() {
-        // Attempt to get a tile at out-of-bounds coordinates and expect an exception
-        board.getTile(4, 0)  // Should throw InvalidBoardException
-        board.getTile(0, 4)  // Should throw InvalidBoardException
-        board.getTile(-4, 0) // Should throw InvalidBoardException
-        board.getTile(0, -4) // Should throw InvalidBoardException
-    }
-
-    @Test(expected = InvalidBoardException::class)
-    fun testHasTileOutOfBounds() {
-        // Attempt to check hasTile at out-of-bounds coordinates and expect an exception
-        board.hasTile(4, 0)  // Should throw InvalidBoardException
-        board.hasTile(0, 4)  // Should throw InvalidBoardException
-        board.hasTile(-4, 0) // Should throw InvalidBoardException
-        board.hasTile(0, -4) // Should throw InvalidBoardException
-    }
-
 }

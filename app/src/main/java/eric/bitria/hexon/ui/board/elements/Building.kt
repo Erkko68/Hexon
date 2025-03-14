@@ -31,16 +31,23 @@ fun RenderAvailablePositions(
             }
             .fillMaxSize()
     ) {
-        board.tiles.forEach { (coordinates, tile) ->
+        /*
+        board.nodes.forEach { (coordinates, tile) ->
             val (q, r) = coordinates
             val (tileX, tileY) = axialToScreen(q, r, tileSize)
 
-            tile.vertices.forEachIndexed { index, vertex ->
-                if (vertex.canPlaceBuilding()) {
-                    val (dx, dy) = getVertexOffset(index, tileSize)
+            tile.vertices.forEach { (direction, vertex) ->
+                // Convert direction to vertex index (assuming Direction enum matches vertex indices)
+                val vertexIndex = direction.ordinal
+
+                // Check if a building can be placed at this vertex
+                if (board.canPlaceBuilding(coordinates, direction)) {
+                    // Calculate the vertex position relative to the tile's center
+                    val (dx, dy) = getVertexOffset(vertexIndex, tileSize)
                     val vertexX = tileX + dx
                     val vertexY = tileY + dy
 
+                    // Render a circle at the vertex position
                     Box(
                         modifier = Modifier
                             .offset { IntOffset(vertexX.toInt(), vertexY.toInt()) }
@@ -52,6 +59,7 @@ fun RenderAvailablePositions(
                 }
             }
         }
+        */
     }
 }
 
@@ -63,7 +71,7 @@ fun RenderAvailablePositions(
 private fun getVertexOffset(vertexIndex: Int, tileSize: Dp): Pair<Float, Float> {
     val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
     val angleOffset = Math.PI / 2 // Start at 90 degrees (top vertex)
-    val angle = angleOffset + (Math.PI / 3 * vertexIndex) // Each vertex is 60° apart
+    val angle = angleOffset - (Math.PI / 3 * vertexIndex) // Subtract for clockwise order
     val dx = tileSizePx * cos(angle).toFloat()
     val dy = -tileSizePx * sin(angle).toFloat() // Negate dy to flip vertically
     return Pair(dx, dy)

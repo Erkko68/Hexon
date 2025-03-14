@@ -21,9 +21,9 @@ fun axialToScreen(
 ): Pair<Float, Float> {
     val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
 
-    // Convert axial coordinates to screen coordinates
-    val x = tileSizePx * (3f / 2 * q)
-    val y = tileSizePx * (sqrt(3f) / 2 * q + sqrt(3f) * r)
+    // Convert axial coordinates to screen coordinates for a pointy-oriented hexagon
+    val x = tileSizePx * (sqrt(3f) * (q + r / 2f))
+    val y = tileSizePx * (3f / 2 * r)
 
     return Pair(x, y)
 }
