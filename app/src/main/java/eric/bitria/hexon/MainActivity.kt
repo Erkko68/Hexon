@@ -10,22 +10,22 @@ import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Tile
-import eric.bitria.hexon.src.data.Building
-import eric.bitria.hexon.src.data.Coord
+import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
-import eric.bitria.hexon.src.data.Resource
+import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.ui.theme.HexonTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val tile1 = Tile(Coord(0, 0), Resource.WOOD, 8)
-        val tile2 = Tile(Coord(0, 1), Resource.BRICK, 8)
-        val tile3 = Tile(Coord(-1, 1), Resource.ORE, 8)
-        val tile4 = Tile(Coord(2, 0), Resource.WHEAT, 8)
-        val tile5 = Tile(Coord(1, 0), Resource.DESERT, 8)
-        val tile6 = Tile(Coord(+1, -1), Resource.SHEEP, 8)
+        val tile1 = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        val tile2 = Tile(AxialCoord(0, 1), Resource.BRICK, 8)
+        val tile3 = Tile(AxialCoord(-1, 1), Resource.ORE, 8)
+        val tile4 = Tile(AxialCoord(2, 0), Resource.WHEAT, 8)
+        val tile5 = Tile(AxialCoord(1, 0), Resource.DESERT, 8)
+        val tile6 = Tile(AxialCoord(+1, -1), Resource.SHEEP, 8)
 
         val board = Board(radius = 3).apply {
             addTile(tile1)
@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
             addTile(tile6)
         }
 
-        board.getTile(Coord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
+        board.getTile(AxialCoord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
 
 
         setContent {

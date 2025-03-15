@@ -1,4 +1,4 @@
-package eric.bitria.hexon.src.data
+package eric.bitria.hexon.src.data.game
 
 import androidx.compose.ui.graphics.Color
 

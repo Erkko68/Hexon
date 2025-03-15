@@ -1,25 +1,25 @@
 package eric.bitria.hexon.src.data
 
 // Coordinate System
-data class Coord(
+data class AxialCoord(
     val q: Int,
     val r: Int
-) : Comparable<Coord> {
+) : Comparable<AxialCoord> {
 
-    override fun compareTo(other: Coord): Int {
+    override fun compareTo(other: AxialCoord): Int {
         return compareValuesBy(this, other, { it.q }, { it.r })
     }
 
     fun getNeighbor(dir: Direction) = when(dir) {
-        Direction.NORTHEAST -> Coord(q + 1, r - 1)
-        Direction.EAST -> Coord(q + 1, r)
-        Direction.SOUTHEAST -> Coord(q, r + 1)
-        Direction.SOUTHWEST -> Coord(q - 1, r + 1)
-        Direction.WEST -> Coord(q - 1, r)
-        Direction.NORTHWEST -> Coord(q, r - 1)
+        Direction.NORTHEAST -> AxialCoord(q + 1, r - 1)
+        Direction.EAST -> AxialCoord(q + 1, r)
+        Direction.SOUTHEAST -> AxialCoord(q, r + 1)
+        Direction.SOUTHWEST -> AxialCoord(q - 1, r + 1)
+        Direction.WEST -> AxialCoord(q - 1, r)
+        Direction.NORTHWEST -> AxialCoord(q, r - 1)
     }
 
-    fun directionTo(other: Coord): Direction {
+    fun directionTo(other: AxialCoord): Direction {
         val dq = other.q - q
         val dr = other.r - r
         return when (dq to dr) {

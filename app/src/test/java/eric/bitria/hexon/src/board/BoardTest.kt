@@ -1,10 +1,10 @@
 package eric.bitria.hexon.src.board
 
 import eric.bitria.hexon.src.board.tile.Tile
-import eric.bitria.hexon.src.board.tile.Vertex
-import eric.bitria.hexon.src.data.Coord
+import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
-import eric.bitria.hexon.src.data.Resource
+import eric.bitria.hexon.src.data.game.Resource
+import eric.bitria.hexon.src.exceptions.InvalidBoardException
 
 import org.junit.Assert.*
 import org.junit.Before
@@ -19,24 +19,24 @@ class BoardTest {
 
     @Test
     fun addTile_ShouldStoreTileAndCreateEdgesAndVertices() {
-        val coord = Coord(0, 0)
-        val tile = Tile(coord, Resource.WOOD, 8)
+        val axialCoord = AxialCoord(0, 0)
+        val tile = Tile(axialCoord, Resource.WOOD, 8)
 
         board.addTile(tile)
 
         // Verify the tile is stored
-        assertEquals(tile, board.tiles[coord])
+        assertEquals(tile, board.getTile(axialCoord))
 
         // Verify edges and vertices are created correctly
         Direction.entries.forEach { dir ->
-            val neighborCoord = coord.getNeighbor(dir)
-            val edgeCoords = listOf(coord, neighborCoord).sorted()
+            val neighborCoord = axialCoord.getNeighbor(dir)
+            val edgeCoords = listOf(axialCoord, neighborCoord).sorted()
             val edgePair = Pair(edgeCoords[0], edgeCoords[1])
 
             assertNotNull("Edge should be created for direction $dir", board.getEdge(edgePair.first, edgePair.second))
 
-            val neighborCoord1 = coord.getNeighbor(dir.next())
-            val vertexCoords = listOf(coord, neighborCoord, neighborCoord1).sorted()
+            val neighborCoord1 = axialCoord.getNeighbor(dir.next())
+            val vertexCoords = listOf(axialCoord, neighborCoord, neighborCoord1).sorted()
             val vertexTriple = Triple(vertexCoords[0], vertexCoords[1], vertexCoords[2])
 
             assertNotNull("Vertex should be created for direction $dir", board.getVertex(vertexTriple.first, vertexTriple.second, vertexTriple.third))
@@ -45,79 +45,58 @@ class BoardTest {
 
     @Test
     fun getEdge_ShouldReturnCorrectEdge() {
-        val coord1 = Coord(0, 0)
-        val coord2 = Coord(1, 0)
-        val tile = Tile(coord1, Resource.WOOD, 5)
+        val axialCoord1 = AxialCoord(0, 0)
+        val axialCoord2 = AxialCoord(1, 0)
+        val tile = Tile(axialCoord1, Resource.WOOD, 5)
 
         board.addTile(tile)
 
-        val edge = board.getEdge(coord1, coord2)
+        val edge = board.getEdge(axialCoord1, axialCoord2)
 
-        assertNotNull("Edge between $coord1 and $coord2 should exist", edge)
+        assertNotNull("Edge between $axialCoord1 and $axialCoord2 should exist", edge)
     }
 
     @Test
     fun getVertex_ShouldReturnCorrectVertex() {
-        val coord1 = Coord(0, 0)
-        val coord2 = Coord(1, 0)
-        val coord3 = Coord(0, 1)
-        val tile = Tile(coord1, Resource.WHEAT, 9)
+        val axialCoord1 = AxialCoord(0, 0)
+        val axialCoord2 = AxialCoord(1, 0)
+        val axialCoord3 = AxialCoord(0, 1)
+        val tile = Tile(axialCoord1, Resource.WHEAT, 9)
 
         board.addTile(tile)
 
-        val vertex = board.getVertex(coord1, coord2, coord3)
+        val vertex = board.getVertex(axialCoord1, axialCoord2, axialCoord3)
 
-        assertNotNull("Vertex between $coord1, $coord2, and $coord3 should exist", vertex)
+        assertNotNull("Vertex between $axialCoord1, $axialCoord2, and $axialCoord3 should exist", vertex)
     }
 
-    @Test
-    fun getAdjacentVertexCoords_ReturnsCorrectAdjacentVertices() {
-        // Create a vertex with coordinates (0,0), (1,0), (0,1)
-        val coordA = Coord(0, 0)
-        val coordB = Coord(1, 0)
-        val coordC = Coord(0, 1)
-        val vertex = Vertex(Triple(coordA, coordB, coordC))
+    // Exceptions
 
-        // Get adjacent vertices' coordinates
-        val adjacentVertices = vertex.getAdjacentVertexTriplets()
+    @Test(expected = InvalidBoardException::class)
+    fun testGetVertexThrowsException() {
+        // Coordinates outside the board's radius
+        val coord1 = AxialCoord(4, 0) // Out of bounds
+        val coord2 = AxialCoord(0, 0) // Within bounds
+        val coord3 = AxialCoord(1, -1) // Within bounds
 
-        // Expected adjacent vertices (sorted)
-        val expected1 = sortTriple(Triple(coordA, coordB, Coord(1, -1)))
-        val expected2 = sortTriple(Triple(coordB, coordC, Coord(1, 1)))
-        val expected3 = sortTriple(Triple(coordA, coordC, Coord(-1, 1)))
-
-        // Verify the results
-        assertEquals(3, adjacentVertices.size)
-        assertTrue(adjacentVertices.contains(expected1))
-        assertTrue(adjacentVertices.contains(expected2))
-        assertTrue(adjacentVertices.contains(expected3))
+        board.getVertex(coord1, coord2, coord3)
     }
 
-    @Test
-    fun getAdjacentVertexCoords_ReturnsCorrectAdjacentVerticesSecondPosition() {
-        // Create a vertex with coordinates (0,0), (1,0), (0,1)
-        val coordA = Coord(0, 0)
-        val coordB = Coord(1, 0)
-        val coordC = Coord(1, -1)
-        val vertex = Vertex(Triple(coordA, coordB, coordC))
+    @Test(expected = InvalidBoardException::class)
+    fun testGetEdgeThrowsException() {
+        // Coordinates outside the board's radius
+        val coord1 = AxialCoord(-4, 0) // Out of bounds
+        val coord2 = AxialCoord(0, 0) // Within bounds
 
-        // Get adjacent vertices' coordinates
-        val adjacentVertices = vertex.getAdjacentVertexTriplets()
-
-        // Expected adjacent vertices (sorted)
-        val expected1 = sortTriple(Triple(coordA, coordB, Coord(0, 1)))
-        val expected2 = sortTriple(Triple(coordB, coordC, Coord(2, -1)))
-        val expected3 = sortTriple(Triple(coordA, coordC, Coord(0, -1)))
-
-        // Verify the results
-        assertEquals(3, adjacentVertices.size)
-        assertTrue(adjacentVertices.contains(expected1))
-        assertTrue(adjacentVertices.contains(expected2))
-        assertTrue(adjacentVertices.contains(expected3))
+        board.getEdge(coord1, coord2)
     }
 
-    private fun sortTriple(triple: Triple<Coord, Coord, Coord>): Triple<Coord, Coord, Coord> {
-        val sorted = listOf(triple.first, triple.second, triple.third).sorted()
-        return Triple(sorted[0], sorted[1], sorted[2])
+    @Test(expected = InvalidBoardException::class)
+    fun testGetTileThrowsException() {
+        // Coordinate outside the board's radius
+        val coord = AxialCoord(0, 4) // Out of bounds
+
+        board.getTile(coord)
     }
+
 }

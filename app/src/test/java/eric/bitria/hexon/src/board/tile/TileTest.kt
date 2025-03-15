@@ -1,7 +1,7 @@
 package eric.bitria.hexon.src.board.tile
 
-import eric.bitria.hexon.src.data.Coord
-import eric.bitria.hexon.src.data.Resource
+import eric.bitria.hexon.src.data.AxialCoord
+import eric.bitria.hexon.src.data.game.Resource
 import junit.framework.TestCase.assertEquals
 import junit.framework.TestCase.assertTrue
 import org.junit.Before
@@ -13,7 +13,7 @@ class TileTest {
 
     @Before
     fun setUp() {
-        tile = Tile(Coord(0, 0), Resource.WOOD, 8)
+        tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
     }
 
     @Test
@@ -23,8 +23,8 @@ class TileTest {
 
     @Test
     fun tileShouldHaveCorrectCoords(){
-        val coord = Coord(0, 0);
-        assertTrue(tile.coords == coord)
+        val axialCoord = AxialCoord(0, 0);
+        assertTrue(tile.coords == axialCoord)
     }
 
     @Test

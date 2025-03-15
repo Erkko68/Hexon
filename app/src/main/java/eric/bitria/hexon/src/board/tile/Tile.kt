@@ -1,13 +1,13 @@
 package eric.bitria.hexon.src.board.tile
 
-import eric.bitria.hexon.src.data.Building
-import eric.bitria.hexon.src.data.Coord
+import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
-import eric.bitria.hexon.src.data.Resource
+import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.TileNotAddedException
 
 class Tile(
-    val coords: Coord,
+    val coords: AxialCoord,
     val resource: Resource,
     val number: Int
 ) {

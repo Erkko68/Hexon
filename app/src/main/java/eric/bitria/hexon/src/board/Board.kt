@@ -3,16 +3,19 @@ package eric.bitria.hexon.src.board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.src.board.tile.Vertex
-import eric.bitria.hexon.src.data.Coord
+import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
+import eric.bitria.hexon.src.utils.sortPair
+import eric.bitria.hexon.src.utils.sortTriple
 import kotlin.math.abs
 
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
 class Board(private val radius: Int) {
-    private val tiles = mutableMapOf<Coord, Tile>()
-    private val edges = mutableMapOf<Pair<Coord, Coord>, Edge>()
-    private val vertices = mutableMapOf<Triple<Coord, Coord, Coord>, Vertex>()
+
+    private val tiles = mutableMapOf<AxialCoord, Tile>()
+    private val edges = mutableMapOf<Pair<AxialCoord, AxialCoord>, Edge>()
+    private val vertices = mutableMapOf<Triple<AxialCoord, AxialCoord, AxialCoord>, Vertex>()
 
     // Getters
 
@@ -22,23 +25,21 @@ class Board(private val radius: Int) {
 
     fun getEdges(): List<Edge> = edges.values.toList()
 
-    fun getVertex(coord1: Coord, coord2: Coord, coord3: Coord): Vertex? {
-        val vertexCoords = listOf(coord1, coord2, coord3).sorted()
-        if (vertexCoords.any { !isWithinBoard(it) }) throw InvalidBoardException("One or more vertex coordinates are out of range.")
-        val vertexTriple = Triple(vertexCoords[0], vertexCoords[1], vertexCoords[2])
+    fun getVertex(axialCoord1: AxialCoord, axialCoord2: AxialCoord, axialCoord3: AxialCoord): Vertex? {
+        val vertexTriple = sortTriple(Triple(axialCoord1, axialCoord2, axialCoord3))
+        if (vertexTriple.toList().any { !isWithinBoard(it) }) throw InvalidBoardException("One or more vertex coordinates are out of range.")
         return vertices[vertexTriple]
     }
 
-    fun getEdge(coord1: Coord, coord2: Coord): Edge? {
-        val edgeCoords = listOf(coord1, coord2).sorted()
-        if (edgeCoords.any { !isWithinBoard(it) }) throw InvalidBoardException("One or more edge coordinates are out of range.")
-        val edgePair = Pair(edgeCoords[0], edgeCoords[1])
+    fun getEdge(axialCoord1: AxialCoord, axialCoord2: AxialCoord): Edge? {
+        val edgePair = sortPair(Pair(axialCoord1, axialCoord2))
+        if (edgePair.toList().any { !isWithinBoard(it) }) throw InvalidBoardException("One or more edge coordinates are out of range.")
         return edges[edgePair]
     }
 
-    fun getTile(tileCoord: Coord): Tile? {
-        if (!isWithinBoard(tileCoord)) throw InvalidBoardException(tileCoord, radius)
-        return tiles[tileCoord]
+    fun getTile(tileAxialCoord: AxialCoord): Tile? {
+        if (!isWithinBoard(tileAxialCoord)) throw InvalidBoardException(tileAxialCoord, radius)
+        return tiles[tileAxialCoord]
     }
 
     // Logic
@@ -59,15 +60,13 @@ class Board(private val radius: Int) {
             // Get the neighboring coordinate in the specified direction
             val neighborCoord = coord.getNeighbor(dir)
 
-            val edgeCoords = listOf(coord, neighborCoord).sorted() // Sort edge coordinates to ensure consistent keys
-            val edgePair = Pair(edgeCoords[0], edgeCoords[1])
-            val edge = edges.getOrPut(edgePair) { Edge(edgePair) } // Store new edge
+            val edgePair = sortPair(Pair(coord, neighborCoord)) // Sorted Edge Coords
+            val edge = edges.getOrPut(edgePair) { Edge(edgePair) }
 
             // Get second vertex neighbor coordinate
             val neighborCoord1 = coord.getNeighbor(dir.prev())
 
-            val vertexCoords = listOf(coord, neighborCoord, neighborCoord1).sorted() // Sort vertex coordinates to ensure consistent keys
-            val vertexTriple = Triple(vertexCoords[0], vertexCoords[1], vertexCoords[2])
+            val vertexTriple = sortTriple(Triple(coord, neighborCoord, neighborCoord1)) // Sorted vertexCoords
             val vertex = vertices.getOrPut(vertexTriple) { Vertex(vertexTriple) }
 
             tile.edges[dir] = edge
@@ -77,19 +76,26 @@ class Board(private val radius: Int) {
 
     fun canPlaceBuilding(vertex: Vertex): Boolean {
         // Check if any adjacent vertex has a building or if this vertex itself has a building
-        if (!vertices.containsKey(vertex.coords)) throw InvalidBoardException("Vertex is not on the board.")
         return !vertex.hasBuilding() &&
-                vertex.getAdjacentVertexTriplets().none { adjacentTriplet ->
+                vertex.getAdjacentVerticesCoords().none { adjacentTriplet ->
                     vertices[adjacentTriplet]?.hasBuilding() == true
                 }
     }
 
+    fun canPlaceRoad(edge: Edge): Boolean {
+        // Check if any adjacent vertex has a building or if this vertex itself has a building
+        return !edge.hasBuilding() &&
+                edge.getAdjacentVerticesCoords().none { adjacentTriplet ->
+                    vertices[adjacentTriplet]?.hasBuilding() == true
+                } || edge.getAdjacentEdgesCoords().none { adjacentPair ->
+    }
+
     // Helper functions
 
-    private fun isWithinBoard(coord: Coord): Boolean {
-        return (abs(coord.q) <= radius) &&
-                (abs(coord.r) <= radius) &&
-                (abs(coord.q + coord.r) <= radius)
+    private fun isWithinBoard(axialCoord: AxialCoord): Boolean {
+        return (abs(axialCoord.q) <= radius) &&
+                (abs(axialCoord.r) <= radius) &&
+                (abs(axialCoord.q + axialCoord.r) <= radius)
     }
 
 }

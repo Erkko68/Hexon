@@ -1,13 +1,16 @@
 package eric.bitria.hexon.src.board.tile
 
-import eric.bitria.hexon.src.data.Building
-import eric.bitria.hexon.src.data.Coord
-import eric.bitria.hexon.src.data.Direction
+import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.AxialCoord
+import eric.bitria.hexon.src.utils.sortPair
+import eric.bitria.hexon.src.utils.sortTriple
 
 class Vertex(
-    val coords: Triple<Coord, Coord, Coord>
+    private val coords: Triple<AxialCoord, AxialCoord, AxialCoord>
 ) {
     private var building: Building = Building.NONE
+
+    fun getCoords(): Triple<AxialCoord, AxialCoord, AxialCoord> = sortTriple(coords)
 
     fun hasBuilding() = building != Building.NONE
 
@@ -19,8 +22,8 @@ class Vertex(
      * Returns a list of the three adjacent vertices.
      * Each adjacent vertex is represented as a sorted Triple of Coord.
      */
-    fun getAdjacentVertexTriplets(): List<Triple<Coord, Coord, Coord>> {
-        val adjacentVertices = mutableListOf<Triple<Coord, Coord, Coord>>()
+    fun getAdjacentVerticesCoords(): List<Triple<AxialCoord, AxialCoord, AxialCoord>> {
+        val adjacentVertices = mutableListOf<Triple<AxialCoord, AxialCoord, AxialCoord>>()
         val pairsWithThird = listOf(
             Triple(coords.first, coords.second, coords.third),
             Triple(coords.second, coords.third, coords.first),
@@ -43,9 +46,22 @@ class Vertex(
         return adjacentVertices
     }
 
-    private fun sortTriple(triple: Triple<Coord, Coord, Coord>): Triple<Coord, Coord, Coord> {
-        return listOf(triple.first, triple.second, triple.third).sorted().let {
-            Triple(it[0], it[1], it[2])
+    fun getAdjacentEdgesCoords(): List<Pair<AxialCoord, AxialCoord>> {
+        return listOf(
+            sortPair(Pair(coords.first, coords.second)),
+            sortPair(Pair(coords.second, coords.third)),
+            sortPair(Pair(coords.first, coords.third))
+        )
+    }
+
+    companion object {
+        // The same method as before but static
+        fun getAdjacentEdgesCoords(vertexCoord: Triple<AxialCoord, AxialCoord, AxialCoord>): List<Pair<AxialCoord, AxialCoord>> {
+            return listOf(
+                sortPair(Pair(vertexCoord.first, vertexCoord.second)),
+                sortPair(Pair(vertexCoord.second, vertexCoord.third)),
+                sortPair(Pair(vertexCoord.first, vertexCoord.third))
+            )
         }
     }
 }
