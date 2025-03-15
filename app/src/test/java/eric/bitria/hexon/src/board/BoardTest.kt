@@ -1,8 +1,11 @@
 package eric.bitria.hexon.src.board
 
+import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Tile
+import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
+import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
 
@@ -68,6 +71,49 @@ class BoardTest {
         val vertex = board.getVertex(axialCoord1, axialCoord2, axialCoord3)
 
         assertNotNull("Vertex between $axialCoord1, $axialCoord2, and $axialCoord3 should exist", vertex)
+    }
+
+    // canPlaceRoad
+
+    @Test
+    fun testCanPlaceRoad_BuildingOnAdjacentVertex() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        tile.placeBuilding(Building.SETTLEMENT, Direction.NORTHEAST)
+        val edge = tile.edges[Direction.NORTHEAST]!!
+
+        assertTrue(board.canPlaceRoad(edge)) // Should return true if adjacent vertex has a building
+    }
+
+    @Test
+    fun testCanPlaceRoad_RoadOnAdjacentEdge() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        tile.placeRoad(Direction.NORTHEAST)
+        val edge = tile.edges[Direction.EAST]!!
+
+        assertTrue(board.canPlaceRoad(edge)) // Should return true if adjacent edge has a road
+    }
+
+    @Test
+    fun testCanPlaceRoad_BuildingOnEdge() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val edge = tile.edges[Direction.NORTHEAST]!!
+
+        assertFalse(board.canPlaceRoad(edge)) // Should return false if edge already has a building
+    }
+
+    @Test
+    fun testCanPlaceRoad_NoBuildingOrRoad() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+        val edge = tile.edges[Direction.EAST]!!
+
+        assertFalse(board.canPlaceRoad(edge)) // Should return false if no building or road is adjacent
     }
 
     // Exceptions

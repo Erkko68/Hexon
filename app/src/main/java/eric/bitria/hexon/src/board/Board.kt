@@ -83,11 +83,13 @@ class Board(private val radius: Int) {
     }
 
     fun canPlaceRoad(edge: Edge): Boolean {
-        // Check if any adjacent vertex has a building or if this vertex itself has a building
-        return !edge.hasBuilding() &&
-                edge.getAdjacentVerticesCoords().none { adjacentTriplet ->
-                    vertices[adjacentTriplet]?.hasBuilding() == true
-                } || edge.getAdjacentEdgesCoords().none { adjacentPair ->
+        // Condition 1: Edge must not have a building
+        // Condition 2: At least one adjacent vertex has a building
+        // Condition 3: At least one adjacent edge has a road
+        return !edge.hasBuilding() && (
+                edge.getAdjacentVerticesCoords().any { vertices[it]?.hasBuilding() == true } ||
+                        edge.getAdjacentEdgesCoords().any { edges[it]?.hasBuilding() == true }
+                )
     }
 
     // Helper functions
