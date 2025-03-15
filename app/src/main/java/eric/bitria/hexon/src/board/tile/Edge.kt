@@ -21,6 +21,10 @@ class Edge(
         this.building = building
     }
 
+    /**
+     * From this edge, it returns the 2 adjacent vertices.
+     * @return a list of the three adjacent vertices a Triple of coordinates.
+     */
     fun getAdjacentVerticesCoords(): List<Triple<AxialCoord, AxialCoord, AxialCoord>> {
         val a = coords.first
         val b = coords.second
@@ -38,6 +42,15 @@ class Edge(
         return listOf(sortTriple(Triple(a, b, thirdCoord1)), sortTriple(Triple(a, b, thirdCoord2)))
     }
 
+    /**
+     * From this edge, it returns the 4 adjacent edges.
+     *
+     * An adjacent edge is defined as the edges from the adjacent vertices without counting this edge itself.
+     * So if each adjacent vertex has three edges, when we take the edges from both vertices and combine them
+     * in a list we will have 6 edges. But two of them will be this edge so we can exclude them.
+     *
+     * @return a list of the two adjacent edges.
+     */
     fun getAdjacentEdgesCoords(): List<Pair<AxialCoord, AxialCoord>> {
         val adjacentEdges = mutableSetOf<Pair<AxialCoord, AxialCoord>>()
 

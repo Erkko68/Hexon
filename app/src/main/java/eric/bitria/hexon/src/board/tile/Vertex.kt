@@ -19,8 +19,10 @@ class Vertex(
     }
 
     /**
-     * Returns a list of the three adjacent vertices.
-     * Each adjacent vertex is represented as a sorted Triple of Coord.
+     * An adjacent vertex is defined as the opposite vertex from an adjacent edge.
+     * Since each vertex is connected to 3 edges, we have 3 opposite vertices and therefore adjacent vertices.
+     *
+     * @return A list containing Triples of the adjacent Vertices.
      */
     fun getAdjacentVerticesCoords(): List<Triple<AxialCoord, AxialCoord, AxialCoord>> {
         val adjacentVertices = mutableListOf<Triple<AxialCoord, AxialCoord, AxialCoord>>()
@@ -46,16 +48,16 @@ class Vertex(
         return adjacentVertices
     }
 
+    /**
+     * Returns a list of the adjacent edges from this given vertex.
+     *
+     * @return a list containing Pairs of AxialCoords
+     */
     fun getAdjacentEdgesCoords(): List<Pair<AxialCoord, AxialCoord>> {
-        return listOf(
-            sortPair(Pair(coords.first, coords.second)),
-            sortPair(Pair(coords.second, coords.third)),
-            sortPair(Pair(coords.first, coords.third))
-        )
+        return getAdjacentEdgesCoords(coords)
     }
 
     companion object {
-        // The same method as before but static
         fun getAdjacentEdgesCoords(vertexCoord: Triple<AxialCoord, AxialCoord, AxialCoord>): List<Pair<AxialCoord, AxialCoord>> {
             return listOf(
                 sortPair(Pair(vertexCoord.first, vertexCoord.second)),

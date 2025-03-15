@@ -8,5 +8,5 @@ enum class Resource(val color: Color) {
     SHEEP(Color(0xFF4CAF50)),
     WHEAT(Color.Yellow),
     ORE(Color.Gray),
-    DESERT(Color(0xFFF4D03F))
+    NONE(Color(0xFFF4D03F))
 }

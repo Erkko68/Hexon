@@ -1,15 +1,15 @@
 package eric.bitria.hexon.src.board
 
-import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Tile
-import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
-
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 

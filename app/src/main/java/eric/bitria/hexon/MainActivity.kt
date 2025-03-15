@@ -24,7 +24,7 @@ class MainActivity : ComponentActivity() {
         val tile2 = Tile(AxialCoord(0, 1), Resource.BRICK, 8)
         val tile3 = Tile(AxialCoord(-1, 1), Resource.ORE, 8)
         val tile4 = Tile(AxialCoord(2, 0), Resource.WHEAT, 8)
-        val tile5 = Tile(AxialCoord(1, 0), Resource.DESERT, 8)
+        val tile5 = Tile(AxialCoord(1, 0), Resource.NONE, 8)
         val tile6 = Tile(AxialCoord(+1, -1), Resource.SHEEP, 8)
 
         val board = Board(radius = 3).apply {
