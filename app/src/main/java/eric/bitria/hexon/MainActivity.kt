@@ -36,7 +36,7 @@ class MainActivity : ComponentActivity() {
             addTile(tile6)
         }
 
-        board.getTile(AxialCoord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
+        //board.getTile(AxialCoord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
 
 
         setContent {

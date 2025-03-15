@@ -5,7 +5,10 @@ import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
+import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
+import eric.bitria.hexon.src.exceptions.TileNotAddedException
+import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.src.utils.sortPair
 import eric.bitria.hexon.src.utils.sortTriple
 import kotlin.math.abs
@@ -42,7 +45,7 @@ class Board(private val radius: Int) {
         return tiles[tileAxialCoord]
     }
 
-    // Logic
+    // Setters
 
     fun addTile(tile: Tile) {
         // Get tile coordinates
@@ -74,21 +77,48 @@ class Board(private val radius: Int) {
         }
     }
 
-    fun canPlaceBuilding(vertex: Vertex): Boolean {
-        // Check if any adjacent vertex has a building or if this vertex itself has a building
-        return !vertex.hasBuilding() &&
-                vertex.getAdjacentVerticesCoords().none { adjacentTriplet ->
-                    vertices[adjacentTriplet]?.hasBuilding() == true
-                }
+    fun placeBuilding(vertex: Vertex, building: Building, player: Player) {
+        if (!vertices.containsKey(vertex.getCoords())) throw TileNotAddedException("The tile for this vertex has not been added to the board.")
+        // CAUTION!! canPlaceBuilding without checking player, only for first building placement
+        if (!canPlaceBuilding(vertex)) throw InvalidBoardException("Cannot place building at $vertex. Call canPlaceBuilding first")
+        vertex.placeBuilding(building,player)
     }
 
-    fun canPlaceRoad(edge: Edge): Boolean {
+    fun placeRoad(edge: Edge, player: Player) {
+        if (!edges.containsKey(edge.getCoords())) throw TileNotAddedException("The tile for this edge has not been added to the board.")
+        if (!canPlaceRoad(edge, player)) throw InvalidBoardException("Cannot place building at $edge. Call canPlaceBuilding first")
+        edge.placeBuilding(Building.ROAD, player)
+    }
+
+    // Checks
+
+    fun canPlaceBuilding(vertex: Vertex, player: Player): Boolean {
+        // Condition 1: Vertex must not have a building
+        // Condition 2: No adjacent vertex has a building
+        // Condition 3: At least one adjacent edge has a building owned by the player
+        return canPlaceBuilding(vertex) &&
+                vertex.getAdjacentEdgesCoords().any { edges[it]?.let { edge -> edge.hasBuilding() && edge.getPlayer() == player } == true }
+    }
+
+    // Used only on the first building placement
+    fun canPlaceBuilding(vertex: Vertex): Boolean {
+        // Condition 1: Vertex must not have a building
+        // Condition 2: No adjacent vertex has a building
+        return !vertex.hasBuilding() &&
+                vertex.getAdjacentVerticesCoords().none { vertices[it]?.hasBuilding() == true }
+    }
+
+    fun canPlaceRoad(edge: Edge, player: Player): Boolean {
         // Condition 1: Edge must not have a building
-        // Condition 2: At least one adjacent vertex has a building
-        // Condition 3: At least one adjacent edge has a road
+        // Condition 2: At least one adjacent vertex has a building owned by the player
+        // Condition 3: At least one adjacent edge has a road owned by the player
         return !edge.hasBuilding() && (
-                edge.getAdjacentVerticesCoords().any { vertices[it]?.hasBuilding() == true } ||
-                        edge.getAdjacentEdgesCoords().any { edges[it]?.hasBuilding() == true }
+                edge.getAdjacentVerticesCoords().any { vertices[it]?.let {
+                    vertex -> vertex.hasBuilding() && vertex.getPlayer() == player
+                } == true } ||
+                        edge.getAdjacentEdgesCoords().any { edges[it]?.let {
+                            adjacentEdge -> adjacentEdge.hasBuilding() && adjacentEdge.getPlayer() == player
+                        } == true }
                 )
     }
 

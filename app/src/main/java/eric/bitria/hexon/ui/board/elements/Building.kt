@@ -36,6 +36,7 @@ fun RenderAvailablePositions(
             val (q, r) = tile.coords
             val (tileX, tileY) = axialToScreen(q, r, tileSize)
 
+            /*
             // Iterate through all directions to render vertices
             Direction.entries.forEach { direction ->
                 val vertex = tile.vertices[direction]
@@ -56,6 +57,7 @@ fun RenderAvailablePositions(
                     )
                 }
             }
+            */
         }
     }
 }

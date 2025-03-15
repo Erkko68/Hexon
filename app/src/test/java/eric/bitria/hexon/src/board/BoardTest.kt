@@ -6,6 +6,7 @@ import eric.bitria.hexon.src.data.Direction
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
+import eric.bitria.hexon.src.player.Player
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -16,9 +17,15 @@ import org.junit.Test
 class BoardTest {
 
     private lateinit var board: Board
+    private lateinit var player: Player
 
     @Before
-    fun setUp() { board = Board(3) }
+    fun setUp() {
+        board = Board(3)
+        player = Player()
+    }
+
+    // AddTile
 
     @Test
     fun addTile_ShouldStoreTileAndCreateEdgesAndVertices() {
@@ -45,6 +52,8 @@ class BoardTest {
             assertNotNull("Vertex should be created for direction $dir", board.getVertex(vertexTriple.first, vertexTriple.second, vertexTriple.third))
         }
     }
+
+    // Getters
 
     @Test
     fun getEdge_ShouldReturnCorrectEdge() {
@@ -80,10 +89,12 @@ class BoardTest {
         val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
         board.addTile(tile)
 
-        tile.placeBuilding(Building.SETTLEMENT, Direction.NORTHEAST)
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+
+        vertex.placeBuilding(Building.SETTLEMENT,player) // Force SETTLEMENT building on this vertex
         val edge = tile.edges[Direction.NORTHEAST]!!
 
-        assertTrue(board.canPlaceRoad(edge)) // Should return true if adjacent vertex has a building
+        assertTrue(board.canPlaceRoad(edge, player)) // Should return true if adjacent vertex has a building
     }
 
     @Test
@@ -91,10 +102,11 @@ class BoardTest {
         val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
         board.addTile(tile)
 
-        tile.placeRoad(Direction.NORTHEAST)
-        val edge = tile.edges[Direction.EAST]!!
+        val edge = tile.edges[Direction.NORTHEAST]!!
+        edge.placeBuilding(Building.ROAD,player) // Force road on this edge
 
-        assertTrue(board.canPlaceRoad(edge)) // Should return true if adjacent edge has a road
+        val edge1 = tile.edges[Direction.EAST]!!
+        assertTrue(board.canPlaceRoad(edge1, player)) // Should return true if adjacent edge has a road
     }
 
     @Test
@@ -103,8 +115,9 @@ class BoardTest {
         board.addTile(tile)
 
         val edge = tile.edges[Direction.NORTHEAST]!!
+        edge.placeBuilding(Building.ROAD,player) // Force SETTLEMENT building on this edge
 
-        assertFalse(board.canPlaceRoad(edge)) // Should return false if edge already has a building
+        assertFalse(board.canPlaceRoad(edge,player)) // Should return false if edge already has a building
     }
 
     @Test
@@ -113,7 +126,98 @@ class BoardTest {
         board.addTile(tile)
         val edge = tile.edges[Direction.EAST]!!
 
-        assertFalse(board.canPlaceRoad(edge)) // Should return false if no building or road is adjacent
+        assertFalse(board.canPlaceRoad(edge,player)) // Should return false if no building or road is adjacent
+    }
+
+    @Test
+    fun testCanPLaceRoad_NoPlayerBuilding() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        vertex.placeBuilding(Building.SETTLEMENT,Player()) // Force road on this edge
+
+        val edge1 = tile.edges[Direction.NORTHEAST]!!
+        assertFalse(board.canPlaceRoad(edge1, player)) // Should return false, since Building is from another player
+    }
+
+    @Test
+    fun testCanPLaceRoad_NoPlayerRoad() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val edge = tile.edges[Direction.NORTHEAST]!!
+        edge.placeBuilding(Building.ROAD,Player()) // Force road on this edge
+
+        val edge1 = tile.edges[Direction.EAST]!!
+        assertFalse(board.canPlaceRoad(edge1, player)) // Should return false, since Road is from another player
+    }
+
+    // canPlaceBuilding
+
+    @Test
+    fun testCanPlaceBuilding_NoBuildingOnVertex() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        assertTrue(board.canPlaceBuilding(vertex)) // Should return true if vertex has no building
+    }
+
+    @Test
+    fun testCanPlaceBuilding_BuildingOnVertex() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        vertex.placeBuilding(Building.SETTLEMENT, player) // Force SETTLEMENT building on this vertex
+
+        assertFalse(board.canPlaceBuilding(vertex, player)) // Should return false if vertex already has a building
+    }
+
+    @Test
+    fun testCanPlaceBuilding_BuildingOnAdjacentVertex() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        val adjacentVertex = tile.vertices[Direction.EAST]!!
+        adjacentVertex.placeBuilding(Building.SETTLEMENT, player) // Force SETTLEMENT building on adjacent vertex
+
+        assertFalse(board.canPlaceBuilding(vertex, player)) // Should return false if adjacent vertex has a building
+    }
+
+    @Test
+    fun testCanPlaceBuilding_RoadOnAdjacentEdge() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        val edge = tile.edges[Direction.NORTHEAST]!!
+        edge.placeBuilding(Building.ROAD, player) // Force ROAD on adjacent edge
+
+        assertTrue(board.canPlaceBuilding(vertex, player)) // Should return true if adjacent edge has a road owned by the player
+    }
+
+    @Test
+    fun testCanPlaceBuilding_NoRoadOnAdjacentEdge() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        assertFalse(board.canPlaceBuilding(vertex, player)) // Should return false if no adjacent edge has a road
+    }
+
+    @Test
+    fun testCanPlaceBuilding_RoadOnAdjacentEdgeNotOwnedByPlayer() {
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        val edge = tile.edges[Direction.NORTHEAST]!!
+        edge.placeBuilding(Building.ROAD, Player()) // Force ROAD on adjacent edge owned by another player
+
+        assertFalse(board.canPlaceBuilding(vertex, player)) // Should return false if adjacent edge has a road not owned by the player
     }
 
     // Exceptions

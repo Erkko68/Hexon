@@ -3,6 +3,7 @@ package eric.bitria.hexon.src.board.tile
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
+import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.src.utils.sortPair
 import eric.bitria.hexon.src.utils.sortTriple
 
@@ -11,13 +12,17 @@ class Edge(
     private val coords: Pair<AxialCoord, AxialCoord>
 ){
     private var building: Building = Building.NONE
+    private var player: Player? = null
 
     fun getCoords(): Pair<AxialCoord, AxialCoord> = sortPair(coords)
 
     fun hasBuilding() = building != Building.NONE
 
-    fun placeBuilding(building: Building) {
+    fun getPlayer() = player
+
+    fun placeBuilding(building: Building, player: Player) {
         if (building != Building.ROAD) throw InvalidBuildingException("An edge can only have a ROAD type building")
+        this.player = player
         this.building = building
     }
 

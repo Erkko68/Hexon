@@ -26,7 +26,8 @@ class Deck {
      * @param resource The resource to add.
      * @param quantity The quantity of the resource to add.
      */
-    fun addResource(resource: Resource, quantity: Int) {
+    @VisibleForTesting
+    internal fun addResource(resource: Resource, quantity: Int) {
         resourceCards[resource] = (resourceCards[resource] ?: 0) + quantity
     }
 
