@@ -1,7 +1,11 @@
 package eric.bitria.hexon.src.data
 
 // Coordinate System
-data class Coord(val q: Int, val r: Int) : Comparable<Coord> {
+data class Coord(
+    val q: Int,
+    val r: Int
+) : Comparable<Coord> {
+
     override fun compareTo(other: Coord): Int {
         return compareValuesBy(this, other, { it.q }, { it.r })
     }
@@ -13,10 +17,6 @@ data class Coord(val q: Int, val r: Int) : Comparable<Coord> {
         Direction.SOUTHWEST -> Coord(q - 1, r + 1)
         Direction.WEST -> Coord(q - 1, r)
         Direction.NORTHWEST -> Coord(q, r - 1)
-    }
-
-    fun getNeighborCoords(): List<Coord> {
-        return Direction.entries.map { this.getNeighbor(it) }
     }
 
     fun directionTo(other: Coord): Direction {
@@ -32,6 +32,4 @@ data class Coord(val q: Int, val r: Int) : Comparable<Coord> {
             else -> throw IllegalArgumentException("Coordinates are not adjacent")
         }
     }
-
-    private fun getS(): Int{ return -q-r }
 }

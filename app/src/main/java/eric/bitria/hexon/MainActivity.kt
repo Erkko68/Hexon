@@ -20,17 +20,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val tile1 = Tile(Coord(0, 0), Resource.WOOD, 8)
+        val tile2 = Tile(Coord(0, 1), Resource.BRICK, 8)
+        val tile3 = Tile(Coord(-1, 1), Resource.ORE, 8)
+        val tile4 = Tile(Coord(2, 0), Resource.WHEAT, 8)
+        val tile5 = Tile(Coord(1, 0), Resource.DESERT, 8)
+        val tile6 = Tile(Coord(+1, -1), Resource.SHEEP, 8)
+
         val board = Board(radius = 3).apply {
-            // Add tiles with proper coordinates and resources
-            val tile1 = Tile(Coord(0, 0), Resource.WOOD, 8)
-            val tile2 = Tile(Coord(0, 1), Resource.BRICK, 8)
-            val tile3 = Tile(Coord(-1, 1), Resource.ORE, 8)
             addTile(tile1)
             addTile(tile2)
             addTile(tile3)
+            addTile(tile4)
+            addTile(tile5)
+            addTile(tile6)
         }
 
-        board.tiles.get(Coord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
+        board.getTile(Coord(0, 0))!!.vertices[Direction.SOUTHEAST]!!.placeBuilding(Building.SETTLEMENT)
 
 
         setContent {

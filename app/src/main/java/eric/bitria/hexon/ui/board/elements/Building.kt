@@ -32,8 +32,8 @@ fun RenderAvailablePositions(
             }
             .fillMaxSize()
     ) {
-        board.tiles.forEach { (coordinates, tile) ->
-            val (q, r) = coordinates
+        board.getTiles().forEach { tile ->
+            val (q, r) = tile.coords
             val (tileX, tileY) = axialToScreen(q, r, tileSize)
 
             // Iterate through all directions to render vertices

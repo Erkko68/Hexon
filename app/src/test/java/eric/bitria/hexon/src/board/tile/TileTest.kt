@@ -24,7 +24,7 @@ class TileTest {
     @Test
     fun tileShouldHaveCorrectCoords(){
         val coord = Coord(0, 0);
-        assertTrue(tile.coord == coord)
+        assertTrue(tile.coords == coord)
     }
 
     @Test

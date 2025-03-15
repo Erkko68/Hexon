@@ -5,7 +5,7 @@ import eric.bitria.hexon.src.data.Coord
 import eric.bitria.hexon.src.data.Direction
 
 class Vertex(
-    private val coords: Triple<Coord, Coord, Coord>
+    val coords: Triple<Coord, Coord, Coord>
 ) {
     private var building: Building = Building.NONE
 
@@ -28,10 +28,8 @@ class Vertex(
         )
         for ((a, b, thirdCoord) in pairsWithThird) {
             val direction = a.directionTo(b)
-            val nextDir = Direction.entries[(direction.ordinal + 1) % 6]
-            val prevDir = Direction.entries[(direction.ordinal - 1 + 6) % 6]
-            val c1 = a.getNeighbor(nextDir)
-            val c2 = a.getNeighbor(prevDir)
+            val c1 = a.getNeighbor(direction.next())
+            val c2 = a.getNeighbor(direction.prev())
             val d = when (thirdCoord) {
                 c1 -> c2
                 c2 -> c1

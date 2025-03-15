@@ -11,7 +11,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -56,8 +55,8 @@ fun RenderTiles(
             IntOffset(zoomState.offsetX.toInt(), zoomState.offsetY.toInt())
         }
     ) {
-        board.tiles.forEach { (coordinates, tile) ->
-            val (q, r) = coordinates
+        board.getTiles().forEach { tile ->
+            val (q, r) = tile.coords
             TileView(
                 q = q,
                 r = r,
