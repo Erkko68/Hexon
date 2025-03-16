@@ -1,5 +1,6 @@
 package eric.bitria.hexon.src.board
 
+import androidx.compose.runtime.mutableStateMapOf
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.src.board.tile.Vertex
@@ -16,9 +17,9 @@ import kotlin.math.abs
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
 class Board(private val radius: Int) {
 
-    private val tiles = mutableMapOf<AxialCoord, Tile>()
-    private val edges = mutableMapOf<Pair<AxialCoord, AxialCoord>, Edge>()
-    private val vertices = mutableMapOf<Triple<AxialCoord, AxialCoord, AxialCoord>, Vertex>()
+    val tiles = mutableStateMapOf<AxialCoord, Tile>()
+    val edges = mutableStateMapOf<Pair<AxialCoord, AxialCoord>, Edge>()
+    val vertices = mutableStateMapOf<Triple<AxialCoord, AxialCoord, AxialCoord>, Vertex>()
 
     // Getters
 
@@ -97,7 +98,7 @@ class Board(private val radius: Int) {
         // Condition 2: No adjacent vertex has a building
         // Condition 3: At least one adjacent edge has a building owned by the player
         return canPlaceBuilding(vertex) &&
-                vertex.getAdjacentEdgesCoords().any { edges[it]?.let { edge -> edge.hasBuilding() && edge.getPlayer() == player } == true }
+                vertex.getAdjacentEdgesCoords().any { edges[it]?.let { edge -> edge.hasBuilding() && edge.player == player } == true }
     }
 
     // Used only on the first building placement
@@ -114,10 +115,10 @@ class Board(private val radius: Int) {
         // Condition 3: At least one adjacent edge has a road owned by the player
         return !edge.hasBuilding() && (
                 edge.getAdjacentVerticesCoords().any { vertices[it]?.let {
-                    vertex -> vertex.hasBuilding() && vertex.getPlayer() == player
+                    vertex -> vertex.hasBuilding() && vertex.player == player
                 } == true } ||
                         edge.getAdjacentEdgesCoords().any { edges[it]?.let {
-                            adjacentEdge -> adjacentEdge.hasBuilding() && adjacentEdge.getPlayer() == player
+                            adjacentEdge -> adjacentEdge.hasBuilding() && adjacentEdge.player == player
                         } == true }
                 )
     }

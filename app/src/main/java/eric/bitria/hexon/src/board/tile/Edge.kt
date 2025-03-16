@@ -1,5 +1,8 @@
 package eric.bitria.hexon.src.board.tile
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
@@ -11,14 +14,12 @@ import eric.bitria.hexon.src.utils.sortTriple
 class Edge(
     private val coords: Pair<AxialCoord, AxialCoord>
 ){
-    private var building: Building = Building.NONE
-    private var player: Player? = null
+    var building by mutableStateOf(Building.NONE)
+    var player by mutableStateOf<Player?>(null)
 
     fun getCoords(): Pair<AxialCoord, AxialCoord> = sortPair(coords)
 
     fun hasBuilding() = building != Building.NONE
-
-    fun getPlayer() = player
 
     fun placeBuilding(building: Building, player: Player) {
         if (building != Building.ROAD) throw InvalidBuildingException("An edge can only have a ROAD type building")

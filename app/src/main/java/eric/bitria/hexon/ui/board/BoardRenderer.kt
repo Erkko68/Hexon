@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.board.Board
+import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.board.layers.AvailablePositionsLayer
 import eric.bitria.hexon.ui.board.layers.EdgeLayer
 import eric.bitria.hexon.ui.board.layers.HexagonalTileLayer
@@ -18,6 +19,7 @@ import eric.bitria.hexon.ui.utils.modifier.ZoomState
 @Composable
 fun BoardRenderer(
     board: Board,
+    player: Player,
     zoomState: ZoomState,
     tileSize: Dp = 32.dp
 ) {
@@ -25,8 +27,7 @@ fun BoardRenderer(
         tileSize * zoomState.zoomLevel
     }
 
-    Box(
-        modifier = Modifier.offset {
+    Box(modifier = Modifier.offset {
             IntOffset(zoomState.offsetX.toInt(), zoomState.offsetY.toInt())
         }
     ) {
@@ -34,12 +35,16 @@ fun BoardRenderer(
         HexagonalTileLayer(board, scaledTileSize)
 
         // Existing Buildings Layer
-        //VertexLayer(board.getVertices().filter { it.hasBuilding() }, scaledTileSize)
+        VertexLayer(board.getVertices().filter { it.hasBuilding() }, scaledTileSize)
 
         // Existing Roads Layer
         EdgeLayer(board.getEdges().filter { it.hasBuilding() }, scaledTileSize)
 
-        // Available Positions Layer (transparent overlay)
-        AvailablePositionsLayer(board, scaledTileSize)
+        // Available Positions Layer
+        AvailablePositionsLayer(
+            board = board,
+            tileSize = scaledTileSize,
+            player = player
+        )
     }
 }

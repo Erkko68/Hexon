@@ -20,11 +20,4 @@ object HexConversions {
         } / 3f
         return center
     }
-
-    fun getEdgeMidpoint(edgeCoords: Pair<AxialCoord, AxialCoord>, size: Float): Offset {
-        val (a, b) = edgeCoords
-        val start = axialToPixel(a.q, a.r, size)
-        val end = axialToPixel(b.q, b.r, size)
-        return Offset((start.x + end.x) / 2, (start.y + end.y) / 2)
-    }
 }

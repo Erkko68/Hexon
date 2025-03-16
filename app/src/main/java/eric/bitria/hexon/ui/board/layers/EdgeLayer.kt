@@ -23,25 +23,18 @@ fun EdgeLayer(
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         edges.forEach { edge ->
-            val (startCoord, endCoord) = edge.getCoords()
-            val start = HexConversions.axialToPixel(startCoord.q, startCoord.r, tileSizePx)
-            val end = HexConversions.axialToPixel(endCoord.q, endCoord.r, tileSizePx)
+            // Get the two vertices that form this edge
+            val vertices = edge.getAdjacentVerticesCoords()
+            val startPos = HexConversions.getVertexPosition(vertices[0], tileSizePx)
+            val endPos = HexConversions.getVertexPosition(vertices[1], tileSizePx)
 
-            // Draw road as a line instead of rotated rectangle
             drawLine(
                 color = Color.Blue,
-                start = start,
-                end = end,
+                start = startPos,
+                end = endPos,
                 strokeWidth = strokeWidth,
                 cap = StrokeCap.Round
             )
         }
     }
-}
-
-private fun calculateEdgeAngle(edgeCoords: Pair<AxialCoord, AxialCoord>, size: Float): Float {
-    val (a, b) = edgeCoords
-    val start = HexConversions.axialToPixel(a.q, a.r, size)
-    val end = HexConversions.axialToPixel(b.q, b.r, size)
-    return Math.toDegrees(atan2(end.y - start.y, end.x - start.x).toDouble()).toFloat()
 }
