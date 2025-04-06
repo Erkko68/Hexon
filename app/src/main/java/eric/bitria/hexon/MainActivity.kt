@@ -10,17 +10,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.view.GameViewModel
 import eric.bitria.hexon.src.board.Board
-import eric.bitria.hexon.src.board.tile.Edge
-import eric.bitria.hexon.src.board.tile.Tile
-import eric.bitria.hexon.src.board.tile.Vertex
-import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.data.AxialCoord
-import eric.bitria.hexon.src.data.Direction
-import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.board.BoardContainer
 import eric.bitria.hexon.ui.board.BoardRenderer
+import eric.bitria.hexon.ui.board.layers.CardsLayer
 import eric.bitria.hexon.ui.theme.HexonTheme
 
 class MainActivity : ComponentActivity() {
@@ -59,4 +54,5 @@ fun GameScreen(
             tileSize = 32.dp
         )
     }
+    CardsLayer(player = player)
 }

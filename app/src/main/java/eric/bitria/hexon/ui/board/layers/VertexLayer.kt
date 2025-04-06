@@ -8,12 +8,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import eric.bitria.hexon.src.board.tile.Vertex
+import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
 
 @Composable
 fun VertexLayer(
     vertices: Collection<Vertex>,
-    tileSize: Dp
+    tileSize: Dp,
+    player: Player
 ) {
     val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
 
@@ -21,7 +23,7 @@ fun VertexLayer(
         vertices.forEach { vertex ->
             val position = HexConversions.getVertexPosition(vertex.getCoords(), tileSizePx)
             drawCircle(
-                color = Color.Blue,
+                color = player.color,
                 radius = tileSizePx * 0.2f,
                 center = position
             )

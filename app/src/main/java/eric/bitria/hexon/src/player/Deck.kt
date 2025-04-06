@@ -1,6 +1,5 @@
 package eric.bitria.hexon.src.player
 
-import androidx.annotation.VisibleForTesting
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
@@ -8,17 +7,7 @@ import eric.bitria.hexon.src.exceptions.InvalidResourceException
 
 class Deck {
 
-    @VisibleForTesting
-    internal val resourceCards = mutableMapOf<Resource, Int>()
-
-    /**
-     * Adds one unit of the specified resource to the deck.
-     *
-     * @param resource The resource to add.
-     */
-    fun addResource(resource: Resource) {
-        addResource(resource, 1)
-    }
+    val resourceCards = mutableMapOf<Resource, Int>()
 
     /**
      * Adds the specified quantity of the resource to the deck.
@@ -26,8 +15,7 @@ class Deck {
      * @param resource The resource to add.
      * @param quantity The quantity of the resource to add.
      */
-    @VisibleForTesting
-    internal fun addResource(resource: Resource, quantity: Int) {
+    fun addResource(resource: Resource, quantity: Int) {
         resourceCards[resource] = (resourceCards[resource] ?: 0) + quantity
     }
 
@@ -54,7 +42,7 @@ class Deck {
      * @throws InvalidBuildingException If the building is `Building.NONE` (no recipe exists).
      */
     fun hasBuildingResources(building: Building): Boolean {
-        if (building == Building.NONE) throw InvalidBuildingException("No recipe for NONE")
+        if (building.recipe.isEmpty()) throw InvalidBuildingException("No recipe for $building")
         val requiredResources = building.recipe
         return requiredResources.all { (resource, requiredQuantity) ->
             val availableQuantity = resourceCards[resource] ?: 0

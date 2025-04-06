@@ -10,13 +10,15 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.data.AxialCoord
+import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
 import kotlin.math.atan2
 
 @Composable
 fun EdgeLayer(
     edges: Collection<Edge>,
-    tileSize: Dp
+    tileSize: Dp,
+    player: Player
 ) {
     val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
     val strokeWidth = tileSizePx * 0.15f
@@ -29,7 +31,7 @@ fun EdgeLayer(
             val endPos = HexConversions.getVertexPosition(vertices[1], tileSizePx)
 
             drawLine(
-                color = Color.Blue,
+                color = player.color,
                 start = startPos,
                 end = endPos,
                 strokeWidth = strokeWidth,

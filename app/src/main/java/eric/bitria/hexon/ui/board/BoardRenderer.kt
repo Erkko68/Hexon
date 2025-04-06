@@ -10,7 +10,9 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.ui.board.layers.AvailablePositionsLayer
+import eric.bitria.hexon.ui.board.layers.AvailableEdgePositionsLayer
+import eric.bitria.hexon.ui.board.layers.AvailableVertexPositionsLayer
+import eric.bitria.hexon.ui.board.layers.CardsLayer
 import eric.bitria.hexon.ui.board.layers.EdgeLayer
 import eric.bitria.hexon.ui.board.layers.HexagonalTileLayer
 import eric.bitria.hexon.ui.board.layers.VertexLayer
@@ -35,15 +37,28 @@ fun BoardRenderer(
         HexagonalTileLayer(board, scaledTileSize)
 
         // Existing Buildings Layer
-        VertexLayer(board.getVertices().filter { it.hasBuilding() }, scaledTileSize)
+        VertexLayer(
+            board.getVertices().filter { it.hasBuilding() },
+            scaledTileSize,
+            player
+        )
 
         // Existing Roads Layer
-        EdgeLayer(board.getEdges().filter { it.hasBuilding() }, scaledTileSize)
+        EdgeLayer(
+            board.getEdges().filter { it.hasBuilding() },
+            scaledTileSize,
+            player
+        )
 
-        // Available Positions Layer
-        AvailablePositionsLayer(
-            board = board,
-            tileSize = scaledTileSize,
+        AvailableVertexPositionsLayer(
+            vertices = board.getVertices().filter { board.canPlaceBuilding(it,player) },
+            tileSize = tileSize,
+            player = player
+        )
+
+        AvailableEdgePositionsLayer(
+            edges = board.getEdges().filter { board.canPlaceRoad(it,player) },
+            tileSize = tileSize,
             player = player
         )
     }

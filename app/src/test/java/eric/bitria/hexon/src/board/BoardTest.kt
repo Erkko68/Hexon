@@ -1,5 +1,6 @@
 package eric.bitria.hexon.src.board
 
+import androidx.compose.ui.graphics.Color
 import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
@@ -22,7 +23,7 @@ class BoardTest {
     @Before
     fun setUp() {
         board = Board(3)
-        player = Player()
+        player = Player(Color.Red)
     }
 
     // AddTile
@@ -135,7 +136,7 @@ class BoardTest {
         board.addTile(tile)
 
         val vertex = tile.vertices[Direction.NORTHEAST]!!
-        vertex.placeBuilding(Building.SETTLEMENT,Player()) // Force road on this edge
+        vertex.placeBuilding(Building.SETTLEMENT,Player(Color.Red)) // Force road on this edge
 
         val edge1 = tile.edges[Direction.NORTHEAST]!!
         assertFalse(board.canPlaceRoad(edge1, player)) // Should return false, since Building is from another player
@@ -147,7 +148,7 @@ class BoardTest {
         board.addTile(tile)
 
         val edge = tile.edges[Direction.NORTHEAST]!!
-        edge.placeBuilding(Building.ROAD,Player()) // Force road on this edge
+        edge.placeBuilding(Building.ROAD,Player(Color.Red)) // Force road on this edge
 
         val edge1 = tile.edges[Direction.EAST]!!
         assertFalse(board.canPlaceRoad(edge1, player)) // Should return false, since Road is from another player
@@ -215,9 +216,46 @@ class BoardTest {
 
         val vertex = tile.vertices[Direction.NORTHEAST]!!
         val edge = tile.edges[Direction.NORTHEAST]!!
-        edge.placeBuilding(Building.ROAD, Player()) // Force ROAD on adjacent edge owned by another player
+        edge.placeBuilding(Building.ROAD, Player(Color.Red)) // Force ROAD on adjacent edge owned by another player
 
         assertFalse(board.canPlaceBuilding(vertex, player)) // Should return false if adjacent edge has a road not owned by the player
+    }
+
+    // Resources
+    @Test
+    fun testGiveResourceShouldGiveSettlementResourceToPlayer(){
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        val vertex1 = tile.vertices[Direction.EAST]!!
+
+        board.placeBuilding(vertex,Building.SETTLEMENT,player)
+        board.placeBuilding(vertex1,Building.SETTLEMENT,Player(Color.Red))
+
+        // Empty resource
+        assertEquals(player.deck.resourceCards[Resource.WOOD],null)
+
+        // Give resource
+        board.giveResource(8)
+        assertEquals(player.deck.resourceCards[Resource.WOOD],1)
+    }
+
+    @Test
+    fun testGiveResourceShouldGiveCityResourceToPlayer(){
+        val tile = Tile(AxialCoord(0, 0), Resource.WOOD, 8)
+        board.addTile(tile)
+        val vertex = tile.vertices[Direction.NORTHEAST]!!
+        val vertex1 = tile.vertices[Direction.EAST]!!
+
+        board.placeBuilding(vertex,Building.CITY,player)
+        board.placeBuilding(vertex1,Building.SETTLEMENT,Player(Color.Red))
+
+        // Empty resource
+        assertEquals(player.deck.resourceCards[Resource.WOOD],null)
+
+        // Give resource
+        board.giveResource(8)
+        assertEquals(player.deck.resourceCards[Resource.WOOD],2)
     }
 
     // Exceptions

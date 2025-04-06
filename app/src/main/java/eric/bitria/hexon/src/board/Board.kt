@@ -80,15 +80,22 @@ class Board(private val radius: Int) {
 
     fun placeBuilding(vertex: Vertex, building: Building, player: Player) {
         if (!vertices.containsKey(vertex.getCoords())) throw TileNotAddedException("The tile for this vertex has not been added to the board.")
-        // CAUTION!! canPlaceBuilding without checking player, only for first building placement
-        if (!canPlaceBuilding(vertex)) throw InvalidBoardException("Cannot place building at $vertex. Call canPlaceBuilding first")
         vertex.placeBuilding(building,player)
     }
 
     fun placeRoad(edge: Edge, player: Player) {
         if (!edges.containsKey(edge.getCoords())) throw TileNotAddedException("The tile for this edge has not been added to the board.")
-        if (!canPlaceRoad(edge, player)) throw InvalidBoardException("Cannot place building at $edge. Call canPlaceBuilding first")
         edge.placeBuilding(Building.ROAD, player)
+    }
+
+    // Resource
+
+    fun giveResource(number: Int){
+        tiles.forEach{ tile ->
+            if(tile.value.number == number){
+                tile.value.giveResource();
+            }
+        }
     }
 
     // Checks

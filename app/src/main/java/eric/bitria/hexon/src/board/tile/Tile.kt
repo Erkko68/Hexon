@@ -11,4 +11,12 @@ class Tile(
 ) {
     val edges = mutableMapOf<Direction, Edge>()
     val vertices = mutableMapOf<Direction, Vertex>()
+
+    fun giveResource() {
+        vertices.forEach{
+            if(it.value.hasBuilding()){
+                it.value.player?.addResource(resource,it.value.building.value)
+            }
+        }
+    }
 }
