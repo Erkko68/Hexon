@@ -9,14 +9,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import eric.bitria.hexon.view.GameViewModel
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.ui.board.BoardContainer
 import eric.bitria.hexon.ui.board.BoardRenderer
+import eric.bitria.hexon.ui.board.ZoomContainer
 import eric.bitria.hexon.ui.board.layers.CardsLayer
 import eric.bitria.hexon.ui.theme.HexonTheme
+import eric.bitria.hexon.view.GameViewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -46,12 +45,10 @@ fun GameScreen(
     board: Board,
     player: Player,
 ) {
-    BoardContainer(board = board) { zoomState ->
+    ZoomContainer(board) {
         BoardRenderer(
             board = board,
-            player = player,
-            zoomState = zoomState,
-            tileSize = 32.dp
+            player = player
         )
     }
     CardsLayer(player = player)

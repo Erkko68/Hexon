@@ -15,7 +15,7 @@ import eric.bitria.hexon.src.utils.sortTriple
 import kotlin.math.abs
 
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
-class Board(private val radius: Int) {
+class Board(val radius: Int) {
 
     val tiles = mutableStateMapOf<AxialCoord, Tile>()
     val edges = mutableStateMapOf<Pair<AxialCoord, AxialCoord>, Edge>()

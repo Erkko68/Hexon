@@ -12,22 +12,20 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import eric.bitria.hexon.src.board.tile.Edge
-import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
+import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
 import kotlin.math.roundToInt
 
 @Composable
 fun AvailableEdgePositionsLayer(
     edges: Collection<Edge>,
-    tileSize: Dp,
     player: Player
 ) {
-    val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
+    val tileSizePx = with(LocalDensity.current) { LocalTileSize.current.toPx() }
     val circleRadius = tileSizePx * 0.2f
 
     Box(modifier = Modifier.fillMaxSize()) {

@@ -10,18 +10,17 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Dp
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
+import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
 import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
 fun HexagonalTileLayer(
     board: Board,
-    tileSize: Dp
 ) {
-    val tileSizePx = with(LocalDensity.current) { tileSize.toPx() }
+    val tileSizePx = with(LocalDensity.current) { LocalTileSize.current.toPx() }
 
     Canvas(modifier = Modifier.fillMaxSize()) {
         board.getTiles().forEach { tile ->

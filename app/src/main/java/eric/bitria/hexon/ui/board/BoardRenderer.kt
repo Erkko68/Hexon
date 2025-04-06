@@ -21,44 +21,32 @@ import eric.bitria.hexon.ui.utils.modifier.ZoomState
 @Composable
 fun BoardRenderer(
     board: Board,
-    player: Player,
-    zoomState: ZoomState,
-    tileSize: Dp = 32.dp
+    player: Player
 ) {
-    val scaledTileSize = remember(zoomState.zoomLevel) {
-        tileSize * zoomState.zoomLevel
-    }
 
-    Box(modifier = Modifier.offset {
-            IntOffset(zoomState.offsetX.toInt(), zoomState.offsetY.toInt())
-        }
-    ) {
+    Box{
         // Base Hexagonal Tiles Layer
-        HexagonalTileLayer(board, scaledTileSize)
+        HexagonalTileLayer(board)
 
         // Existing Buildings Layer
         VertexLayer(
             board.getVertices().filter { it.hasBuilding() },
-            scaledTileSize,
             player
         )
 
         // Existing Roads Layer
         EdgeLayer(
             board.getEdges().filter { it.hasBuilding() },
-            scaledTileSize,
             player
         )
 
         AvailableVertexPositionsLayer(
             vertices = board.getVertices().filter { board.canPlaceBuilding(it,player) },
-            tileSize = tileSize,
             player = player
         )
 
         AvailableEdgePositionsLayer(
             edges = board.getEdges().filter { board.canPlaceRoad(it,player) },
-            tileSize = tileSize,
             player = player
         )
     }
