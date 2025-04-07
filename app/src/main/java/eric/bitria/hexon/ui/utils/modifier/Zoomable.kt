@@ -9,8 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 
-val LocalTileSize = staticCompositionLocalOf<Dp> { error("No tile size provided") }
-
+// Class to hold zoom state values
 class ZoomState {
     var zoomLevel by mutableFloatStateOf(1f)
     var offsetX by mutableFloatStateOf(0f)

@@ -1,5 +1,6 @@
 package eric.bitria.hexon.src.player
 
+import androidx.compose.runtime.mutableStateMapOf
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
@@ -7,7 +8,7 @@ import eric.bitria.hexon.src.exceptions.InvalidResourceException
 
 class Deck {
 
-    val resourceCards = mutableMapOf<Resource, Int>()
+    val resourceCards = mutableStateMapOf<Resource, Int>()
 
     /**
      * Adds the specified quantity of the resource to the deck.
@@ -16,6 +17,7 @@ class Deck {
      * @param quantity The quantity of the resource to add.
      */
     fun addResource(resource: Resource, quantity: Int) {
+        if (resource == Resource.NONE) return
         resourceCards[resource] = (resourceCards[resource] ?: 0) + quantity
     }
 

@@ -10,17 +10,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.board.Board
-import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
 import eric.bitria.hexon.ui.utils.modifier.ZoomState
 import eric.bitria.hexon.ui.utils.modifier.zoomable
 import kotlin.math.min
+
+val LocalTileSize = staticCompositionLocalOf<Dp> { error("Tile size not provided") }
 
 @Composable
 fun ZoomContainer(
@@ -31,23 +34,23 @@ fun ZoomContainer(
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
 
-    // Calculate dynamic base tile size based on container dimensions
+    // Base tile size derived from the container size and board radius
     val baseTileSize = remember(containerSize, board.radius) {
         with(density) {
-            if (containerSize == IntSize.Zero) return@remember 0.dp
-
-            val minDimension = min(containerSize.width, containerSize.height)
-            val tileSizePx = minDimension / ((board.radius + 1) * 4)
-            tileSizePx.toDp()
+            if (containerSize == IntSize.Zero) 0.dp
+            else {
+                val minDimension = min(containerSize.width, containerSize.height)
+                (minDimension / ((board.radius + 1) * 4)).toDp()
+            }
         }
     }
 
-    // Calculate scaled tile size with zoom
+    // Scaled tile size after applying zoom level
     val scaledTileSize = remember(baseTileSize, zoomState.zoomLevel) {
         baseTileSize * zoomState.zoomLevel
     }
 
-    // Calculate center and maxOffset based on current scaled size and container
+    // Calculate zoom center and max offset
     val (centerX, centerY, maxOffset) = remember(containerSize, scaledTileSize, board.radius) {
         with(density) {
             val centerX = containerSize.width / 2f
@@ -57,7 +60,7 @@ fun ZoomContainer(
         }
     }
 
-    // Update ZoomState with current center and maxOffset
+    // Apply center and boundaries to zoom state
     LaunchedEffect(centerX, centerY, maxOffset) {
         zoomState.centerX = centerX
         zoomState.centerY = centerY
@@ -77,11 +80,11 @@ fun ZoomContainer(
                     )
                 }
         ) {
-            // Initial centering when container size changes
+            // Initial centering on container size change
             LaunchedEffect(containerSize) {
                 if (containerSize != IntSize.Zero) {
-                    zoomState.offsetX = zoomState.centerX
-                    zoomState.offsetY = zoomState.centerY
+                    zoomState.offsetX = centerX
+                    zoomState.offsetY = centerY
                 }
             }
 

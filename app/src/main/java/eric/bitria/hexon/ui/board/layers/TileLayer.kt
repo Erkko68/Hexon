@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.platform.LocalDensity
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
-import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
+import eric.bitria.hexon.ui.board.LocalTileSize
 import kotlin.math.cos
 import kotlin.math.sin
 

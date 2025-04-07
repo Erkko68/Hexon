@@ -13,16 +13,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import eric.bitria.hexon.src.board.tile.Vertex
-import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.player.Player
+import eric.bitria.hexon.ui.board.LocalTileSize
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
-import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
 import kotlin.math.roundToInt
 
 @Composable
 fun AvailableVertexPositionsLayer(
     vertices: Collection<Vertex>,
-    player: Player
+    onClick: (Any) -> Unit
 ) {
     val tileSizePx = with(LocalDensity.current) { LocalTileSize.current.toPx() }
     val circleRadius = tileSizePx * 0.2f
@@ -44,9 +42,7 @@ fun AvailableVertexPositionsLayer(
                         )
                     }
                     .size(clickableSize)
-                    .clickable {
-                        vertex.placeBuilding(Building.CITY, player)
-                    }
+                    .clickable { onClick(vertex) }
                     .drawBehind {
                         drawCircle(
                             color = Color.Red,

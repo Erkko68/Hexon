@@ -1,6 +1,5 @@
 package eric.bitria.hexon.ui.board.layers
 
-
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,16 +13,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntOffset
 import eric.bitria.hexon.src.board.tile.Edge
-import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.player.Player
+import eric.bitria.hexon.ui.board.LocalTileSize
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
-import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
 import kotlin.math.roundToInt
 
 @Composable
 fun AvailableEdgePositionsLayer(
     edges: Collection<Edge>,
-    player: Player
+    onClick: (Any) -> Unit
 ) {
     val tileSizePx = with(LocalDensity.current) { LocalTileSize.current.toPx() }
     val circleRadius = tileSizePx * 0.2f
@@ -50,9 +47,7 @@ fun AvailableEdgePositionsLayer(
                         )
                     }
                     .size(clickableSize)
-                    .clickable {
-                        edge.placeBuilding(Building.ROAD, player)
-                    }
+                    .clickable { onClick(edge) }
                     .drawBehind {
                         drawCircle(
                             color = Color.DarkGray,

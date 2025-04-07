@@ -8,6 +8,7 @@ import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.Direction
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.exceptions.InvalidBoardException
+import eric.bitria.hexon.src.exceptions.InvalidBuildingException
 import eric.bitria.hexon.src.exceptions.TileNotAddedException
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.src.utils.sortPair
@@ -98,6 +99,14 @@ class Board(val radius: Int) {
         }
     }
 
+    fun givePlacementResources(vertex: Vertex){
+        if(!vertex.hasBuilding()) { throw InvalidBuildingException("This vertex has no building!")}
+        vertex.getCoords().toList()
+            .forEach{
+                getTile(it)?.resource?.let { it1 -> vertex.player?.addResource(it1,1) }
+            }
+    }
+
     // Checks
 
     fun canPlaceBuilding(vertex: Vertex, player: Player): Boolean {
@@ -133,9 +142,9 @@ class Board(val radius: Int) {
     // Helper functions
 
     private fun isWithinBoard(axialCoord: AxialCoord): Boolean {
-        return (abs(axialCoord.q) <= radius) &&
-                (abs(axialCoord.r) <= radius) &&
-                (abs(axialCoord.q + axialCoord.r) <= radius)
+        return (abs(axialCoord.q) <= radius + 1) &&
+                (abs(axialCoord.r) <= radius + 1) &&
+                (abs(axialCoord.q + axialCoord.r) <= radius + 1)
     }
 
 }

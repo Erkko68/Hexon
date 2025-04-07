@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.9.1"
 composeBomVersion = "2025.03.00"
 junitJupiterApi = "5.12.0"
 junitJupiterEngine = "5.12.0"
