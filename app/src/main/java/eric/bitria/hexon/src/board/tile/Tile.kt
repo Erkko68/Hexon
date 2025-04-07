@@ -9,9 +9,12 @@ class Tile(
     val resource: Resource,
     val number: Int
 ) {
-    val edges = mutableMapOf<Direction, Edge>()
-    val vertices = mutableMapOf<Direction, Vertex>()
+    internal val edges = mutableMapOf<Direction, Edge>()
+    internal val vertices = mutableMapOf<Direction, Vertex>()
 
+    /**
+     * Gives the Tile resource to the existing Buildings
+     */
     fun giveResource() {
         vertices.forEach{
             if(it.value.hasBuilding()){

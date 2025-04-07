@@ -18,9 +18,9 @@ import kotlin.math.abs
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
 class Board(val radius: Int) {
 
-    val tiles = mutableStateMapOf<AxialCoord, Tile>()
-    val edges = mutableStateMapOf<Pair<AxialCoord, AxialCoord>, Edge>()
-    val vertices = mutableStateMapOf<Triple<AxialCoord, AxialCoord, AxialCoord>, Vertex>()
+    private val tiles = mutableStateMapOf<AxialCoord, Tile>()
+    private val edges = mutableStateMapOf<Pair<AxialCoord, AxialCoord>, Edge>()
+    private val vertices = mutableStateMapOf<Triple<AxialCoord, AxialCoord, AxialCoord>, Vertex>()
 
     // Getters
 
@@ -94,7 +94,7 @@ class Board(val radius: Int) {
     fun giveResource(number: Int){
         tiles.forEach{ tile ->
             if(tile.value.number == number){
-                tile.value.giveResource();
+                tile.value.giveResource()
             }
         }
     }

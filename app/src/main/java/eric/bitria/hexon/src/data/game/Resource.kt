@@ -4,8 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 enum class Resource(val color: Color) {
     BRICK(Color.Red),
-    WOOD(Color.Green),
-    SHEEP(Color(0xFF4CAF50)),
+    WOOD(Color(0xFF4CAF50)),
+    SHEEP(Color.Green),
     WHEAT(Color.Yellow),
     ORE(Color.Gray),
     NONE(Color(0xFFF4D03F))

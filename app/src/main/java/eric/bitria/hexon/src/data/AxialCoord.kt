@@ -2,8 +2,8 @@ package eric.bitria.hexon.src.data
 
 // Coordinate System
 data class AxialCoord(
-    val q: Int,
-    val r: Int
+    internal val q: Int,
+    internal val r: Int
 ) : Comparable<AxialCoord> {
 
     override fun compareTo(other: AxialCoord): Int {

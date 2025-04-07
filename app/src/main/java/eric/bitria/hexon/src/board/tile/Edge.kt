@@ -14,8 +14,8 @@ import eric.bitria.hexon.src.utils.sortTriple
 class Edge(
     private val coords: Pair<AxialCoord, AxialCoord>
 ){
-    var building by mutableStateOf(Building.NONE)
-    var player by mutableStateOf<Player?>(null)
+    private var building by mutableStateOf(Building.NONE)
+    internal var player by mutableStateOf<Player?>(null)
 
     fun getCoords(): Pair<AxialCoord, AxialCoord> = sortPair(coords)
 
