@@ -29,14 +29,14 @@ fun BoardRenderer(
         VertexLayer(board.getVertices().filter { it.hasBuilding() })
         EdgeLayer(board.getEdges().filter { it.hasBuilding() })
 
-        if(phase == GamePhase.PLACE_SETTLEMENT || phase == GamePhase.PLACE_INITIAL_SETTLEMENT) {
+        if(phase == GamePhase.PLACE_SETTLEMENT || phase == GamePhase.INITIAL_SETTLEMENT_PLACEMENT) {
             AvailableVertexPositionsLayer(
                 vertices = vertices,
                 onClick = { onClick(it) }
             )
         }
 
-        if(phase == GamePhase.PLACE_ROAD) {
+        if(phase == GamePhase.PLACE_ROAD || phase == GamePhase.INITIAL_ROAD_PLACEMENT) {
             AvailableEdgePositionsLayer(
                 edges = edges,
                 onClick = { onClick(it) }

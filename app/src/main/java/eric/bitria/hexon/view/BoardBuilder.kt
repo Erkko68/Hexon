@@ -20,13 +20,13 @@ object BoardBuilder {
             Resource.WHEAT, Resource.WHEAT, Resource.WHEAT, Resource.WHEAT,
             Resource.ORE, Resource.ORE, Resource.ORE,
             Resource.NONE // Desert
-        ).shuffled().toMutableList() // Convert to MutableList after shuffling
+        ).shuffled().toMutableList()
 
         // Number tokens (desert gets none)
         val numberTokens = mutableListOf(
             2, 3, 3, 4, 4, 5, 5, 6, 6,
             8, 8, 9, 9, 10, 10, 11, 11, 12
-        ).shuffled().toMutableList() // Convert to MutableList after shuffling
+        ).shuffled().toMutableList()
 
         coords.forEach { coord ->
             val resource = resources.removeAt(0)
