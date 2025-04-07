@@ -20,41 +20,51 @@ import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.ui.utils.modifier.LocalTileSize
 import eric.bitria.hexon.ui.utils.modifier.ZoomState
 import eric.bitria.hexon.ui.utils.modifier.zoomable
-import kotlin.math.sqrt
+import kotlin.math.min
 
 @Composable
 fun ZoomContainer(
     board: Board,
     content: @Composable () -> Unit
 ) {
-    val baseTileSize = 32.dp
     val zoomState = remember { ZoomState() }
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
     val density = LocalDensity.current
 
-    // Calculate dynamic clamping bounds based on zoom
-    val maxOffset = remember(board.radius, zoomState.zoomLevel) {
+    // Calculate dynamic base tile size based on container dimensions
+    val baseTileSize = remember(containerSize, board.radius) {
         with(density) {
-            (baseTileSize * zoomState.zoomLevel).toPx() * board.radius
+            if (containerSize == IntSize.Zero) return@remember 0.dp
+
+            val minDimension = min(containerSize.width, containerSize.height)
+            val tileSizePx = minDimension / ((board.radius + 1) * 4)
+            tileSizePx.toDp()
         }
     }
 
-    // Center position calculation
-    val (centerX, centerY) = remember(containerSize) {
-        if (containerSize == IntSize.Zero) Pair(0f, 0f)
-        else Pair(containerSize.width/2f, containerSize.height/2f)
+    // Calculate scaled tile size with zoom
+    val scaledTileSize = remember(baseTileSize, zoomState.zoomLevel) {
+        baseTileSize * zoomState.zoomLevel
     }
 
-    // Apply clamping relative to center
-    val clampedOffsetX = remember(zoomState.offsetX, centerX, maxOffset) {
-        (zoomState.offsetX - centerX).coerceIn(-maxOffset, maxOffset) + centerX
+    // Calculate center and maxOffset based on current scaled size and container
+    val (centerX, centerY, maxOffset) = remember(containerSize, scaledTileSize, board.radius) {
+        with(density) {
+            val centerX = containerSize.width / 2f
+            val centerY = containerSize.height / 2f
+            val maxOffset = (scaledTileSize.toPx() * board.radius) * 1.5f
+            Triple(centerX, centerY, maxOffset)
+        }
     }
 
-    val clampedOffsetY = remember(zoomState.offsetY, centerY, maxOffset) {
-        (zoomState.offsetY - centerY).coerceIn(-maxOffset, maxOffset) + centerY
+    // Update ZoomState with current center and maxOffset
+    LaunchedEffect(centerX, centerY, maxOffset) {
+        zoomState.centerX = centerX
+        zoomState.centerY = centerY
+        zoomState.maxOffset = maxOffset
     }
 
-    CompositionLocalProvider(LocalTileSize provides baseTileSize * zoomState.zoomLevel) {
+    CompositionLocalProvider(LocalTileSize provides scaledTileSize) {
         Box(
             Modifier
                 .fillMaxSize()
@@ -62,16 +72,16 @@ fun ZoomContainer(
                 .zoomable(zoomState)
                 .offset {
                     IntOffset(
-                        clampedOffsetX.toInt(),
-                        clampedOffsetY.toInt()
+                        zoomState.offsetX.toInt(),
+                        zoomState.offsetY.toInt()
                     )
                 }
         ) {
-            // Initial centering
+            // Initial centering when container size changes
             LaunchedEffect(containerSize) {
                 if (containerSize != IntSize.Zero) {
-                    zoomState.offsetX = containerSize.width / 2f
-                    zoomState.offsetY = containerSize.height / 2f
+                    zoomState.offsetX = zoomState.centerX
+                    zoomState.offsetY = zoomState.centerY
                 }
             }
 

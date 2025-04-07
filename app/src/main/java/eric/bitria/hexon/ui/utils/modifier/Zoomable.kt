@@ -15,6 +15,9 @@ class ZoomState {
     var zoomLevel by mutableFloatStateOf(1f)
     var offsetX by mutableFloatStateOf(0f)
     var offsetY by mutableFloatStateOf(0f)
+    var centerX by mutableFloatStateOf(0f)
+    var centerY by mutableFloatStateOf(0f)
+    var maxOffset by mutableFloatStateOf(0f)
 }
 
 fun Modifier.zoomable(zoomState: ZoomState, minZoom: Float = 1f, maxZoom: Float = 3f): Modifier {
@@ -24,9 +27,22 @@ fun Modifier.zoomable(zoomState: ZoomState, minZoom: Float = 1f, maxZoom: Float 
             val contentFocalX = (centroid.x - zoomState.offsetX) / zoomState.zoomLevel
             val contentFocalY = (centroid.y - zoomState.offsetY) / zoomState.zoomLevel
 
+            val newOffsetX = centroid.x - contentFocalX * newZoom + pan.x
+            val newOffsetY = centroid.y - contentFocalY * newZoom + pan.y
+
+            // Clamp new offsets within allowed range
+            val clampedOffsetX = (newOffsetX - zoomState.centerX).coerceIn(
+                -zoomState.maxOffset,
+                zoomState.maxOffset
+            ) + zoomState.centerX
+            val clampedOffsetY = (newOffsetY - zoomState.centerY).coerceIn(
+                -zoomState.maxOffset,
+                zoomState.maxOffset
+            ) + zoomState.centerY
+
             zoomState.zoomLevel = newZoom
-            zoomState.offsetX = centroid.x - contentFocalX * zoomState.zoomLevel + pan.x
-            zoomState.offsetY = centroid.y - contentFocalY * zoomState.zoomLevel + pan.y
+            zoomState.offsetX = clampedOffsetX
+            zoomState.offsetY = clampedOffsetY
         }
     }
 }
