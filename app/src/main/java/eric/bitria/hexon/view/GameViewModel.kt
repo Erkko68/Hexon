@@ -6,39 +6,52 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
-import eric.bitria.hexon.src.board.BoardBuilder
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
 
 class GameViewModel : ViewModel() {
-    // Existing properties
+    // Vals
     val player by mutableStateOf(Player(Color(0xFFFF5722)))
     val board by mutableStateOf(BoardBuilder.createInitialBoard())
-    var gamePhase by mutableStateOf(GamePhase.PLACE_SETTLEMENT)
+    var gamePhase by mutableStateOf(GamePhase.PLACE_INITIAL_SETTLEMENT)
 
     // Derived properties
     val availableVertices by derivedStateOf {
-        board.getVertices().filter { board.canPlaceBuilding(it) }
+        when (gamePhase) {
+            GamePhase.PLACE_INITIAL_SETTLEMENT -> {
+                board.getVertices().filter { board.canPlaceBuilding(it) }
+            }
+            GamePhase.PLACE_SETTLEMENT -> {
+                board.getVertices().filter { board.canPlaceBuilding(it, player) }
+            }
+            else -> {
+                emptyList()
+            }
+        }
     }
-
-    val availableEdges by derivedStateOf {
-        board.getEdges().filter { board.canPlaceRoad(it, player) }
-    }
+    val availableEdges by derivedStateOf { board.getEdges().filter { board.canPlaceRoad(it, player) } }
 
     // Define click handlers as mutable state
     fun onBoardClick(item: Any) {
-        when {
-            item is Vertex && gamePhase == GamePhase.PLACE_SETTLEMENT ->
-                handleSettlementClick(item)
+        when (gamePhase) {
+            // Settlements
+            GamePhase.PLACE_INITIAL_SETTLEMENT ->
+                placeSettlementClick(item)
+            GamePhase.PLACE_SETTLEMENT ->
+                placeSettlementClick(item)
 
-            item is Edge && gamePhase == GamePhase.PLACE_ROAD ->
+            // Road
+            GamePhase.PLACE_ROAD ->
                 handleRoadClick(item)
+
+            GamePhase.ROLL_DICE -> TODO()
+            GamePhase.IDLE -> TODO()
         }
     }
 
-    private fun handleSettlementClick(item: Any) {
+    private fun placeSettlementClick(item: Any) {
         if (item !is Vertex) return
         board.placeBuilding(item,Building.SETTLEMENT, player)
         board.givePlacementResources(item)
@@ -50,6 +63,6 @@ class GameViewModel : ViewModel() {
         if (item !is Edge) return
         board.placeRoad(item, player)
         //player.deck.removeBuildingResources(Building.ROAD)
-        gamePhase = GamePhase.PLACE_SETTLEMENT
+        gamePhase = GamePhase.PLACE_INITIAL_SETTLEMENT
     }
 }

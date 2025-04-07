@@ -27,11 +27,9 @@ fun BoardRenderer(
 
         // Existing Buildings Layer
         VertexLayer(board.getVertices().filter { it.hasBuilding() })
-
-        // Existing Roads Layer
         EdgeLayer(board.getEdges().filter { it.hasBuilding() })
 
-        if(phase == GamePhase.PLACE_SETTLEMENT) {
+        if(phase == GamePhase.PLACE_SETTLEMENT || phase == GamePhase.PLACE_INITIAL_SETTLEMENT) {
             AvailableVertexPositionsLayer(
                 vertices = vertices,
                 onClick = { onClick(it) }

@@ -1,5 +1,6 @@
-package eric.bitria.hexon.src.board
+package eric.bitria.hexon.view
 
+import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.game.Resource
@@ -29,7 +30,7 @@ object BoardBuilder {
 
         coords.forEach { coord ->
             val resource = resources.removeAt(0)
-            val number = if (resource == Resource.NONE) 0 else numberTokens.removeAt(0)
+            val number = if (resource == Resource.NONE) 7 else numberTokens.removeAt(0)
             board.addTile(Tile(coord, resource, number))
         }
 
