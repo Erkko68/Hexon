@@ -34,6 +34,7 @@ class GameViewModel : ViewModel() {
             }
         }
     }
+
     val availableEdges by derivedStateOf {
         when (gamePhase) {
             GamePhase.PLACE_ROAD, GamePhase.INITIAL_ROAD_PLACEMENT -> {
