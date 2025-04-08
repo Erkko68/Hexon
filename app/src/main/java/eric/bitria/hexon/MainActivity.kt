@@ -59,5 +59,5 @@ fun GameScreen(
             phase = phase
         )
     }
-    CardsLayer(player = player)
+    CardsLayer(player)
 }

@@ -75,7 +75,7 @@ class GameViewModel : ViewModel() {
         }
 
         // Else (not in initial placement) remove resources from deck
-        player.deck.removeBuildingResources(Building.SETTLEMENT)
+        player.removeBuildingResources(Building.SETTLEMENT)
         gamePhase = GamePhase.IDLE
     }
 
@@ -89,7 +89,7 @@ class GameViewModel : ViewModel() {
         }
 
         // Else (not in initial placement) remove resources from deck
-        player.deck.removeBuildingResources(Building.ROAD)
+        player.removeBuildingResources(Building.ROAD)
         gamePhase = GamePhase.IDLE
     }
 }
