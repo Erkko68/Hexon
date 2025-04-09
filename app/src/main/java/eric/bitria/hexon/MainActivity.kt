@@ -13,8 +13,8 @@ import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.board.BoardRenderer
+import eric.bitria.hexon.ui.ui.UIRenderer
 import eric.bitria.hexon.ui.board.ZoomContainer
-import eric.bitria.hexon.ui.board.layers.CardsLayer
 import eric.bitria.hexon.ui.theme.HexonTheme
 import eric.bitria.hexon.view.GamePhase
 import eric.bitria.hexon.view.GameViewModel
@@ -59,5 +59,5 @@ fun GameScreen(
             phase = phase
         )
     }
-    CardsLayer(player)
+    UIRenderer(player)
 }

@@ -1,4 +1,4 @@
-package eric.bitria.hexon.ui.board.layers.cards
+package eric.bitria.hexon.ui.ui.cards
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
