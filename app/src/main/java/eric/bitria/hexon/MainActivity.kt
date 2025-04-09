@@ -4,18 +4,15 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.board.BoardRenderer
-import eric.bitria.hexon.ui.ui.UIRenderer
 import eric.bitria.hexon.ui.board.ZoomContainer
 import eric.bitria.hexon.ui.theme.HexonTheme
+import eric.bitria.hexon.ui.ui.UIRenderer
 import eric.bitria.hexon.view.GamePhase
 import eric.bitria.hexon.view.GameViewModel
 
@@ -26,16 +23,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             HexonTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
-                    GameScreen(
-                        board = viewModel.board,
-                        player = viewModel.player,
-                        availableVertices = viewModel.availableVertices,
-                        availableEdges = viewModel.availableEdges,
-                        onClick = viewModel::onBoardClick,
-                        phase = viewModel.gamePhase
-                    )
-                }
+                GameScreen(
+                    board = viewModel.board,
+                    player = viewModel.player,
+                    availableVertices = viewModel.availableVertices,
+                    availableEdges = viewModel.availableEdges,
+                    onClick = viewModel::onBoardClick,
+                    phase = viewModel.gamePhase
+                )
             }
         }
     }

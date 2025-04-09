@@ -22,7 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,13 +38,13 @@ fun <T : Enum<T>> CardsContainer(
     content: @Composable (T) -> Unit
 ) {
     val cardSize = with(LocalCardSize.current) { LocalCardSize.current }
-    var isCardsVisible by remember { mutableStateOf(true) }
+    var isCardsVisible by rememberSaveable { mutableStateOf(true) }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(cardSize * 1.618f)
-    ) {
+    ){
         Row(
             modifier = Modifier
                 .padding(horizontal = 16.dp),
@@ -117,7 +117,7 @@ private fun ToggleButton(
     ) {
         // Optional icon/indicator
         Text(
-            text = if (isVisible) "◀" else "▶",
+            text = "◀",
             color = Color.White,
             fontSize = 24.sp
         )
