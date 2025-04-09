@@ -3,7 +3,6 @@ package eric.bitria.hexon.src.player
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import eric.bitria.hexon.src.data.game.Building
@@ -14,7 +13,7 @@ import eric.bitria.hexon.src.exceptions.InvalidResourceException
 class Player(
     val color: Color
 ) {
-    var victoryPoints by mutableIntStateOf(0)
+    val victoryPoints by mutableIntStateOf(0)
     private val deck: Deck = Deck()
 
     /**
@@ -42,8 +41,8 @@ class Player(
         return deck.getResources()
     }
 
-    private class Deck {
-        private val resourceCards = mutableStateMapOf<Resource, Int>()
+    internal class Deck {
+        val resourceCards = mutableStateMapOf<Resource, Int>()
 
         fun getResources(): Map<Resource, Int> {
             return resourceCards.toMap()

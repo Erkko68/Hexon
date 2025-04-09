@@ -26,8 +26,8 @@ fun BoardRenderer(
         HexagonalTileLayer(board)
 
         // Existing Buildings Layer
-        VertexLayer(board.getVertices().filter { it.hasBuilding() })
         EdgeLayer(board.getEdges().filter { it.hasBuilding() })
+        VertexLayer(board.getVertices().filter { it.hasBuilding() })
 
         if(phase == GamePhase.PLACE_SETTLEMENT || phase == GamePhase.INITIAL_SETTLEMENT_PLACEMENT) {
             AvailableVertexPositionsLayer(

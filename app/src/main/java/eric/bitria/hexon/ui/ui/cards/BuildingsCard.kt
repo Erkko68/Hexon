@@ -14,7 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.ui.utils.icons.Color.calculateBorderColor
+import eric.bitria.hexon.ui.icons.Color.calculateBorderColor
 
 @Composable
 fun BuildingCard(

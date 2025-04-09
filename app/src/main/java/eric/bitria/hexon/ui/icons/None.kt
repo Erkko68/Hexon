@@ -1,4 +1,4 @@
-package eric.bitria.hexon.ui.utils.icons
+package eric.bitria.hexon.ui.icons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.vector.ImageVector

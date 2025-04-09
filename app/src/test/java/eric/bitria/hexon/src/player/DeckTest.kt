@@ -4,6 +4,7 @@ import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
 import eric.bitria.hexon.src.exceptions.InvalidResourceException
+import eric.bitria.hexon.src.player.Player.Deck
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

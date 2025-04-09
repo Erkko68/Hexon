@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eric.bitria.hexon.src.data.game.Resource
-import eric.bitria.hexon.ui.utils.icons.Color.calculateBorderColor
+import eric.bitria.hexon.ui.icons.Color.calculateBorderColor
 
 @Composable
 fun ResourceCard(

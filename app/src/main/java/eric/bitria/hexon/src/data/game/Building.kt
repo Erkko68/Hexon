@@ -3,9 +3,9 @@ package eric.bitria.hexon.src.data.game
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import eric.bitria.hexon.ui.utils.icons.Castle
-import eric.bitria.hexon.ui.utils.icons.House
-import eric.bitria.hexon.ui.utils.icons.None
+import eric.bitria.hexon.ui.icons.Castle
+import eric.bitria.hexon.ui.icons.House
+import eric.bitria.hexon.ui.icons.None
 
 enum class Building(
     val recipe: Map<Resource, Int>,

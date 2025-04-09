@@ -233,11 +233,11 @@ class BoardTest {
         board.placeBuilding(vertex1,Building.SETTLEMENT,Player(Color.Red))
 
         // Empty resource
-        assertEquals(player.deck.resourceCards[Resource.WOOD],null)
+        assertEquals(player.getDeckResources()[Resource.WOOD],null)
 
         // Give resource
         board.giveResource(8)
-        assertEquals(player.deck.resourceCards[Resource.WOOD],1)
+        assertEquals(player.getDeckResources()[Resource.WOOD],1)
     }
 
     @Test
@@ -251,11 +251,11 @@ class BoardTest {
         board.placeBuilding(vertex1,Building.SETTLEMENT,Player(Color.Red))
 
         // Empty resource
-        assertEquals(player.deck.resourceCards[Resource.WOOD],null)
+        assertEquals(player.getDeckResources()[Resource.WOOD],null)
 
         // Give resource
         board.giveResource(8)
-        assertEquals(player.deck.resourceCards[Resource.WOOD],2)
+        assertEquals(player.getDeckResources()[Resource.WOOD],2)
     }
 
     // Exceptions
@@ -263,7 +263,7 @@ class BoardTest {
     @Test(expected = InvalidBoardException::class)
     fun testGetVertexThrowsException() {
         // Coordinates outside the board's radius
-        val coord1 = AxialCoord(4, 0) // Out of bounds
+        val coord1 = AxialCoord(5, 0) // Out of bounds
         val coord2 = AxialCoord(0, 0) // Within bounds
         val coord3 = AxialCoord(1, -1) // Within bounds
 
@@ -273,7 +273,7 @@ class BoardTest {
     @Test(expected = InvalidBoardException::class)
     fun testGetEdgeThrowsException() {
         // Coordinates outside the board's radius
-        val coord1 = AxialCoord(-4, 0) // Out of bounds
+        val coord1 = AxialCoord(-5, 0) // Out of bounds
         val coord2 = AxialCoord(0, 0) // Within bounds
 
         board.getEdge(coord1, coord2)
@@ -282,7 +282,7 @@ class BoardTest {
     @Test(expected = InvalidBoardException::class)
     fun testGetTileThrowsException() {
         // Coordinate outside the board's radius
-        val coord = AxialCoord(0, 4) // Out of bounds
+        val coord = AxialCoord(0, 5) // Out of bounds
 
         board.getTile(coord)
     }
