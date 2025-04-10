@@ -39,7 +39,7 @@ fun ResourceCard(
             contentColor = Color.Black
         ),
         border = BorderStroke(2.dp, borderColor),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
     ) {
         Column(
             modifier = Modifier

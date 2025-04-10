@@ -11,16 +11,16 @@ import eric.bitria.hexon.ui.board.layers.EdgeLayer
 import eric.bitria.hexon.ui.board.layers.HexagonalTileLayer
 import eric.bitria.hexon.ui.board.layers.VertexLayer
 import eric.bitria.hexon.view.enums.GamePhase
+import eric.bitria.hexon.view.utils.ClickHandler
 
 @Composable
 fun BoardRenderer(
     board: Board,
     edges: List<Edge>,
     vertices: List<Vertex>,
-    onClick: (Any) -> Unit,
+    clickHandler: ClickHandler
 ) {
-
-    Box{
+    Box {
         // Base Hexagonal Tiles Layer
         HexagonalTileLayer(board)
 
@@ -30,12 +30,20 @@ fun BoardRenderer(
 
         AvailableVertexPositionsLayer(
             vertices = vertices,
-            onClick = { onClick(it) }
+            onClick = {
+                if (clickHandler is ClickHandler.OnVertex) {
+                    clickHandler.handler(it as Vertex)
+                }
+            }
         )
 
         AvailableEdgePositionsLayer(
             edges = edges,
-            onClick = { onClick(it) }
+            onClick = {
+                if (clickHandler is ClickHandler.OnEdge) {
+                    clickHandler.handler(it as Edge)
+                }
+            }
         )
     }
 }

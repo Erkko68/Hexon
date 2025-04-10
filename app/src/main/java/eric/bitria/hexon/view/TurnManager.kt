@@ -8,7 +8,9 @@ data class TurnManager(
 ) {
     private var currentTurnIndex = 0
 
-    val turnOrder: List<Player> = players.shuffled()
+    // Changed to var so we can reverse it
+    var turnOrder: List<Player> = players.shuffled()
+        private set
 
     fun getCurrentPlayer(): Player = turnOrder[currentTurnIndex]
 
@@ -20,5 +22,14 @@ data class TurnManager(
             currentTurnIndex = 0
             onRotationComplete.invoke()
         }
+    }
+
+    /**
+     * Reverses the current turn order and resets the current turn index.
+     * Used at the end of an initial placement phase to run the reverse round.
+     */
+    fun reverseTurnOrder() {
+        turnOrder = turnOrder.reversed()
+        currentTurnIndex = 0
     }
 }

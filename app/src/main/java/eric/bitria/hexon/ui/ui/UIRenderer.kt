@@ -18,7 +18,9 @@ import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.ui.cards.BuildingCard
 import eric.bitria.hexon.ui.ui.cards.ResourceCard
+import eric.bitria.hexon.view.enums.GameAction
 import eric.bitria.hexon.view.enums.GamePhase
+import eric.bitria.hexon.view.utils.ClickHandler
 
 val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
@@ -26,8 +28,8 @@ val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided
 fun UIRenderer(
     player: Player,
     phase: GamePhase,
-    dices: Pair<Int, Int> = Pair(0, 0),
-    onClick: (Any) -> Unit = {}
+    dices: Pair<Int, Int>,
+    clickHandler: ClickHandler
 ) {
 
     // Calculate card size based on screen width
@@ -52,7 +54,11 @@ fun UIRenderer(
                     DiceScreen(
                         dice1 = dices.first,
                         dice2 = dices.second,
-                        onRollClick = { onClick(Unit) }
+                        onRollClick = {
+                            if (clickHandler is ClickHandler.NoParam) {
+                                clickHandler.handler()
+                            }
+                        }
                     )
                 }
             } else {
@@ -73,19 +79,27 @@ fun UIRenderer(
                         ) { building ->
                             BuildingCard(
                                 building = building,
-                                onClick = { onClick(building) },
+                                onClick = {
+                                    if (clickHandler is ClickHandler.OnBuilding) {
+                                        clickHandler.handler(building)
+                                    }
+                                },
                                 enabled = player.hasBuildingResources(building) and (phase == GamePhase.PLAYER_TURN)
                             )
                         }
 
-                        val resources = player.getDeckResources().keys.toTypedArray()
+                        val resources = player.getDeckResources().filter { it.value > 0 }.keys.toTypedArray()
                         CardsContainer(
                             cards = resources
                         ) { resource ->
                             ResourceCard(
                                 resource = resource,
                                 count = player.getDeckResources()[resource] ?: 0,
-                                onClick = { onClick(resource) }
+                                onClick = {
+                                    if (clickHandler is ClickHandler.OnResource) {
+                                        clickHandler.handler(resource)
+                                    }
+                                },
                             )
                         }
                         Spacer(Modifier)
