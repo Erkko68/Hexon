@@ -1,21 +1,29 @@
 package eric.bitria.hexon.src.player
 
-import androidx.annotation.VisibleForTesting
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
 import eric.bitria.hexon.src.exceptions.InvalidResourceException
+import eric.bitria.hexon.view.enums.GameAction
 
 class Player(
     val color: Color
 ) {
-    val victoryPoints by mutableIntStateOf(0)
+    private var _action by mutableStateOf(GameAction.PLACE_SETTLEMENT)
+    private var _victoryPoints by mutableIntStateOf(0)
     private val deck: Deck = Deck()
+
+    fun getAction(): GameAction = _action
+    fun setAction(action: GameAction) {_action = action}
+
+    fun getVictoryPoints(): Int = _victoryPoints
+    fun setVictoryPoints(points: Int) {_victoryPoints = points}
 
     /**
      * Adds a resource to the player's deck.

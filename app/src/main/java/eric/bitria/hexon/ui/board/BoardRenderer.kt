@@ -18,7 +18,6 @@ fun BoardRenderer(
     edges: List<Edge>,
     vertices: List<Vertex>,
     onClick: (Any) -> Unit,
-    phase: GamePhase
 ) {
 
     Box{
@@ -29,18 +28,14 @@ fun BoardRenderer(
         EdgeLayer(board.getEdges().filter { it.hasBuilding() })
         VertexLayer(board.getVertices().filter { it.hasBuilding() })
 
-        if(phase == GamePhase.INITIAL_PLACEMENT || phase == GamePhase.PLAYER_TURN) {
-            AvailableVertexPositionsLayer(
-                vertices = vertices,
-                onClick = { onClick(it) }
-            )
-        }
+        AvailableVertexPositionsLayer(
+            vertices = vertices,
+            onClick = { onClick(it) }
+        )
 
-        if(phase == GamePhase.INITIAL_PLACEMENT || phase == GamePhase.PLAYER_TURN) {
-            AvailableEdgePositionsLayer(
-                edges = edges,
-                onClick = { onClick(it) }
-            )
-        }
+        AvailableEdgePositionsLayer(
+            edges = edges,
+            onClick = { onClick(it) }
+        )
     }
 }

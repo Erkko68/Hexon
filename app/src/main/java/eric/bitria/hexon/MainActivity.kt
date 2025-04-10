@@ -28,8 +28,8 @@ class MainActivity : ComponentActivity() {
                     player = viewModel.player,
                     availableVertices = viewModel.availableVertices,
                     availableEdges = viewModel.availableEdges,
-                    onClick = viewModel::onBoardClick,
-                    phase = viewModel.gamePhase
+                    onClick = viewModel.onClick,
+                    onCardSelect = viewModel.onCardSelect
                 )
             }
         }
@@ -43,16 +43,18 @@ fun GameScreen(
     availableVertices: List<Vertex>,
     availableEdges: List<Edge>,
     onClick: (Any) -> Unit,
-    phase: GamePhase
+    onCardSelect: (Any) -> Unit
 ) {
     ZoomContainer(board) {
         BoardRenderer(
             board = board,
             vertices = availableVertices,
             edges = availableEdges,
-            onClick = onClick,
-            phase = phase
+            onClick = onClick
         )
     }
-    UIRenderer(player)
+    UIRenderer(
+        player = player,
+        onCardSelect = onCardSelect
+    )
 }

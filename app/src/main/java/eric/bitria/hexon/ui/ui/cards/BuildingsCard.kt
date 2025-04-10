@@ -19,7 +19,8 @@ import eric.bitria.hexon.ui.utils.Color.calculateBorderColor
 @Composable
 fun BuildingCard(
     building: Building,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     val borderColor = calculateBorderColor(building.color)
 
@@ -32,7 +33,8 @@ fun BuildingCard(
             contentColor = Color.Black
         ),
         border = BorderStroke(2.dp, borderColor),
-        elevation = CardDefaults.cardElevation(4.dp)
+        elevation = CardDefaults.cardElevation(4.dp),
+        enabled = enabled
     ) {
         Box(
             modifier = Modifier

@@ -23,7 +23,10 @@ import eric.bitria.hexon.ui.ui.cards.ResourceCard
 val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
 @Composable
-fun UIRenderer(player: Player) {
+fun UIRenderer(
+    player: Player,
+    onCardSelect: (Any) -> Unit = {}
+) {
 
     // Calculate card size based on screen width
     val configuration = LocalConfiguration.current
@@ -59,6 +62,8 @@ fun UIRenderer(player: Player) {
                     ) { building ->
                         BuildingCard(
                             building = building,
+                            onClick = { onCardSelect(building) },
+                            enabled = player.hasBuildingResources(building)
                         )
                     }
 
@@ -68,7 +73,8 @@ fun UIRenderer(player: Player) {
                     ) { resource ->
                         ResourceCard(
                             resource = resource,
-                            count = player.getDeckResources()[resource] ?: 0
+                            count = player.getDeckResources()[resource] ?: 0,
+                            onClick = { onCardSelect(resource) }
                         )
                     }
                     Spacer(Modifier)
