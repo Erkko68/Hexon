@@ -10,7 +10,7 @@ import eric.bitria.hexon.ui.board.layers.AvailableVertexPositionsLayer
 import eric.bitria.hexon.ui.board.layers.EdgeLayer
 import eric.bitria.hexon.ui.board.layers.HexagonalTileLayer
 import eric.bitria.hexon.ui.board.layers.VertexLayer
-import eric.bitria.hexon.view.GamePhase
+import eric.bitria.hexon.view.enums.GamePhase
 
 @Composable
 fun BoardRenderer(
@@ -29,14 +29,14 @@ fun BoardRenderer(
         EdgeLayer(board.getEdges().filter { it.hasBuilding() })
         VertexLayer(board.getVertices().filter { it.hasBuilding() })
 
-        if(phase == GamePhase.PLACE_SETTLEMENT || phase == GamePhase.INITIAL_SETTLEMENT_PLACEMENT) {
+        if(phase == GamePhase.INITIAL_PLACEMENT || phase == GamePhase.PLAYER_TURN) {
             AvailableVertexPositionsLayer(
                 vertices = vertices,
                 onClick = { onClick(it) }
             )
         }
 
-        if(phase == GamePhase.PLACE_ROAD || phase == GamePhase.INITIAL_ROAD_PLACEMENT) {
+        if(phase == GamePhase.INITIAL_PLACEMENT || phase == GamePhase.PLAYER_TURN) {
             AvailableEdgePositionsLayer(
                 edges = edges,
                 onClick = { onClick(it) }

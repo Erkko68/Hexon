@@ -32,13 +32,17 @@ class Board(val radius: Int) {
 
     fun getVertex(axialCoord1: AxialCoord, axialCoord2: AxialCoord, axialCoord3: AxialCoord): Vertex? {
         val vertexTriple = sortTriple(Triple(axialCoord1, axialCoord2, axialCoord3))
-        if (vertexTriple.toList().any { !isWithinBoard(it) }) throw InvalidBoardException("One or more vertex coordinates are out of range.")
+        if (vertexTriple.toList().all { !isWithinBoard(it) }) {
+            throw InvalidBoardException("All vertex coordinates are out of range.")
+        }
         return vertices[vertexTriple]
     }
 
     fun getEdge(axialCoord1: AxialCoord, axialCoord2: AxialCoord): Edge? {
         val edgePair = sortPair(Pair(axialCoord1, axialCoord2))
-        if (edgePair.toList().any { !isWithinBoard(it) }) throw InvalidBoardException("One or more edge coordinates are out of range.")
+        if (edgePair.toList().all { !isWithinBoard(it) }) {
+            throw InvalidBoardException("Both edge coordinates are out of range.")
+        }
         return edges[edgePair]
     }
 
@@ -142,9 +146,9 @@ class Board(val radius: Int) {
     // Helper functions
 
     private fun isWithinBoard(axialCoord: AxialCoord): Boolean {
-        return (abs(axialCoord.q) <= radius + 1) &&
-                (abs(axialCoord.r) <= radius + 1) &&
-                (abs(axialCoord.q + axialCoord.r) <= radius + 1)
+        return (abs(axialCoord.q) <= radius) &&
+                (abs(axialCoord.r) <= radius) &&
+                (abs(axialCoord.q + axialCoord.r) <= radius)
     }
 
 }

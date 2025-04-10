@@ -13,7 +13,7 @@ import eric.bitria.hexon.ui.board.BoardRenderer
 import eric.bitria.hexon.ui.board.ZoomContainer
 import eric.bitria.hexon.ui.theme.HexonTheme
 import eric.bitria.hexon.ui.ui.UIRenderer
-import eric.bitria.hexon.view.GamePhase
+import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.GameViewModel
 
 class MainActivity : ComponentActivity() {

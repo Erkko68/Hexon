@@ -1,9 +1,10 @@
-package eric.bitria.hexon.view
+package eric.bitria.hexon.view.utils
 
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.src.data.game.Resource
+import kotlin.collections.forEach
 
 object BoardBuilder {
 
@@ -33,7 +34,6 @@ object BoardBuilder {
             val number = if (resource == Resource.NONE) 7 else numberTokens.removeAt(0)
             board.addTile(Tile(coord, resource, number))
         }
-
 
         return board
     }

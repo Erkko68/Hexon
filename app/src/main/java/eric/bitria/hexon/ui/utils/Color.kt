@@ -1,4 +1,5 @@
-package eric.bitria.hexon.ui.icons
+package eric.bitria.hexon.ui.utils
+
 import androidx.compose.ui.graphics.Color
 
 object Color {

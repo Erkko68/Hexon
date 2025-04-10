@@ -263,9 +263,19 @@ class BoardTest {
     @Test(expected = InvalidBoardException::class)
     fun testGetVertexThrowsException() {
         // Coordinates outside the board's radius
-        val coord1 = AxialCoord(5, 0) // Out of bounds
-        val coord2 = AxialCoord(0, 0) // Within bounds
-        val coord3 = AxialCoord(1, -1) // Within bounds
+        val coord1 = AxialCoord(4, 0) // Out of bounds
+        val coord2 = AxialCoord(0, 4) // Out of bounds
+        val coord3 = AxialCoord(4, -1) // Out of bounds
+
+        board.getVertex(coord1, coord2, coord3)
+    }
+
+    @Test
+    fun testGetVertexDoesNotThrowException() {
+        // Coordinates outside the board's radius
+        val coord1 = AxialCoord(4, 0) // Out of bounds
+        val coord2 = AxialCoord(0, 2) // Out of bounds
+        val coord3 = AxialCoord(4, -1) // Out of bounds
 
         board.getVertex(coord1, coord2, coord3)
     }
@@ -273,8 +283,17 @@ class BoardTest {
     @Test(expected = InvalidBoardException::class)
     fun testGetEdgeThrowsException() {
         // Coordinates outside the board's radius
-        val coord1 = AxialCoord(-5, 0) // Out of bounds
-        val coord2 = AxialCoord(0, 0) // Within bounds
+        val coord1 = AxialCoord(-4, 0) // In bounds
+        val coord2 = AxialCoord(0, 4) // In bounds
+
+        board.getEdge(coord1, coord2)
+    }
+
+    @Test
+    fun testGetEdgeDoesNotThrowException() {
+        // Coordinates outside the board's radius
+        val coord1 = AxialCoord(-4, 0) // Out of bounds
+        val coord2 = AxialCoord(0, 3) // In bounds
 
         board.getEdge(coord1, coord2)
     }
@@ -282,7 +301,7 @@ class BoardTest {
     @Test(expected = InvalidBoardException::class)
     fun testGetTileThrowsException() {
         // Coordinate outside the board's radius
-        val coord = AxialCoord(0, 5) // Out of bounds
+        val coord = AxialCoord(0, 4) // Out of bounds
 
         board.getTile(coord)
     }
