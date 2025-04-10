@@ -4,7 +4,7 @@ import eric.bitria.hexon.src.player.Player
 
 data class TurnManager(
     val players: List<Player>,
-    val onRotationComplete: (() -> Unit)? = null
+    val onRotationComplete: (() -> Unit) = {}
 ) {
     private var currentTurnIndex = 0
 
@@ -18,7 +18,7 @@ data class TurnManager(
         // Check if we've reached the end of the rotation
         if (currentTurnIndex >= turnOrder.size) {
             currentTurnIndex = 0
-            onRotationComplete?.invoke()
+            onRotationComplete.invoke()
         }
     }
 }

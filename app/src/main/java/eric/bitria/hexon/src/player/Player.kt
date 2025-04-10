@@ -15,7 +15,7 @@ import eric.bitria.hexon.view.enums.GameAction
 class Player(
     val color: Color
 ) {
-    private var _action by mutableStateOf(GameAction.PLACE_SETTLEMENT)
+    private var _action by mutableStateOf(GameAction.IDLE)
     private var _victoryPoints by mutableIntStateOf(0)
     private val deck: Deck = Deck()
 

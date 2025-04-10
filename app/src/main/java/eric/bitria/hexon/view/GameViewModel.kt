@@ -10,7 +10,6 @@ import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.view.enums.GameAction
 import eric.bitria.hexon.view.enums.GamePhase
@@ -22,21 +21,18 @@ class GameViewModel : ViewModel() {
     private val _turnManager = TurnManager(listOf(Player(Color(0xFFFF5722)), Player(Color.Blue)))
     private var _currentPlayer by mutableStateOf(_turnManager.getCurrentPlayer())
     private val _gameManager = GameManager(_board, _currentPlayer)
-    private var _onClick = mutableStateOf<((Any) -> Unit)>({
-        it: Any -> _gameManager.placeInitialSettlement(it as Vertex)
-        _currentPlayer.setAction(GameAction.PLACE_ROAD)
-        initialRoadPlacement()
-    })
-    private var _onCardSelect: (Any) -> Unit = ::onCardSelect
+    private var _onClick = mutableStateOf<((Any) -> Unit)>({})
+    private var _dices: Pair<Int, Int> by mutableStateOf(_gameManager.getDices())
 
     // Game State
-    private var _gamePhase by mutableStateOf(GamePhase.INITIAL_PLACEMENT)
+    private var _gamePhase by mutableStateOf(GamePhase.NONE)
 
     // Getters
     val board: Board get() = _board
     val player: Player get() = _currentPlayer
     val onClick: (Any) -> Unit get() = _onClick.value
-    val onCardSelect: (Any) -> Unit get() = _onCardSelect
+    val phase: GamePhase get() = _gamePhase
+    val dices: Pair<Int, Int> get() = _dices
 
     // Derived properties
     val availableVertices by derivedStateOf {
@@ -81,41 +77,53 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    // Player Card Selection
-    fun onCardSelect(card: Any){
-        if(card is Building){
-            when(card){
-                Building.SETTLEMENT -> _currentPlayer.setAction(GameAction.PLACE_SETTLEMENT)
-                Building.ROAD -> _currentPlayer.setAction(GameAction.PLACE_ROAD)
-                Building.CITY -> _currentPlayer.setAction(GameAction.PLACE_CITY)
-                else -> {}
-            }
+    init {
+        _gamePhase = GamePhase.INITIAL_PLACEMENT
+        _currentPlayer.setAction(GameAction.PLACE_SETTLEMENT)
+
+        _onClick.value = {
+            it: Any -> _gameManager.placeInitialSettlement(it as Vertex)
+            initialRoadPlacement()
         }
     }
 
-    fun initialRoadPlacement(){
+    private fun initialSettlementPlacement(){
         _gamePhase = GamePhase.INITIAL_PLACEMENT
+        _currentPlayer.setAction(GameAction.PLACE_SETTLEMENT)
+
+        _onClick.value = {
+            it: Any -> _gameManager.placeInitialSettlement(it as Vertex)
+            initialRoadPlacement()
+        }
+    }
+
+    private fun initialRoadPlacement(){
+        _gamePhase = GamePhase.INITIAL_PLACEMENT
+        _currentPlayer.setAction(GameAction.PLACE_ROAD)
         _onClick.value = {
             it: Any -> _gameManager.placeInitialRoad(it as Edge)
-            _currentPlayer.setAction(GameAction.IDLE)
             rollDices()
         }
     }
 
-    fun rollDices() {
+    private fun rollDices() {
         _gamePhase = GamePhase.ROLL_DICE
+        _currentPlayer.setAction(GameAction.IDLE)
         _currentPlayer = _turnManager.getCurrentPlayer()
-        _onClick.value = {
-            _: Any -> _gameManager.rollDice()
-            startTurn()
+        _onClick.value = { _: Any ->
+            _gameManager.rollDice()
+            //startTurn()
+            endTurn()
         }
     }
 
-    fun startTurn() {
+    private fun startTurn() {
         _gamePhase = GamePhase.PLAYER_TURN
         _onClick.value = { element : Any ->
             when (_currentPlayer.getAction()) {
-                GameAction.IDLE -> {}
+                GameAction.IDLE -> {
+                    onCardSelect(element)
+                }
                 GameAction.PLACE_CITY -> {
                     _currentPlayer.setAction(GameAction.IDLE)
                     endTurn()
@@ -134,11 +142,28 @@ class GameViewModel : ViewModel() {
         }
     }
 
+    // Player Card Selection
+    private fun onCardSelect(card: Any){
+        if(card is Building){
+            when(card){
+                Building.SETTLEMENT -> _currentPlayer.setAction(GameAction.PLACE_SETTLEMENT)
+                Building.ROAD -> _currentPlayer.setAction(GameAction.PLACE_ROAD)
+                Building.CITY -> _currentPlayer.setAction(GameAction.PLACE_CITY)
+                else -> {}
+            }
+        }
+    }
 
-    fun endTurn() {
+
+    private fun endTurn() {
         _gamePhase = GamePhase.NEXT_TURN
+
         _turnManager.nextTurn()
-        rollDices()
+        _currentPlayer = _turnManager.getCurrentPlayer()
+        _gameManager.setCurrentPlayer(_currentPlayer)
+
+        //rollDices()
+        initialSettlementPlacement()
     }
 
 }

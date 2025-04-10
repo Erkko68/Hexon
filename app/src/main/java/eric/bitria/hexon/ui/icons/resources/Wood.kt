@@ -1,4 +1,4 @@
-package eric.bitria.hexon.ui.icons
+package eric.bitria.hexon.ui.icons.resources
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color

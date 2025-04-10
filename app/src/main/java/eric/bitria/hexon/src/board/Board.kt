@@ -103,13 +103,19 @@ class Board(val radius: Int) {
         }
     }
 
-    fun givePlacementResources(vertex: Vertex){
-        if(!vertex.hasBuilding()) { throw InvalidBuildingException("This vertex has no building!")}
-        vertex.getCoords().toList()
-            .forEach{
-                getTile(it)?.resource?.let { it1 -> vertex.player?.addResource(it1,1) }
+    fun givePlacementResources(vertex: Vertex) {
+        if (!vertex.hasBuilding()) { throw InvalidBuildingException("This vertex has no building!") }
+        // Filter the coordinates that are within the board
+        val validCoords = vertex.getCoords().toList()
+            .filter { isWithinBoard(it) }
+
+        validCoords.forEach {
+            getTile(it)?.resource?.let { resource ->
+                vertex.player?.addResource(resource, 1)
             }
+        }
     }
+
 
     // Checks
 

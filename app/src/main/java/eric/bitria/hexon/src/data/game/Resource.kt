@@ -4,12 +4,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import eric.bitria.hexon.ui.theme.HexonColors
-import eric.bitria.hexon.ui.icons.Brick
+import eric.bitria.hexon.ui.icons.resources.Brick
 import eric.bitria.hexon.ui.icons.None
-import eric.bitria.hexon.ui.icons.Ore
-import eric.bitria.hexon.ui.icons.Sheep
-import eric.bitria.hexon.ui.icons.Wheat
-import eric.bitria.hexon.ui.icons.Wood
+import eric.bitria.hexon.ui.icons.resources.Ore
+import eric.bitria.hexon.ui.icons.resources.Sheep
+import eric.bitria.hexon.ui.icons.resources.Wheat
+import eric.bitria.hexon.ui.icons.resources.Wood
 
 enum class Resource(
     val color: Color,

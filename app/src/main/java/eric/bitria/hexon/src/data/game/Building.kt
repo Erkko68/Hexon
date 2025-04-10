@@ -3,9 +3,10 @@ package eric.bitria.hexon.src.data.game
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import eric.bitria.hexon.ui.icons.Castle
-import eric.bitria.hexon.ui.icons.House
+import eric.bitria.hexon.ui.icons.buildings.Castle
+import eric.bitria.hexon.ui.icons.buildings.House
 import eric.bitria.hexon.ui.icons.None
+import eric.bitria.hexon.ui.icons.buildings.Trail
 
 enum class Building(
     val recipe: Map<Resource, Int>,
@@ -29,7 +30,7 @@ enum class Building(
         recipe = mapOf(Resource.WOOD to 1, Resource.BRICK to 1),
         value = 0,
         color = Color(0xFF757575),
-        icon = Icons.None
+        icon = Icons.Trail
     ),
     CITY(
         recipe = mapOf(Resource.WHEAT to 2, Resource.ORE to 3),

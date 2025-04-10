@@ -8,24 +8,24 @@ import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.view.enums.GamePhase
 import kotlin.random.Random
 
 class GameManager(
     private val board: Board,
-    private val currentPlayer: Player
+    private var currentPlayer: Player
 ) {
-    private var _dice by mutableIntStateOf(0)
-    fun getDice(): Int = _dice
+    private var _dice1 by mutableIntStateOf(0)
+    private var _dice2 by mutableIntStateOf(0)
+
+    fun getDices(): Pair<Int, Int> = Pair(_dice1, _dice2)
+    fun setCurrentPlayer(player: Player) { currentPlayer = player}
 
     // Roll Dice (Global)
-
     fun rollDice() {
-        val dice1 = Random.nextInt(1, 7)
-        val dice2 = Random.nextInt(1, 7)
-        _dice = dice1 + dice2
+        _dice1 = Random.nextInt(1, 7)
+        _dice2 = Random.nextInt(1, 7)
         // Give resources
-        board.giveResource(_dice)
+        board.giveResource(_dice1 + _dice2)
     }
 
     // Initial Placements
