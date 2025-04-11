@@ -2,7 +2,9 @@ package eric.bitria.hexon.ui.ui.cards
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -15,21 +17,24 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.ui.utils.Color.calculateBorderColor
+import eric.bitria.hexon.view.enums.GameActions
 
 @Composable
-fun BuildingCard(
-    building: Building,
+fun ActionCard(
+    action: GameActions,
     onClick: () -> Unit = {},
     enabled: Boolean = true
 ) {
-    val borderColor = calculateBorderColor(building.color)
+    val borderColor = calculateBorderColor(action.color)
 
     Card(
         onClick = onClick,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .aspectRatio(1f) // Square aspect ratio
+            .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = building.color,
+            containerColor = action.color,
             contentColor = Color.Black
         ),
         border = BorderStroke(2.dp, borderColor),
@@ -42,7 +47,7 @@ fun BuildingCard(
                 .padding(5.dp)
         ){
             Icon(
-                imageVector = building.icon,
+                imageVector = action.icon,
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxSize()

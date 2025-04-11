@@ -3,6 +3,8 @@ package eric.bitria.hexon.view.utils
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.game.Resource
+import eric.bitria.hexon.view.enums.GameActions
 
 /**
  * Sealed class representing different types of click handlers for various game actions.
@@ -32,14 +34,6 @@ sealed class ClickHandler {
      */
     data class OnEdge(val handler: (Edge) -> Unit) : ClickHandler()
 
-    /**
-     * Represents a click on a [Building].
-     *
-     * This is used when the player clicks on a [Building] (e.g., selecting a building for placement).
-     *
-     * @param handler A function that takes a [Building] as a parameter and performs an action.
-     */
-    data class OnBuilding(val handler: (Building) -> Unit) : ClickHandler()
 
     /**
      * Represents a click on a [Resource] or any generic object.
@@ -50,7 +44,9 @@ sealed class ClickHandler {
      *
      * @param handler A function that takes any object as a parameter and performs an action.
      */
-    data class OnResource(val handler: (Any) -> Unit) : ClickHandler()
+    data class OnResource(val handler: (Resource) -> Unit) : ClickHandler()
+
+    data class OnAction(val handler: (GameActions) -> Unit) : ClickHandler()
 
     /**
      * Represents a click action that doesn't require any parameters.

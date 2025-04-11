@@ -22,14 +22,14 @@ class MainActivity : ComponentActivity() {
                         board = viewModel.board,
                         vertices = viewModel.availableVertices,
                         edges = viewModel.availableEdges,
-                        clickHandler = viewModel.clickHandler
+                        clickHandler = viewModel.boardClickHandler
                     )
                 }
                 UIRenderer(
                     player = viewModel.player,
                     phase = viewModel.phase,
-                    clickHandler = viewModel.clickHandler,
-                    dices = viewModel.dices,
+                    clickHandler = viewModel.cardClickHandler,
+                    dices = viewModel.dices
                 )
             }
         }

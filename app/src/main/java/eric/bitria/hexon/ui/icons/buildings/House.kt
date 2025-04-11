@@ -1,9 +1,13 @@
 package eric.bitria.hexon.ui.icons.buildings
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
@@ -46,12 +50,10 @@ val Icons.House: ImageVector
 
 private var _house: ImageVector? = null
 
-@Preview(showBackground = true)
+@Preview
 @Composable
-fun HousePreview() {
-    Icon(
-        imageVector = Icons.House,
-        contentDescription = "House Icon",
-        tint = MaterialTheme.colorScheme.primary
-    )
+private fun Preview() {
+    Box(modifier = Modifier.padding(12.dp)) {
+        Image(imageVector = Icons.House, contentDescription = "")
+    }
 }

@@ -1,9 +1,13 @@
 package eric.bitria.hexon.ui.icons.buildings
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
@@ -14,6 +18,7 @@ import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.ui.icons.Cash
 
 val Icons.Castle: ImageVector
     get() {
@@ -59,12 +64,11 @@ val Icons.Castle: ImageVector
 
 private var _castle: ImageVector? = null
 
-@Preview(showBackground = true)
+
+@Preview
 @Composable
-fun CastlePreview() {
-    Icon(
-        imageVector = Icons.Castle,
-        contentDescription = "House Icon",
-        tint = MaterialTheme.colorScheme.primary
-    )
+private fun Preview() {
+    Box(modifier = Modifier.padding(12.dp)) {
+        Image(imageVector = Icons.Castle, contentDescription = "")
+    }
 }

@@ -10,17 +10,17 @@ import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.exceptions.InvalidBuildingException
 import eric.bitria.hexon.src.exceptions.InvalidResourceException
-import eric.bitria.hexon.view.enums.GameAction
+import eric.bitria.hexon.view.enums.GameActions
 
 class Player(
     val color: Color
 ) {
-    private var _action by mutableStateOf(GameAction.IDLE)
+    private var _action by mutableStateOf(GameActions.IDLE)
     private var _victoryPoints by mutableIntStateOf(0)
     private val deck: Deck = Deck()
 
-    fun getAction(): GameAction = _action
-    fun setAction(action: GameAction) {_action = action}
+    fun getAction(): GameActions = _action
+    fun setAction(action: GameActions) {_action = action}
 
     fun getVictoryPoints(): Int = _victoryPoints
     fun setVictoryPoints(points: Int) {_victoryPoints = points}
