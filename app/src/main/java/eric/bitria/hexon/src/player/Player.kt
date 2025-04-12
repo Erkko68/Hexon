@@ -15,15 +15,9 @@ import eric.bitria.hexon.view.enums.GameActions
 class Player(
     val color: Color
 ) {
-    private var _action by mutableStateOf(GameActions.IDLE)
     private var _victoryPoints by mutableIntStateOf(0)
     private val deck: Deck = Deck()
     private val shop: Shop = Shop(deck)
-
-    fun getShop(): Shop = shop
-
-    fun getAction(): GameActions = _action
-    fun setAction(action: GameActions) {_action = action}
 
     fun getVictoryPoints(): Int = _victoryPoints
     fun setVictoryPoints(points: Int) {_victoryPoints = points}
@@ -51,5 +45,27 @@ class Player(
 
     fun getDeckResources(): Map<Resource, Int> {
         return deck.getResources()
+    }
+
+    // Trading functions
+
+    fun selectTradingResource(resource: Resource){
+        shop.selectTradingResource(resource)
+    }
+
+    fun addTradingResource(resource: Resource){
+        shop.addTradingResource(resource)
+    }
+
+    fun canAcceptTrade(): Boolean{
+        return shop.canAcceptTrade()
+    }
+
+    fun cancelTrade(){
+        shop.cancelTrade()
+    }
+
+    fun acceptTrade() {
+        shop.acceptTrade()
     }
 }

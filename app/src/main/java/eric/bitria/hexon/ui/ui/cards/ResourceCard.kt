@@ -26,11 +26,13 @@ import eric.bitria.hexon.ui.utils.Color.calculateBorderColor
 fun ResourceCard(
     resource: Resource,
     count: Int,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    enabled: Boolean = true
 ) {
     val borderColor = calculateBorderColor(resource.color)
 
     Card(
+        enabled = enabled,
         onClick = onClick,
         modifier = Modifier.fillMaxSize(),
         shape = RoundedCornerShape(8.dp),

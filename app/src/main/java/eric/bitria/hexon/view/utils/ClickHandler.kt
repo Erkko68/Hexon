@@ -46,6 +46,8 @@ sealed class ClickHandler {
      */
     data class OnResource(val handler: (Resource) -> Unit) : ClickHandler()
 
+    data class OnBuilding(val handler: (Building) -> Unit) : ClickHandler()
+
     data class OnAction(val handler: (GameActions) -> Unit) : ClickHandler()
 
     /**

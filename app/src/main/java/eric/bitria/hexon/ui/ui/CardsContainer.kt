@@ -29,8 +29,7 @@ fun <T : Enum<T>> CardsContainer(
     ) {
         Row(
             modifier = Modifier
-                .horizontalScroll(rememberScrollState())
-                .padding(horizontal = 16.dp),
+                .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             cards.forEach { card ->

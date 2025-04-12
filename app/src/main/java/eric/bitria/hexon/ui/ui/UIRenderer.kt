@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -15,8 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.ui.cards.ActionCard
+import eric.bitria.hexon.ui.ui.cards.BuildingCard
 import eric.bitria.hexon.ui.ui.cards.ResourceCard
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
@@ -29,28 +32,51 @@ fun UIRenderer(
     player: Player,
     phase: GamePhase,
     dices: Pair<Int, Int>,
-    clickHandler: ClickHandler
+    cardClickHandler: ClickHandler,
+    actionClickHandler: ClickHandler
 ) {
     val configuration = LocalConfiguration.current
     val localCardSize = minOf(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp) / 8f
 
     CompositionLocalProvider(LocalCardSize provides localCardSize) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center
+        ) {
+            // Temporal
             TopSpacerSection(Modifier.weight(1f))
 
             if (phase == GamePhase.ROLL_DICE) {
                 DiceSection(
                     dices = dices,
-                    onRollClick = { (clickHandler as? ClickHandler.NoParam)?.handler() },
+                    onRollClick = { (actionClickHandler as? ClickHandler.NoParam)?.handler() },
                     modifier = Modifier.weight(1f)
                 )
             } else {
-                MainGameContent(
-                    player = player,
-                    phase = phase,
-                    clickHandler = clickHandler,
-                    modifier = Modifier.weight(1f)
-                )
+                Column(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        CardsContent(
+                            player = player,
+                            phase = phase,
+                            cardClickHandler = cardClickHandler,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ActionContent(
+                            phase = phase,
+                            actionClickHandler = actionClickHandler,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
             }
         }
     }
@@ -58,10 +84,7 @@ fun UIRenderer(
 
 @Composable
 private fun TopSpacerSection(modifier: Modifier = Modifier) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.Top
-    ) { /* Empty spacer */ }
+    Row(modifier = modifier) { /* Empty spacer */ }
 }
 
 @Composable
@@ -80,67 +103,23 @@ private fun DiceSection(
 }
 
 @Composable
-private fun MainGameContent(
-    player: Player,
+private fun ActionContent(
     phase: GamePhase,
-    clickHandler: ClickHandler,
-    modifier: Modifier = Modifier
+    actionClickHandler: ClickHandler,
+    modifier: Modifier
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.Bottom
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            GameActionsSection(
-                player = player,
-                phase = phase,
-                clickHandler = clickHandler
-            )
-            ResourcesSection(
-                player = player,
-                clickHandler = clickHandler
-            )
-            Spacer(modifier = Modifier) // Bottom spacing
-        }
-    }
-}
-
-@Composable
-private fun GameActionsSection(
-    player: Player,
-    phase: GamePhase,
-    clickHandler: ClickHandler,
-    modifier: Modifier = Modifier
-) {
-    val buildings = GameActions.entries.filter { it.type == GameActions.Type.BUILD }.toTypedArray()
     val actions = GameActions.entries.filter { it.type == GameActions.Type.ACTION }.toTypedArray()
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.Bottom
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         CardsContainer(
-            modifier = Modifier.weight(1f),
-            cards = buildings
-        ) { building ->
-            ActionCard(
-                action = building,
-                onClick = { (clickHandler as? ClickHandler.OnAction)?.handler(building) },
-                enabled = player.hasBuildingResources(building.card) && (phase == GamePhase.PLAYER_TURN)
-            )
-        }
-
-        CardsContainer(
-            modifier = Modifier.weight(1f),
             cards = actions
         ) { action ->
             ActionCard(
                 action = action,
-                onClick = { (clickHandler as? ClickHandler.OnAction)?.handler(action) },
+                onClick = { (actionClickHandler as? ClickHandler.OnAction)?.handler(action) },
                 enabled = (phase == GamePhase.PLAYER_TURN)
             )
         }
@@ -148,21 +127,38 @@ private fun GameActionsSection(
 }
 
 @Composable
-private fun ResourcesSection(
+private fun CardsContent(
     player: Player,
-    clickHandler: ClickHandler,
-    modifier: Modifier = Modifier
+    phase: GamePhase,
+    cardClickHandler: ClickHandler,
+    modifier: Modifier
 ) {
     val resources = player.getDeckResources().filter { it.value > 0 }.keys.toTypedArray()
+    val buildings = Building.entries.filter { it != Building.NONE }.toTypedArray()
 
-    CardsContainer(
+    Column(
         modifier = modifier,
-        cards = resources
-    ) { resource ->
-        ResourceCard(
-            resource = resource,
-            count = player.getDeckResources()[resource] ?: 0,
-            onClick = { (clickHandler as? ClickHandler.OnResource)?.handler(resource) }
-        )
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        CardsContainer(
+            cards = buildings
+        ) { building ->
+            BuildingCard(
+                building = building,
+                onClick = { (cardClickHandler as? ClickHandler.OnBuilding)?.handler(building) },
+                enabled = player.hasBuildingResources(building) && (phase == GamePhase.PLAYER_TURN)
+            )
+        }
+        Spacer(modifier = Modifier.padding(8.dp))
+        CardsContainer(
+            cards = resources
+        ) { resource ->
+            ResourceCard(
+                enabled = true,
+                resource = resource,
+                count = player.getDeckResources()[resource] ?: 0,
+                onClick = { (cardClickHandler as? ClickHandler.OnResource)?.handler(resource) }
+            )
+        }
     }
 }
