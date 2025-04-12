@@ -1,5 +1,6 @@
 package eric.bitria.hexon.ui.ui
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,22 +9,27 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
+import eric.bitria.hexon.ui.icons.None
 import eric.bitria.hexon.ui.ui.cards.ActionCard
 import eric.bitria.hexon.ui.ui.cards.BuildingCard
 import eric.bitria.hexon.ui.ui.cards.ResourceCard
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
+import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
+import eric.bitria.hexon.view.utils.DeckType.PlayerDeck
 
 val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
@@ -32,8 +38,7 @@ fun UIRenderer(
     player: Player,
     phase: GamePhase,
     dices: Pair<Int, Int>,
-    cardClickHandler: ClickHandler,
-    actionClickHandler: ClickHandler
+    clickHandler: ClickHandler,
 ) {
     val configuration = LocalConfiguration.current
     val localCardSize = minOf(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp) / 8f
@@ -49,31 +54,31 @@ fun UIRenderer(
             if (phase == GamePhase.ROLL_DICE) {
                 DiceSection(
                     dices = dices,
-                    onRollClick = { (actionClickHandler as? ClickHandler.NoParam)?.handler() },
+                    onRollClick = { (clickHandler as? ClickHandler.NoParam)?.handler?.invoke() },
                     modifier = Modifier.weight(1f)
                 )
             } else {
                 Column(
                     modifier = Modifier
-                        .padding(16.dp)
+                        .padding(horizontal = 0.dp, vertical = 24.dp)
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
                         modifier = Modifier
-                            .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                            .fillMaxWidth()
                     ) {
                         CardsContent(
                             player = player,
                             phase = phase,
-                            cardClickHandler = cardClickHandler,
+                            clickHandler = clickHandler,
                             modifier = Modifier.weight(1f)
                         )
                         ActionContent(
                             phase = phase,
-                            actionClickHandler = actionClickHandler,
-                            modifier = Modifier.weight(1f)
+                            clickHandler = clickHandler,
+                            player = player,
+                            modifier = Modifier
                         )
                     }
                 }
@@ -105,22 +110,29 @@ private fun DiceSection(
 @Composable
 private fun ActionContent(
     phase: GamePhase,
-    actionClickHandler: ClickHandler,
-    modifier: Modifier
+    clickHandler: ClickHandler,
+    modifier: Modifier,
+    player: Player
 ) {
-    val actions = GameActions.entries.filter { it.type == GameActions.Type.ACTION }.toTypedArray()
+    val actions = GameActions.entries.filter { it.icon != Icons.None }.toTypedArray()
 
     Column(
         modifier = modifier,
-        verticalArrangement = Arrangement.SpaceBetween
+        horizontalAlignment = Alignment.End
     ) {
-        CardsContainer(
+        ActionsContainer(
             cards = actions
         ) { action ->
+            val isPhaseValid = phase == GamePhase.PLAYER_TURN || phase == GamePhase.PLAYER_TRADE
+            val isAcceptTrade = action == GameActions.ACCEPT_TRADE
+            val canAccept = if (isAcceptTrade) player.canAcceptTrade() else true
+
             ActionCard(
                 action = action,
-                onClick = { (actionClickHandler as? ClickHandler.OnAction)?.handler(action) },
-                enabled = (phase == GamePhase.PLAYER_TURN)
+                onClick = {
+                    (clickHandler as? ClickHandler.OnCard)?.handler(CardType.ActionCard(action))
+                },
+                enabled = isPhaseValid && canAccept
             )
         }
     }
@@ -130,7 +142,7 @@ private fun ActionContent(
 private fun CardsContent(
     player: Player,
     phase: GamePhase,
-    cardClickHandler: ClickHandler,
+    clickHandler: ClickHandler,
     modifier: Modifier
 ) {
     val resources = player.getDeckResources().filter { it.value > 0 }.keys.toTypedArray()
@@ -145,7 +157,11 @@ private fun CardsContent(
         ) { building ->
             BuildingCard(
                 building = building,
-                onClick = { (cardClickHandler as? ClickHandler.OnBuilding)?.handler(building) },
+                onClick = { (clickHandler as? ClickHandler.OnCard)?.handler(
+                    CardType.BuildingCard(
+                        building
+                    )
+                ) },
                 enabled = player.hasBuildingResources(building) && (phase == GamePhase.PLAYER_TURN)
             )
         }
@@ -157,7 +173,12 @@ private fun CardsContent(
                 enabled = true,
                 resource = resource,
                 count = player.getDeckResources()[resource] ?: 0,
-                onClick = { (cardClickHandler as? ClickHandler.OnResource)?.handler(resource) }
+                onClick = { (clickHandler as? ClickHandler.OnCard)?.handler(
+                    CardType.ResourceCard(
+                        resource,
+                        PlayerDeck(resource)
+                    )
+                ) }
             )
         }
     }

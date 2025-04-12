@@ -28,8 +28,7 @@ class MainActivity : ComponentActivity() {
                 UIRenderer(
                     player = viewModel.player,
                     phase = viewModel.phase,
-                    cardClickHandler = viewModel.cardClickHandler,
-                    actionClickHandler = viewModel.actionClickHandler,
+                    clickHandler = viewModel.cardClickHandler,
                     dices = viewModel.dices
                 )
             }

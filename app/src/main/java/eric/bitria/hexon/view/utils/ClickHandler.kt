@@ -2,9 +2,6 @@ package eric.bitria.hexon.view.utils
 
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
-import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.data.game.Resource
-import eric.bitria.hexon.view.enums.GameActions
 
 /**
  * Sealed class representing different types of click handlers for various game actions.
@@ -35,27 +32,10 @@ sealed class ClickHandler {
     data class OnEdge(val handler: (Edge) -> Unit) : ClickHandler()
 
 
-    /**
-     * Represents a click on a [Resource] or any generic object.
-     *
-     * This is used when the player clicks on a [Resource] (or any other object) in the game. This
-     * is more generic and can be applied to any type of resource or item that doesn't fall into
-     * the specific categories of [Vertex], [Edge], or [Building].
-     *
-     * @param handler A function that takes any object as a parameter and performs an action.
-     */
-    data class OnResource(val handler: (Resource) -> Unit) : ClickHandler()
-
-    data class OnBuilding(val handler: (Building) -> Unit) : ClickHandler()
-
-    data class OnAction(val handler: (GameActions) -> Unit) : ClickHandler()
+    data class OnCard(val handler: (CardType) -> Unit) : ClickHandler()
 
     /**
-     * Represents a click action that doesn't require any parameters.
-     *
-     * This is useful for actions where the player clicks but no data (such as a [Vertex] or [Edge])
-     * needs to be passed along with the event. For example, ending the player's turn or triggering
-     * a UI update.
+     * Represents a click action that doesn't require any parameters. (Used for the Dice Roll)
      *
      * @param handler A function that performs an action without any parameters.
      */

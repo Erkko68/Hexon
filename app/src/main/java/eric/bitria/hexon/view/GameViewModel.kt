@@ -10,12 +10,18 @@ import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.utils.BoardBuilder
+import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
-import eric.bitria.hexon.view.utils.ClickHandler.*
+import eric.bitria.hexon.view.utils.ClickHandler.NoParam
+import eric.bitria.hexon.view.utils.ClickHandler.None
+import eric.bitria.hexon.view.utils.ClickHandler.OnEdge
+import eric.bitria.hexon.view.utils.ClickHandler.OnVertex
+import eric.bitria.hexon.view.utils.DeckType
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -36,7 +42,6 @@ class GameViewModel : ViewModel() {
     )
 
     private var _cardClickHandler = mutableStateOf<ClickHandler>(None)
-    private var _actionClickHandler = mutableStateOf<ClickHandler>(None)
     private var _boardClickHandler = mutableStateOf<ClickHandler>(None)
     private var _dices: Pair<Int, Int> by mutableStateOf(_gameManager.getDices())
 
@@ -56,7 +61,6 @@ class GameViewModel : ViewModel() {
 
     // Click Handlers
     val cardClickHandler: ClickHandler get() = _cardClickHandler.value
-    val actionClickHandler: ClickHandler get() = _actionClickHandler.value
     val boardClickHandler: ClickHandler get() = _boardClickHandler.value
 
     // Board State
@@ -121,10 +125,10 @@ class GameViewModel : ViewModel() {
         _cardClickHandler.value = None
 
         // Set roll dice click
-        _actionClickHandler.value = NoParam {
+        _cardClickHandler.value = NoParam {
             _gameManager.rollDice()
             _dices = _gameManager.getDices()
-            _actionClickHandler.value = None // Reset onclick
+            _cardClickHandler.value = None // Reset onclick
             viewModelScope.launch {
                 delay(1500)
                 startTurn()
@@ -135,44 +139,11 @@ class GameViewModel : ViewModel() {
     private fun startTurn() {
         _gamePhase = GamePhase.PLAYER_TURN
 
-        _cardClickHandler.value = OnBuilding { building ->
-            when(building) {
-                Building.NONE -> {}
-                Building.SETTLEMENT -> {
-                    resetExposedEdges()
-                    exposeVertices()
-                    _boardClickHandler.value = OnVertex { vertex ->
-                        resetExposedVertices()
-                        _gameManager.placeSettlement(vertex)
-                    }
-                }
-                Building.ROAD -> {
-                    resetExposedVertices()
-                    exposeEdges()
-                    _boardClickHandler.value = OnEdge { edge ->
-                        resetExposedEdges()
-                        _gameManager.placeRoad(edge)
-                    }
-                }
-                Building.CITY -> TODO()
-            }
-        }
-
-        _actionClickHandler.value = OnAction { action ->
-            when (action) {
-                GameActions.OPEN_TRADE -> {
-                    _gamePhase = GamePhase.PLAYER_TRADE
-                }
-                GameActions.CLOSE_TRADE -> {
-                    _gamePhase = GamePhase.PLAYER_TURN
-                }
-                GameActions.ACCEPT_TRADE -> {
-                    _gamePhase = GamePhase.PLAYER_TURN
-                }
-                GameActions.END_TURN -> {
-                    endTurn()
-                }
-                else -> {}
+        _cardClickHandler.value = ClickHandler.OnCard { card ->
+            when (card) {
+                is CardType.BuildingCard -> handleBuilding(card.building)
+                is CardType.ActionCard -> handleAction(card.action)
+                is CardType.ResourceCard -> handleResource(card)
             }
         }
     }
@@ -206,6 +177,59 @@ class GameViewModel : ViewModel() {
         // Exit Initial Placement Round
         if (_gamePhase == GamePhase.INITIAL_PLACEMENT && _hasReversedTurnOrder){
             _gamePhase = GamePhase.ROLL_DICE
+        }
+    }
+
+    // Turn Methods
+
+    private fun handleBuilding(building: Building) {
+        when (building) {
+            Building.NONE -> {}
+            Building.SETTLEMENT -> {
+                resetExposedEdges()
+                exposeVertices()
+                _boardClickHandler.value = OnVertex { vertex ->
+                    resetExposedVertices()
+                    _gameManager.placeSettlement(vertex)
+                }
+            }
+            Building.ROAD -> {
+                resetExposedVertices()
+                exposeEdges()
+                _boardClickHandler.value = OnEdge { edge ->
+                    resetExposedEdges()
+                    _gameManager.placeRoad(edge)
+                }
+            }
+            Building.CITY -> TODO()
+        }
+    }
+
+    private fun handleAction(action: GameActions) {
+        when (action) {
+            GameActions.OPEN_CLOSE_TRADE -> {
+                if(_gamePhase == GamePhase.PLAYER_TURN) {
+                    _gamePhase = GamePhase.PLAYER_TRADE
+                } else {
+                    _gamePhase = GamePhase.PLAYER_TURN
+                }
+            }
+            GameActions.ACCEPT_TRADE -> _gamePhase = GamePhase.PLAYER_TURN
+            GameActions.END_TURN -> endTurn()
+            else -> {}
+        }
+    }
+
+    private fun handleResource(card: CardType.ResourceCard) {
+        when (card.deck) {
+            is DeckType.PlayerDeck -> {
+                if (_gamePhase == GamePhase.PLAYER_TRADE) {
+                    _currentPlayer.addResource(Resource.BRICK,5)
+                }
+            }
+            is DeckType.SystemDeck -> {
+                println("Selected ${card.resource} from System Deck")
+            }
         }
     }
 
