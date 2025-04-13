@@ -151,7 +151,7 @@ class Board(val radius: Int) {
 
     // Helper functions
 
-    private fun isWithinBoard(axialCoord: AxialCoord): Boolean {
+    fun isWithinBoard(axialCoord: AxialCoord): Boolean {
         return (abs(axialCoord.q) <= radius) &&
                 (abs(axialCoord.r) <= radius) &&
                 (abs(axialCoord.q + axialCoord.r) <= radius)

@@ -10,11 +10,11 @@ import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.utils.BoardBuilder
+import eric.bitria.hexon.view.utils.Bot
 import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 import eric.bitria.hexon.view.utils.ClickHandler.NoParam
@@ -30,7 +30,7 @@ class GameViewModel : ViewModel() {
     private val _board by mutableStateOf(BoardBuilder.createInitialBoard())
 
     private val _turnManager = TurnManager(
-        players = listOf(Player(Color(0xFFFF5722)), Player(Color.Blue)),
+        players = listOf(Player(Color(0xFFFF5722)), Player(Color.Blue,true)),
         onRotationComplete = ::onRotationComplete
     )
 
@@ -54,27 +54,31 @@ class GameViewModel : ViewModel() {
 
     /// Getters
 
-    val board: Board get() = _board
-    val player: Player get() = _currentPlayer
-    val phase: GamePhase get() = _gamePhase
-    val dices: Pair<Int, Int> get() = _dices
+        val board: Board get() = _board
+        val player: Player get() = _currentPlayer
+        val phase: GamePhase get() = _gamePhase
+        val dices: Pair<Int, Int> get() = _dices
 
-    // Click Handlers
-    val cardClickHandler: ClickHandler get() = _cardClickHandler.value
-    val boardClickHandler: ClickHandler get() = _boardClickHandler.value
+        // Click Handlers
+        val cardClickHandler: ClickHandler get() = _cardClickHandler.value
+        val boardClickHandler: ClickHandler get() = _boardClickHandler.value
 
-    // Board State
-    val availableVertices: List<Vertex> get() = _availableVertices
-    val availableEdges: List<Edge> get() = _availableEdges
-
-    init {
-        initialSettlementPlacement()
-    }
+        // Board State
+        val availableVertices: List<Vertex> get() = _availableVertices
+        val availableEdges: List<Edge> get() = _availableEdges
 
     // Initial Placement Round
 
+    init { initialSettlementPlacement() }
+
     private fun initialSettlementPlacement(){
         _gamePhase = GamePhase.INITIAL_PLACEMENT
+
+        if(_currentPlayer.isBot){
+            Bot.initialSettlementPlacement(_board,_currentPlayer)
+            return initialRoadPlacement()
+        }
+
         // Set board available vertices
         exposeInitialVertices()
         // Board click handler
@@ -87,6 +91,11 @@ class GameViewModel : ViewModel() {
 
     private fun initialRoadPlacement(){
         _gamePhase = GamePhase.INITIAL_PLACEMENT
+
+        if(_currentPlayer.isBot){
+            Bot.placeRoad(_board,_currentPlayer)
+            return endInitialPlacementTurn()
+        }
 
         // Set board available edges
         exposeEdges()
@@ -117,12 +126,22 @@ class GameViewModel : ViewModel() {
     // Normal Game Rounds
 
     private fun rollDices() {
-        _gamePhase = GamePhase.ROLL_DICE
-
         _currentPlayer = _turnManager.getCurrentPlayer()
         // Rest click handlers
         _boardClickHandler.value = None
         _cardClickHandler.value = None
+
+        if(_currentPlayer.isBot){
+            _gameManager.rollDice()
+            _dices = _gameManager.getDices()
+            viewModelScope.launch {
+                delay(1000)
+                startTurn()
+            }
+            return
+        }
+
+        _gamePhase = GamePhase.ROLL_DICE
 
         // Set roll dice click
         _cardClickHandler.value = NoParam {
@@ -130,7 +149,7 @@ class GameViewModel : ViewModel() {
             _dices = _gameManager.getDices()
             _cardClickHandler.value = None // Reset onclick
             viewModelScope.launch {
-                delay(1500)
+                delay(1000)
                 startTurn()
             }
         }
@@ -138,6 +157,12 @@ class GameViewModel : ViewModel() {
 
     private fun startTurn() {
         _gamePhase = GamePhase.PLAYER_TURN
+
+        if(_currentPlayer.isBot){
+            Bot.placeRoad(_board,_currentPlayer)
+            Bot.placeSettlement(_board,_currentPlayer)
+            return endTurn()
+        }
 
         _cardClickHandler.value = ClickHandler.OnCard { card ->
             when (card) {
@@ -162,7 +187,6 @@ class GameViewModel : ViewModel() {
     }
 
     private var _hasReversedTurnOrder = false
-
     /**
      * Called when all the players have used their turn.
      */
@@ -179,6 +203,7 @@ class GameViewModel : ViewModel() {
             _gamePhase = GamePhase.ROLL_DICE
         }
     }
+
 
     // Turn Methods
 
@@ -225,7 +250,6 @@ class GameViewModel : ViewModel() {
                 _currentPlayer.cancelTrade()
                 endTurn()
             }
-            else -> {}
         }
     }
 
@@ -242,26 +266,16 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    // Helper methods
+    // State Methods
 
-    private fun resetExposedEdges(){
-        _availableEdges = emptyList()
-    }
+    private fun resetExposedEdges(){ _availableEdges = emptyList() }
 
-    private fun resetExposedVertices(){
-        _availableVertices = emptyList()
-    }
+    private fun resetExposedVertices(){ _availableVertices = emptyList() }
 
-    private fun exposeInitialVertices(){
-        _availableVertices = _board.getVertices().filter { _board.canPlaceBuilding(it) }
-    }
+    private fun exposeInitialVertices(){ _availableVertices = _board.getVertices().filter { _board.canPlaceBuilding(it) } }
 
-    private fun exposeVertices(){
-        _availableVertices = _board.getVertices().filter { _board.canPlaceBuilding(it, _currentPlayer) }
-    }
+    private fun exposeVertices(){ _availableVertices = _board.getVertices().filter { _board.canPlaceBuilding(it, _currentPlayer) } }
 
-    private fun exposeEdges(){
-        _availableEdges = _board.getEdges().filter { _board.canPlaceRoad(it, _currentPlayer) }
-    }
+    private fun exposeEdges(){ _availableEdges = _board.getEdges().filter { _board.canPlaceRoad(it, _currentPlayer) } }
 
 }

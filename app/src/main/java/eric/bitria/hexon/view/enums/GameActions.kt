@@ -28,9 +28,5 @@ enum class GameActions(
     ACCEPT_TRADE(
         color = Color(0xFF388E3C),
         icon = Icons.CashOk,
-    ),
-    ROLL_DICES(
-        color = Color.Transparent,
-        icon = Icons.None,
     )
 }

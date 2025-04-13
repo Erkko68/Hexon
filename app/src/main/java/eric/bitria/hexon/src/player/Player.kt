@@ -4,18 +4,30 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import eric.bitria.hexon.src.board.tile.Edge
+import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 
 class Player(
-    val color: Color
+    val color: Color,
+    val isBot: Boolean = false
 ) {
     private var _victoryPoints by mutableIntStateOf(0)
     private val deck: Deck = Deck()
     private val shop: Shop = Shop(deck)
 
+    private val edges: MutableList<Edge> = mutableListOf();
+    private val vertices: MutableList<Vertex> = mutableListOf();
+
     fun getVictoryPoints(): Int = _victoryPoints
     fun setVictoryPoints(points: Int) {_victoryPoints = points}
+
+    fun getEdges(): List<Edge> = edges
+    fun getVertices(): List<Vertex> = vertices
+
+    fun addEdge(edge: Edge) { edges.add(edge) }
+    fun addVertex(vertex: Vertex) { vertices.add(vertex) }
 
     /**
      * Adds a resource to the player's deck.
