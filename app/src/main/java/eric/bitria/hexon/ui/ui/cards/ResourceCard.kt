@@ -4,9 +4,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -17,6 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import eric.bitria.hexon.src.data.game.Resource
@@ -26,6 +28,7 @@ import eric.bitria.hexon.ui.utils.Color.calculateBorderColor
 fun ResourceCard(
     resource: Resource,
     count: Int,
+    selected: Int = 0,
     onClick: () -> Unit = {},
     enabled: Boolean = true
 ) {
@@ -49,16 +52,27 @@ fun ResourceCard(
                 .padding(vertical = 4.dp, horizontal = 8.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .wrapContentSize()
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "$count",
+                    textAlign = TextAlign.Start,
+                    text = "${count - selected}",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                 )
+
+                if (selected > 0) {
+                    Text(
+                        textAlign = TextAlign.End,
+                        text = "$selected",
+                        color = Color.Red,
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
             }
             Box(
                 modifier = Modifier

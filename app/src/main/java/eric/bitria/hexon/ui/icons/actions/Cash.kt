@@ -1,4 +1,4 @@
-package eric.bitria.hexon.ui.icons
+package eric.bitria.hexon.ui.icons.actions
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import eric.bitria.hexon.ui.icons.dice._2
+import kotlin.Unit
 
 val Icons.Cash: ImageVector
     get() {

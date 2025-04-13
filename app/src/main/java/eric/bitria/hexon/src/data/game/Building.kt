@@ -20,17 +20,17 @@ enum class Building(
         color = Color.Transparent,
         icon = Icons.None
     ),
-    SETTLEMENT(
-        recipe = mapOf(Resource.WOOD to 1, Resource.BRICK to 1, Resource.WHEAT to 1, Resource.SHEEP to 1),
-        value = 1,
-        color = Color(0xFF6D4C41),
-        icon = Icons.House
-    ),
     ROAD(
         recipe = mapOf(Resource.WOOD to 1, Resource.BRICK to 1),
         value = 0,
         color = Color(0xFF757575),
         icon = Icons.Trail
+    ),
+    SETTLEMENT(
+        recipe = mapOf(Resource.WOOD to 1, Resource.BRICK to 1, Resource.WHEAT to 1, Resource.SHEEP to 1),
+        value = 1,
+        color = Color(0xFF6D4C41),
+        icon = Icons.House
     ),
     CITY(
         recipe = mapOf(Resource.WHEAT to 2, Resource.ORE to 3),

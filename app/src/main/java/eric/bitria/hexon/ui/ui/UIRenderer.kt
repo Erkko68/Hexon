@@ -1,6 +1,5 @@
 package eric.bitria.hexon.ui.ui
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,11 +14,11 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.icons.None
 import eric.bitria.hexon.ui.ui.cards.ActionCard
@@ -30,6 +29,7 @@ import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 import eric.bitria.hexon.view.utils.DeckType.PlayerDeck
+import eric.bitria.hexon.view.utils.DeckType.SystemDeck
 
 val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
@@ -114,29 +114,40 @@ private fun ActionContent(
     modifier: Modifier,
     player: Player
 ) {
-    val actions = GameActions.entries.filter { it.icon != Icons.None }.toTypedArray()
+    val availableActions = when (phase) {
+        GamePhase.PLAYER_TRADE -> listOf(
+            GameActions.END_TURN,
+            GameActions.CLOSE_TRADE,
+            GameActions.ACCEPT_TRADE
+        ).sorted().toTypedArray()
+        else -> listOf(
+            GameActions.END_TURN,
+            GameActions.OPEN_TRADE
+        ).sorted().toTypedArray()
+    }
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.End
     ) {
-        ActionsContainer(
-            cards = actions
-        ) { action ->
-            val isPhaseValid = phase == GamePhase.PLAYER_TURN || phase == GamePhase.PLAYER_TRADE
-            val isAcceptTrade = action == GameActions.ACCEPT_TRADE
-            val canAccept = if (isAcceptTrade) player.canAcceptTrade() else true
+        ActionsContainer(cards = availableActions) { action ->
+            val isActionAllowedPhase = phase in listOf(GamePhase.PLAYER_TURN, GamePhase.PLAYER_TRADE)
+            val canPerformAction = if (action == GameActions.ACCEPT_TRADE) {
+                player.canAcceptTrade()
+            } else true
 
             ActionCard(
                 action = action,
                 onClick = {
-                    (clickHandler as? ClickHandler.OnCard)?.handler(CardType.ActionCard(action))
+                    (clickHandler as? ClickHandler.OnCard)
+                        ?.handler(CardType.ActionCard(action))
                 },
-                enabled = isPhaseValid && canAccept
+                enabled = isActionAllowedPhase && canPerformAction
             )
         }
     }
 }
+
 
 @Composable
 private fun CardsContent(
@@ -145,32 +156,52 @@ private fun CardsContent(
     clickHandler: ClickHandler,
     modifier: Modifier
 ) {
-    val resources = player.getDeckResources().filter { it.value > 0 }.keys.toTypedArray()
-    val buildings = Building.entries.filter { it != Building.NONE }.toTypedArray()
+    val resources = player.getDeckResources().filter { it.value > 0 }.keys.sorted().toTypedArray()
+    val allResources = Resource.entries.filter { it != Resource.NONE }.sorted().toTypedArray()
+    val buildings = Building.entries.filter { it != Building.NONE }.sorted().toTypedArray()
 
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        CardsContainer(
-            cards = buildings
-        ) { building ->
-            BuildingCard(
-                building = building,
-                onClick = { (clickHandler as? ClickHandler.OnCard)?.handler(
-                    CardType.BuildingCard(
-                        building
-                    )
-                ) },
-                enabled = player.hasBuildingResources(building) && (phase == GamePhase.PLAYER_TURN)
-            )
+        if (phase == GamePhase.PLAYER_TRADE){
+            CardsContainer(
+                cards = allResources
+            ) { resource ->
+                ResourceCard(
+                    resource = resource,
+                    count = player.getSystemTradeDeckResources()[resource] ?: 0,
+                    onClick = { (clickHandler as? ClickHandler.OnCard)?.handler(
+                        CardType.ResourceCard(
+                            resource,
+                            SystemDeck(resource)
+                        )
+                    ) }
+                )
+            }
+        } else {
+            CardsContainer(
+                cards = buildings
+            ) { building ->
+                BuildingCard(
+                    building = building,
+                    onClick = { (clickHandler as? ClickHandler.OnCard)?.handler(
+                        CardType.BuildingCard(
+                            building
+                        )
+                    ) },
+                    enabled = player.hasBuildingResources(building) && (phase == GamePhase.PLAYER_TURN)
+                )
+            }
         }
         Spacer(modifier = Modifier.padding(8.dp))
+
         CardsContainer(
             cards = resources
         ) { resource ->
             ResourceCard(
                 enabled = true,
+                selected = player.getPlayerTradeDeckResources()[resource] ?: 0,
                 resource = resource,
                 count = player.getDeckResources()[resource] ?: 0,
                 onClick = { (clickHandler as? ClickHandler.OnCard)?.handler(

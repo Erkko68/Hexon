@@ -2,15 +2,10 @@ package eric.bitria.hexon.src.player
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateMapOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
-import eric.bitria.hexon.src.exceptions.InvalidBuildingException
-import eric.bitria.hexon.src.exceptions.InvalidResourceException
-import eric.bitria.hexon.view.enums.GameActions
 
 class Player(
     val color: Color
@@ -47,7 +42,14 @@ class Player(
         return deck.getResources()
     }
 
-    // Trading functions
+    /// Trading functions
+
+    // Getters
+
+    fun getSystemTradeDeckResources(): Map<Resource, Int> { return shop.getSystemTradeDeckResources() }
+
+    fun getPlayerTradeDeckResources(): Map<Resource, Int> { return shop.getPlayerTradeDeckResources() }
+
 
     fun selectTradingResource(resource: Resource){
         shop.selectTradingResource(resource)

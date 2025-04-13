@@ -1,4 +1,4 @@
-package eric.bitria.hexon.ui.icons.buildings
+package eric.bitria.hexon.ui.icons.actions
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -17,55 +17,40 @@ import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-val Icons.Castle: ImageVector
+val Icons.Skip: ImageVector
     get() {
-        if (_castle != null) {
-            return _castle!!
+        if (_skip != null) {
+            return _skip!!
         }
-        _castle = Builder(name = "Castle", defaultWidth = 512.0.dp, defaultHeight = 512.0.dp,
+        _skip = Builder(name = "Skip", defaultWidth = 800.0.dp, defaultHeight = 800.0.dp,
                 viewportWidth = 16.0f, viewportHeight = 16.0f).apply {
             path(fill = SolidColor(Color(0xFF000000)), stroke = null, strokeLineWidth = 0.0f,
                     strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
                     pathFillType = NonZero) {
-                moveTo(3.0f, 1.0f)
-                verticalLineTo(4.0f)
-                lineTo(4.667f, 5.667f)
-                lineTo(4.2f, 8.0f)
+                moveTo(4.0f, 15.0f)
                 horizontalLineTo(2.0f)
-                verticalLineTo(6.0f)
-                horizontalLineTo(0.0f)
-                verticalLineTo(15.0f)
-                horizontalLineTo(16.0f)
-                verticalLineTo(6.0f)
+                verticalLineTo(1.0f)
+                horizontalLineTo(4.0f)
+                lineTo(10.0f, 7.0f)
+                verticalLineTo(1.0f)
                 horizontalLineTo(14.0f)
-                verticalLineTo(8.0f)
-                horizontalLineTo(11.8f)
-                lineTo(11.333f, 5.667f)
-                lineTo(13.0f, 4.0f)
-                verticalLineTo(1.0f)
-                horizontalLineTo(11.0f)
-                verticalLineTo(3.0f)
-                horizontalLineTo(9.0f)
-                verticalLineTo(1.0f)
-                horizontalLineTo(7.0f)
-                verticalLineTo(3.0f)
-                horizontalLineTo(5.0f)
-                verticalLineTo(1.0f)
-                horizontalLineTo(3.0f)
+                verticalLineTo(15.0f)
+                horizontalLineTo(10.0f)
+                verticalLineTo(9.0f)
+                lineTo(4.0f, 15.0f)
                 close()
             }
         }
         .build()
-        return _castle!!
+        return _skip!!
     }
 
-private var _castle: ImageVector? = null
-
+private var _skip: ImageVector? = null
 
 @Preview
 @Composable
 private fun Preview() {
     Box(modifier = Modifier.padding(12.dp)) {
-        Image(imageVector = Icons.Castle, contentDescription = "")
+        Image(imageVector = Icons.Skip, contentDescription = "")
     }
 }

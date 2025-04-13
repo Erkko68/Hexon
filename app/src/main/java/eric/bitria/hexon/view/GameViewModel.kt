@@ -206,16 +206,25 @@ class GameViewModel : ViewModel() {
     }
 
     private fun handleAction(action: GameActions) {
+        resetExposedEdges()
+        resetExposedVertices()
         when (action) {
-            GameActions.OPEN_CLOSE_TRADE -> {
-                if(_gamePhase == GamePhase.PLAYER_TURN) {
-                    _gamePhase = GamePhase.PLAYER_TRADE
-                } else {
-                    _gamePhase = GamePhase.PLAYER_TURN
-                }
+            GameActions.OPEN_TRADE -> {
+                _gamePhase = GamePhase.PLAYER_TRADE
             }
-            GameActions.ACCEPT_TRADE -> _gamePhase = GamePhase.PLAYER_TURN
-            GameActions.END_TURN -> endTurn()
+            GameActions.CLOSE_TRADE -> {
+                _currentPlayer.cancelTrade()
+                _gamePhase = GamePhase.PLAYER_TURN
+            }
+            GameActions.ACCEPT_TRADE -> {
+                _currentPlayer.acceptTrade()
+                _gamePhase = GamePhase.PLAYER_TURN
+            }
+            GameActions.END_TURN -> {
+                // If player was trading cancel trade
+                _currentPlayer.cancelTrade()
+                endTurn()
+            }
             else -> {}
         }
     }
@@ -224,11 +233,11 @@ class GameViewModel : ViewModel() {
         when (card.deck) {
             is DeckType.PlayerDeck -> {
                 if (_gamePhase == GamePhase.PLAYER_TRADE) {
-                    _currentPlayer.addResource(Resource.BRICK,5)
+                    _currentPlayer.addTradingResource(card.resource)
                 }
             }
             is DeckType.SystemDeck -> {
-                println("Selected ${card.resource} from System Deck")
+                _currentPlayer.selectTradingResource(card.resource)
             }
         }
     }

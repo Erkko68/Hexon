@@ -11,13 +11,27 @@ class Shop(
     private val playerTemporalDeck = Deck()
     private val shopTemporalDeck = Deck()
 
+    fun getSystemTradeDeckResources(): Map<Resource, Int> {
+        return shopTemporalDeck.getResources()
+    }
+
+    fun getPlayerTradeDeckResources(): Map<Resource, Int> {
+        return playerTemporalDeck.getResources()
+    }
+
     fun selectTradingResource(resource: Resource){
         shopTemporalDeck.addResource(resource,1)
     }
 
-    fun addTradingResource(resource: Resource){
-        playerTemporalDeck.addResource(resource,1)
+    fun addTradingResource(resource: Resource) {
+        val available = playerDeck.getResources()[resource] ?: 0
+        val alreadySelected = playerTemporalDeck.getResources()[resource] ?: 0
+
+        if (alreadySelected < available) {
+            playerTemporalDeck.addResource(resource, 1)
+        }
     }
+
 
     fun canAcceptTrade(): Boolean{
         // Each traded card costs 4 cards from the player's deck
