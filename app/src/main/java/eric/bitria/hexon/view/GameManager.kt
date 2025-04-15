@@ -49,6 +49,12 @@ class GameManager(
         currentPlayer.removeBuildingResources(Building.SETTLEMENT)
     }
 
+    fun placeCity(item: Vertex) {
+        board.placeBuilding(item,Building.CITY, currentPlayer)
+        // Remove deck resources
+        currentPlayer.removeBuildingResources(Building.CITY)
+    }
+
      fun placeRoad(item: Edge) {
         board.placeRoad(item, currentPlayer)
         currentPlayer.removeBuildingResources(Building.ROAD)

@@ -119,6 +119,14 @@ class Board(val radius: Int) {
 
     // Checks
 
+    fun canUpgradeBuilding(vertex: Vertex, player: Player): Boolean {
+        return if(vertex.hasBuilding()){
+            vertex.player == player
+        } else {
+            false
+        }
+    }
+
     fun canPlaceBuilding(vertex: Vertex, player: Player): Boolean {
         // Condition 1: Vertex must not have a building
         // Condition 2: No adjacent vertex has a building

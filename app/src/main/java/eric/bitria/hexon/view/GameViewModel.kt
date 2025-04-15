@@ -30,7 +30,7 @@ class GameViewModel : ViewModel() {
     private val _board by mutableStateOf(BoardBuilder.createInitialBoard())
 
     private val _turnManager = TurnManager(
-        players = listOf(Player(Color(0xFFFF5722)), Player(Color.Blue,true)),
+        players = listOf(Player(Color(0xFFFF5722)), Player(Color.Blue,true), Player(Color.Green,true)),
         onRotationComplete = ::onRotationComplete
     )
 
@@ -52,7 +52,7 @@ class GameViewModel : ViewModel() {
     // Game State
     private var _gamePhase by mutableStateOf(GamePhase.NONE)
 
-    /// Getters
+    // Getters
 
         val board: Board get() = _board
         val player: Player get() = _currentPlayer
@@ -138,19 +138,18 @@ class GameViewModel : ViewModel() {
                 delay(1000)
                 startTurn()
             }
-            return
-        }
+        } else {
+            _gamePhase = GamePhase.ROLL_DICE
 
-        _gamePhase = GamePhase.ROLL_DICE
-
-        // Set roll dice click
-        _cardClickHandler.value = NoParam {
-            _gameManager.rollDice()
-            _dices = _gameManager.getDices()
-            _cardClickHandler.value = None // Reset onclick
-            viewModelScope.launch {
-                delay(1000)
-                startTurn()
+            // Set roll dice click
+            _cardClickHandler.value = NoParam {
+                _gameManager.rollDice()
+                _dices = _gameManager.getDices()
+                _cardClickHandler.value = None // Reset onclick
+                viewModelScope.launch {
+                    delay(1000)
+                    startTurn()
+                }
             }
         }
     }
@@ -173,9 +172,6 @@ class GameViewModel : ViewModel() {
         }
     }
 
-    /**
-     * Called when a player ends their turn.
-     */
     fun endTurn() {
         _gamePhase = GamePhase.END_TURN
 
@@ -185,6 +181,8 @@ class GameViewModel : ViewModel() {
 
         rollDices()
     }
+
+    // Turn Methods
 
     private var _hasReversedTurnOrder = false
     /**
@@ -203,9 +201,6 @@ class GameViewModel : ViewModel() {
             _gamePhase = GamePhase.ROLL_DICE
         }
     }
-
-
-    // Turn Methods
 
     private fun handleBuilding(building: Building) {
         when (building) {
@@ -226,7 +221,14 @@ class GameViewModel : ViewModel() {
                     _gameManager.placeRoad(edge)
                 }
             }
-            Building.CITY -> TODO()
+            Building.CITY -> {
+                resetExposedEdges()
+                exposeUpgradeableVertices()
+                _boardClickHandler.value = OnVertex { vertex ->
+                    resetExposedVertices()
+                    _gameManager.placeCity(vertex)
+                }
+            }
         }
     }
 
@@ -275,6 +277,8 @@ class GameViewModel : ViewModel() {
     private fun exposeInitialVertices(){ _availableVertices = _board.getVertices().filter { _board.canPlaceBuilding(it) } }
 
     private fun exposeVertices(){ _availableVertices = _board.getVertices().filter { _board.canPlaceBuilding(it, _currentPlayer) } }
+
+    private fun exposeUpgradeableVertices(){ _availableVertices = _board.getVertices().filter { _board.canUpgradeBuilding(it, _currentPlayer) } }
 
     private fun exposeEdges(){ _availableEdges = _board.getEdges().filter { _board.canPlaceRoad(it, _currentPlayer) } }
 
