@@ -4,9 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -26,7 +24,6 @@ class MainActivity : ComponentActivity() {
         setContent {
             HexonTheme {
                 val navController = rememberNavController()
-                val context = LocalContext.current
 
                 NavHost(navController = navController, startDestination = Screen.Launch.route) {
                     composable(Screen.Launch.route) {

@@ -212,20 +212,15 @@ class GameViewModel : ViewModel() {
 
     // Turn Methods
 
-    private var _hasReversedTurnOrder = false
-    /**
-     * Called when all the players have used their turn.
-     */
     private fun onRotationComplete(){
 
-        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && !_hasReversedTurnOrder){
-            _hasReversedTurnOrder = true
+        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && !_turnManager.hasReversedTurnOrder()){
             _turnManager.reverseTurnOrder()
             return
         }
 
         // Exit Initial Placement Round
-        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && _hasReversedTurnOrder){
+        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && _turnManager.hasReversedTurnOrder()){
             _gamePhase = GamePhase.ROLL_DICE
         }
     }

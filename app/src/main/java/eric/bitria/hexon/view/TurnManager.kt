@@ -6,7 +6,10 @@ data class TurnManager(
     private val players: List<Player>,
     private val onRotationComplete: (() -> Unit) = {}
 ) {
+    private var _hasReversedTurnOrder = false
     private var currentTurnIndex = 0
+
+    fun hasReversedTurnOrder() = _hasReversedTurnOrder
 
     // Changed to var so we can reverse it
     var turnOrder: List<Player> = players.shuffled()
@@ -30,6 +33,7 @@ data class TurnManager(
      */
     fun reverseTurnOrder() {
         turnOrder = turnOrder.reversed()
+        _hasReversedTurnOrder = true
         currentTurnIndex = 0
     }
 }

@@ -119,7 +119,10 @@ private fun TopSpacerSection(modifier: Modifier = Modifier, timeLeft: Long = 0) 
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            Text(text = formattedTime)
+            Text(
+                text = formattedTime,
+                color = Color.Black
+            )
         }
     }
 }
