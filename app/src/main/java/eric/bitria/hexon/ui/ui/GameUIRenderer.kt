@@ -1,5 +1,7 @@
 package eric.bitria.hexon.ui.ui
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,19 +10,20 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.ui.icons.None
 import eric.bitria.hexon.ui.ui.cards.ActionCard
 import eric.bitria.hexon.ui.ui.cards.BuildingCard
 import eric.bitria.hexon.ui.ui.cards.ResourceCard
@@ -34,11 +37,12 @@ import eric.bitria.hexon.view.utils.DeckType.SystemDeck
 val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
 @Composable
-fun UIRenderer(
+fun GameUIRenderer(
     player: Player,
     phase: GamePhase,
     dices: Pair<Int, Int>,
     clickHandler: ClickHandler,
+    timeLeft: Long
 ) {
     val configuration = LocalConfiguration.current
     val localCardSize = minOf(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp) / 8f
@@ -49,7 +53,10 @@ fun UIRenderer(
             verticalArrangement = Arrangement.Center
         ) {
             // Temporal
-            TopSpacerSection(Modifier.weight(1f))
+            TopSpacerSection(
+                timeLeft = timeLeft,
+                modifier= Modifier.weight(1f)
+            )
 
             if (phase == GamePhase.ROLL_DICE) {
                 DiceSection(
@@ -88,9 +95,35 @@ fun UIRenderer(
 }
 
 @Composable
-private fun TopSpacerSection(modifier: Modifier = Modifier) {
-    Row(modifier = modifier) { /* Empty spacer */ }
+private fun TopSpacerSection(modifier: Modifier = Modifier, timeLeft: Long = 0) {
+    val minutes = timeLeft / 60
+    val seconds = timeLeft % 60
+    val formattedTime = "$minutes:${seconds}"
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.TopEnd
+    ) {
+        Box(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = Color.Gray,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .background(
+                    color = Color.White,
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            Text(text = formattedTime)
+        }
+    }
 }
+
 
 @Composable
 private fun DiceSection(

@@ -4,10 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import eric.bitria.hexon.ui.board.BoardRenderer
-import eric.bitria.hexon.ui.board.ZoomContainer
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import eric.bitria.hexon.screen.GameScreen
+import eric.bitria.hexon.screen.LaunchScreen
+import eric.bitria.hexon.screen.Screen
+import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.theme.HexonTheme
-import eric.bitria.hexon.ui.ui.UIRenderer
 import eric.bitria.hexon.view.GameViewModel
 
 class MainActivity : ComponentActivity() {
@@ -15,22 +22,32 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         setContent {
             HexonTheme {
-                ZoomContainer(viewModel.board) {
-                    BoardRenderer(
-                        board = viewModel.board,
-                        vertices = viewModel.availableVertices,
-                        edges = viewModel.availableEdges,
-                        clickHandler = viewModel.boardClickHandler
-                    )
+                val navController = rememberNavController()
+                val context = LocalContext.current
+
+                NavHost(navController = navController, startDestination = Screen.Launch.route) {
+                    composable(Screen.Launch.route) {
+                        LaunchScreen(
+                            onStartGame = {
+                                navController.navigate(Screen.Game.route)
+                                viewModel.startNewGame(
+                                    listOf(Player(Color(0xFFFF5722)), Player(Color.Blue,true), Player(Color.Green,true))
+                                )
+                            },
+                            onExit = { finish() }
+                        )
+                    }
+                    composable(Screen.Game.route) {
+                        GameScreen(
+                            viewModel = viewModel,
+                            onExitToMenu = { navController.popBackStack() }
+                        )
+                    }
+
                 }
-                UIRenderer(
-                    player = viewModel.player,
-                    phase = viewModel.phase,
-                    clickHandler = viewModel.cardClickHandler,
-                    dices = viewModel.dices
-                )
             }
         }
     }

@@ -1,6 +1,7 @@
 package eric.bitria.hexon.view
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -22,54 +23,57 @@ import eric.bitria.hexon.view.utils.ClickHandler.None
 import eric.bitria.hexon.view.utils.ClickHandler.OnEdge
 import eric.bitria.hexon.view.utils.ClickHandler.OnVertex
 import eric.bitria.hexon.view.utils.DeckType
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
 
-    private val _board by mutableStateOf(BoardBuilder.createInitialBoard())
-
-    private val _turnManager = TurnManager(
-        players = listOf(Player(Color(0xFFFF5722)), Player(Color.Blue,true), Player(Color.Green,true)),
-        onRotationComplete = ::onRotationComplete
-    )
-
-    private var _currentPlayer by mutableStateOf(_turnManager.getCurrentPlayer())
-
-    private val _gameManager = GameManager(
-        board = _board,
-        currentPlayer = _currentPlayer
-    )
-
+    private var _board by mutableStateOf(Board(2))
+    private var _turnManager: TurnManager = TurnManager(emptyList())
+    private var _currentPlayer by mutableStateOf(Player(Color.Transparent))
+    private var _gameManager: GameManager = GameManager(_board, _currentPlayer)
     private var _cardClickHandler = mutableStateOf<ClickHandler>(None)
     private var _boardClickHandler = mutableStateOf<ClickHandler>(None)
-    private var _dices: Pair<Int, Int> by mutableStateOf(_gameManager.getDices())
-
-    // Board Buttons
+    private var _gamePhase by mutableStateOf(GamePhase.NONE)
     private var _availableVertices by mutableStateOf(emptyList<Vertex>())
     private var _availableEdges by mutableStateOf(emptyList<Edge>())
 
-    // Game State
-    private var _gamePhase by mutableStateOf(GamePhase.NONE)
+    // Timer
+    private var timerJob: Job? = null
+    private var turnTimeMillis = 30_000L // 30 seconds
+
+    private val _timeLeft = mutableLongStateOf(turnTimeMillis / 1000)
 
     // Getters
+    val board: Board get() = _board
+    val player: Player get() = _currentPlayer
+    val phase: GamePhase get() = _gamePhase
+    val dices: Pair<Int, Int> get() = _gameManager.getDices()
+    val timeLeft: Long get() = _timeLeft.longValue
+    val cardClickHandler: ClickHandler get() = _cardClickHandler.value
+    val boardClickHandler: ClickHandler get() = _boardClickHandler.value
 
-        val board: Board get() = _board
-        val player: Player get() = _currentPlayer
-        val phase: GamePhase get() = _gamePhase
-        val dices: Pair<Int, Int> get() = _dices
-
-        // Click Handlers
-        val cardClickHandler: ClickHandler get() = _cardClickHandler.value
-        val boardClickHandler: ClickHandler get() = _boardClickHandler.value
-
-        // Board State
-        val availableVertices: List<Vertex> get() = _availableVertices
-        val availableEdges: List<Edge> get() = _availableEdges
+    // Board State
+    val availableVertices: List<Vertex> get() = _availableVertices
+    val availableEdges: List<Edge> get() = _availableEdges
 
     // Initial Placement Round
+    fun startNewGame(players: List<Player>, timer: Long = 30_000L) {
+        _board = BoardBuilder.createInitialBoard()
+        _turnManager = TurnManager(players, onRotationComplete = ::onRotationComplete)
+        _currentPlayer = _turnManager.getCurrentPlayer()
+        _gameManager = GameManager(board = _board, currentPlayer = _currentPlayer)
+        turnTimeMillis = timer
 
-    init { initialSettlementPlacement() }
+        _availableVertices = emptyList()
+        _availableEdges = emptyList()
+        _cardClickHandler.value = None
+        _boardClickHandler.value = None
+
+        initialSettlementPlacement()
+    }
 
     private fun initialSettlementPlacement(){
         _gamePhase = GamePhase.INITIAL_PLACEMENT
@@ -126,6 +130,8 @@ class GameViewModel : ViewModel() {
     // Normal Game Rounds
 
     private fun rollDices() {
+        _gamePhase = GamePhase.ROLL_DICE
+
         _currentPlayer = _turnManager.getCurrentPlayer()
         // Rest click handlers
         _boardClickHandler.value = None
@@ -133,19 +139,24 @@ class GameViewModel : ViewModel() {
 
         if(_currentPlayer.isBot){
             _gameManager.rollDice()
-            _dices = _gameManager.getDices()
             viewModelScope.launch {
-                delay(1000)
+                delay(2000)
                 startTurn()
             }
         } else {
-            _gamePhase = GamePhase.ROLL_DICE
+            resetTurnTimer {
+                _gameManager.rollDice()
+                viewModelScope.launch {
+                    delay(1000)
+                    startTurn()
+                }
+            }
 
             // Set roll dice click
             _cardClickHandler.value = NoParam {
                 _gameManager.rollDice()
-                _dices = _gameManager.getDices()
                 _cardClickHandler.value = None // Reset onclick
+                stopTimer()
                 viewModelScope.launch {
                     delay(1000)
                     startTurn()
@@ -160,19 +171,36 @@ class GameViewModel : ViewModel() {
         if(_currentPlayer.isBot){
             Bot.placeRoad(_board,_currentPlayer)
             Bot.placeSettlement(_board,_currentPlayer)
-            return endTurn()
-        }
+            viewModelScope.launch {
+                delay(2000)
+                endTurn()
+            }
+        } else {
 
-        _cardClickHandler.value = ClickHandler.OnCard { card ->
-            when (card) {
-                is CardType.BuildingCard -> handleBuilding(card.building)
-                is CardType.ActionCard -> handleAction(card.action)
-                is CardType.ResourceCard -> handleResource(card)
+            resetTurnTimer {
+                endTurn()
+            }
+
+            _cardClickHandler.value = ClickHandler.OnCard { card ->
+                when (card) {
+                    is CardType.BuildingCard -> handleBuilding(card.building)
+                    is CardType.ActionCard -> handleAction(card.action)
+                    is CardType.ResourceCard -> handleResource(card)
+                }
             }
         }
     }
 
     fun endTurn() {
+        // Cleanup
+        stopTimer()
+        _currentPlayer.cancelTrade()
+        _boardClickHandler.value = None
+        _cardClickHandler.value = None
+        resetExposedEdges()
+        resetExposedVertices()
+
+        // Next Phase
         _gamePhase = GamePhase.END_TURN
 
         _turnManager.nextTurn()
@@ -248,8 +276,6 @@ class GameViewModel : ViewModel() {
                 _gamePhase = GamePhase.PLAYER_TURN
             }
             GameActions.END_TURN -> {
-                // If player was trading cancel trade
-                _currentPlayer.cancelTrade()
                 endTurn()
             }
         }
@@ -282,4 +308,30 @@ class GameViewModel : ViewModel() {
 
     private fun exposeEdges(){ _availableEdges = _board.getEdges().filter { _board.canPlaceRoad(it, _currentPlayer) } }
 
+    // Timer
+
+    private fun resetTurnTimer(onTimeExpired: () -> Unit) {
+        timerJob?.cancel() // cancel if running
+
+        timerJob = viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            while (isActive) {
+                val elapsed = System.currentTimeMillis() - startTime
+                val remaining = turnTimeMillis - elapsed
+
+                if (remaining <= 0) {
+                    _timeLeft.longValue = 0
+                    onTimeExpired()
+                    break
+                } else {
+                    _timeLeft.longValue = remaining / 1000
+                    delay(1000)
+                }
+            }
+        }
+    }
+
+    private fun stopTimer() {
+        timerJob?.cancel()
+    }
 }

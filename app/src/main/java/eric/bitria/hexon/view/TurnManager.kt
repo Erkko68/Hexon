@@ -3,8 +3,8 @@ package eric.bitria.hexon.view
 import eric.bitria.hexon.src.player.Player
 
 data class TurnManager(
-    val players: List<Player>,
-    val onRotationComplete: (() -> Unit) = {}
+    private val players: List<Player>,
+    private val onRotationComplete: (() -> Unit) = {}
 ) {
     private var currentTurnIndex = 0
 
