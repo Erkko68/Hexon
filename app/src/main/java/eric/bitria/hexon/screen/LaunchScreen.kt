@@ -15,7 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LaunchScreen(onStartGame: () -> Unit, onExit: () -> Unit) {
+fun LaunchScreen(onStartGame: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -27,10 +27,6 @@ fun LaunchScreen(onStartGame: () -> Unit, onExit: () -> Unit) {
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onStartGame) {
             Text("Start Game")
-        }
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onExit) {
-            Text("Exit")
         }
     }
 }

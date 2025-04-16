@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -53,9 +54,10 @@ fun GameUIRenderer(
             verticalArrangement = Arrangement.Center
         ) {
             // Temporal
-            TopSpacerSection(
+            InfoSection(
                 timeLeft = timeLeft,
-                modifier= Modifier.weight(1f)
+                player = player,
+                modifier = Modifier.weight(1f)
             )
 
             if (phase == GamePhase.ROLL_DICE) {
@@ -95,10 +97,11 @@ fun GameUIRenderer(
 }
 
 @Composable
-private fun TopSpacerSection(modifier: Modifier = Modifier, timeLeft: Long = 0) {
+private fun InfoSection(modifier: Modifier = Modifier, timeLeft: Long = 0, player: Player) {
     val minutes = timeLeft / 60
     val seconds = timeLeft % 60
-    val formattedTime = "$minutes:${seconds}"
+
+    val formattedTime = String.format("%d:%02d", minutes, seconds)
 
     Box(
         modifier = modifier
@@ -119,10 +122,19 @@ private fun TopSpacerSection(modifier: Modifier = Modifier, timeLeft: Long = 0) 
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            Text(
-                text = formattedTime,
-                color = Color.Black
-            )
+            // Use a Row to display the time and victory points side by side
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = formattedTime,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.width(16.dp))
+                // Add trophy emoji alongside the player's victory points
+                Text(
+                    text = "🏆 ${player.getVictoryPoints()}",
+                    color = Color.Black
+                )
+            }
         }
     }
 }

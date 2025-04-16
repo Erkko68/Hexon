@@ -21,7 +21,7 @@ class Player(
     private val vertices: MutableList<Vertex> = mutableListOf();
 
     fun getVictoryPoints(): Int = _victoryPoints
-    fun setVictoryPoints(points: Int) {_victoryPoints = points}
+    fun addVictoryPoints(points: Int) {_victoryPoints += points}
 
     fun getEdges(): List<Edge> = edges
     fun getVertices(): List<Vertex> = vertices

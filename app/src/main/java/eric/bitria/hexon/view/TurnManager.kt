@@ -17,7 +17,7 @@ data class TurnManager(
 
     fun getCurrentPlayer(): Player = turnOrder[currentTurnIndex]
 
-    fun nextTurn() {
+    fun nextTurn(): Player {
         currentTurnIndex++
 
         // Check if we've reached the end of the rotation
@@ -25,6 +25,7 @@ data class TurnManager(
             currentTurnIndex = 0
             onRotationComplete.invoke()
         }
+        return getCurrentPlayer()
     }
 
     /**

@@ -1,8 +1,5 @@
 package eric.bitria.hexon.view
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.setValue
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
@@ -10,54 +7,42 @@ import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
 import kotlin.random.Random
 
-class GameManager(
-    private val board: Board,
-    private var currentPlayer: Player
-) {
-    private var _dice1 by mutableIntStateOf(0)
-    private var _dice2 by mutableIntStateOf(0)
-
-    fun getDices(): Pair<Int, Int> = Pair(_dice1, _dice2)
-    fun setCurrentPlayer(player: Player) { currentPlayer = player}
+object GameManager {
 
     // Roll Dice (Global)
-    fun rollDice() {
-        _dice1 = Random.nextInt(1, 7)
-        _dice2 = Random.nextInt(1, 7)
-        // Give resources
-        board.giveResource(_dice1 + _dice2)
+    fun rollDice(board: Board): Pair<Int, Int> {
+        val newDice1 = Random.nextInt(1, 7)
+        val newDice2 = Random.nextInt(1, 7)
+        board.giveResource(newDice1 + newDice2)
+        return Pair(newDice1, newDice2)
     }
 
     // Initial Placements
-
-    fun placeInitialSettlement(item: Vertex){
-        // Set initial settlement
-        board.placeBuilding(item,Building.SETTLEMENT, currentPlayer)
+    fun placeInitialSettlement(board: Board, currentPlayer: Player, item: Vertex) {
+        board.placeBuilding(item, Building.SETTLEMENT, currentPlayer)
+        currentPlayer.addVictoryPoints(1)
         board.givePlacementResources(item)
     }
 
-    fun placeInitialRoad(item: Edge){
-        // Set initial road
+    fun placeInitialRoad(board: Board, currentPlayer: Player, item: Edge) {
         board.placeRoad(item, currentPlayer)
     }
 
     // Normal Placements
-
-    fun placeSettlement(item: Vertex) {
-        board.placeBuilding(item,Building.SETTLEMENT, currentPlayer)
-        // Remove deck resources
+    fun placeSettlement(board: Board, currentPlayer: Player, item: Vertex) {
+        board.placeBuilding(item, Building.SETTLEMENT, currentPlayer)
+        currentPlayer.addVictoryPoints(1)
         currentPlayer.removeBuildingResources(Building.SETTLEMENT)
     }
 
-    fun placeCity(item: Vertex) {
-        board.placeBuilding(item,Building.CITY, currentPlayer)
-        // Remove deck resources
+    fun placeCity(board: Board, currentPlayer: Player, item: Vertex) {
+        board.placeBuilding(item, Building.CITY, currentPlayer)
+        currentPlayer.addVictoryPoints(1)
         currentPlayer.removeBuildingResources(Building.CITY)
     }
 
-     fun placeRoad(item: Edge) {
+    fun placeRoad(board: Board, currentPlayer: Player, item: Edge) {
         board.placeRoad(item, currentPlayer)
         currentPlayer.removeBuildingResources(Building.ROAD)
     }
-
 }

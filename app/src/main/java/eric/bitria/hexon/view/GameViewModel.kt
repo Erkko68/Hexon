@@ -1,6 +1,7 @@
 package eric.bitria.hexon.view
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -30,27 +31,29 @@ import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
 
-    private var _board by mutableStateOf(Board(2))
+    private var _board by mutableStateOf(Board(1))
     private var _turnManager: TurnManager = TurnManager(emptyList())
-    private var _currentPlayer by mutableStateOf(Player(Color.Transparent))
-    private var _gameManager: GameManager = GameManager(_board, _currentPlayer)
     private var _cardClickHandler = mutableStateOf<ClickHandler>(None)
     private var _boardClickHandler = mutableStateOf<ClickHandler>(None)
     private var _gamePhase by mutableStateOf(GamePhase.NONE)
     private var _availableVertices by mutableStateOf(emptyList<Vertex>())
     private var _availableEdges by mutableStateOf(emptyList<Edge>())
 
+    private var _player by mutableStateOf(Player(Color.Transparent))
+    private var _currentPlayer by mutableStateOf(Player(Color.Transparent))
+    private var _dice1 by mutableIntStateOf(0)
+    private var _dice2 by mutableIntStateOf(0)
+
     // Timer
     private var timerJob: Job? = null
     private var turnTimeMillis = 30_000L // 30 seconds
-
     private val _timeLeft = mutableLongStateOf(turnTimeMillis / 1000)
 
     // Getters
     val board: Board get() = _board
-    val player: Player get() = _currentPlayer
+    val player: Player get() = _player
     val phase: GamePhase get() = _gamePhase
-    val dices: Pair<Int, Int> get() = _gameManager.getDices()
+    val dices: Pair<Int, Int> get() = Pair(_dice1, _dice2)
     val timeLeft: Long get() = _timeLeft.longValue
     val cardClickHandler: ClickHandler get() = _cardClickHandler.value
     val boardClickHandler: ClickHandler get() = _boardClickHandler.value
@@ -60,11 +63,11 @@ class GameViewModel : ViewModel() {
     val availableEdges: List<Edge> get() = _availableEdges
 
     // Initial Placement Round
-    fun startNewGame(players: List<Player>, timer: Long = 30_000L) {
+    fun startNewGame(player: Player, players: List<Player>, timer: Long = 30_000L) {
         _board = BoardBuilder.createInitialBoard()
         _turnManager = TurnManager(players, onRotationComplete = ::onRotationComplete)
         _currentPlayer = _turnManager.getCurrentPlayer()
-        _gameManager = GameManager(board = _board, currentPlayer = _currentPlayer)
+        _player = player // Set non bot player
         turnTimeMillis = timer
 
         _availableVertices = emptyList()
@@ -79,17 +82,21 @@ class GameViewModel : ViewModel() {
         _gamePhase = GamePhase.INITIAL_PLACEMENT
 
         if(_currentPlayer.isBot){
-            Bot.initialSettlementPlacement(_board,_currentPlayer)
-            return initialRoadPlacement()
-        }
+            viewModelScope.launch {
+                delay(2000)
+                Bot.initialSettlementPlacement(_board,_currentPlayer)
+                initialRoadPlacement()
+            }
+        } else {
 
-        // Set board available vertices
-        exposeInitialVertices()
-        // Board click handler
-        _boardClickHandler.value = OnVertex { vertex ->
-            resetExposedVertices()
-            _gameManager.placeInitialSettlement(vertex)
-            initialRoadPlacement()
+            // Set board available vertices
+            exposeInitialVertices()
+            // Board click handler
+            _boardClickHandler.value = OnVertex { vertex ->
+                resetExposedVertices()
+                GameManager.placeInitialSettlement(_board, _currentPlayer, vertex)
+                initialRoadPlacement()
+            }
         }
     }
 
@@ -97,27 +104,28 @@ class GameViewModel : ViewModel() {
         _gamePhase = GamePhase.INITIAL_PLACEMENT
 
         if(_currentPlayer.isBot){
-            Bot.placeRoad(_board,_currentPlayer)
-            return endInitialPlacementTurn()
-        }
+            viewModelScope.launch {
+                delay(2000)
+                Bot.placeRoad(_board,_currentPlayer)
+                endInitialPlacementTurn()
+            }
+        } else {
 
-        // Set board available edges
-        exposeEdges()
+            // Set board available edges
+            exposeEdges()
 
-        _boardClickHandler.value = OnEdge { edge ->
-            resetExposedEdges()
-            _gameManager.placeInitialRoad(edge)
-            endInitialPlacementTurn()
+            _boardClickHandler.value = OnEdge { edge ->
+                resetExposedEdges()
+                GameManager.placeInitialRoad(_board, _currentPlayer, edge)
+                endInitialPlacementTurn()
+            }
         }
     }
 
     private fun endInitialPlacementTurn(){
         _gamePhase = GamePhase.INITIAL_PLACEMENT
 
-        // Set next Player
-        _turnManager.nextTurn()
-        _currentPlayer = _turnManager.getCurrentPlayer()
-        _gameManager.setCurrentPlayer(_currentPlayer)
+        _currentPlayer = _turnManager.nextTurn()
 
         // If nextTurn triggers end round switch to normal game execution
         if(_gamePhase == GamePhase.ROLL_DICE){
@@ -138,14 +146,15 @@ class GameViewModel : ViewModel() {
         _cardClickHandler.value = None
 
         if(_currentPlayer.isBot){
-            _gameManager.rollDice()
             viewModelScope.launch {
                 delay(2000)
+                updateDice(GameManager.rollDice(_board))
+                delay(1000)
                 startTurn()
             }
         } else {
             resetTurnTimer {
-                _gameManager.rollDice()
+                updateDice(GameManager.rollDice(_board))
                 viewModelScope.launch {
                     delay(1000)
                     startTurn()
@@ -154,7 +163,7 @@ class GameViewModel : ViewModel() {
 
             // Set roll dice click
             _cardClickHandler.value = NoParam {
-                _gameManager.rollDice()
+                updateDice(GameManager.rollDice(_board))
                 _cardClickHandler.value = None // Reset onclick
                 stopTimer()
                 viewModelScope.launch {
@@ -169,6 +178,7 @@ class GameViewModel : ViewModel() {
         _gamePhase = GamePhase.PLAYER_TURN
 
         if(_currentPlayer.isBot){
+            _gamePhase = GamePhase.BOT_TURN
             Bot.placeRoad(_board,_currentPlayer)
             Bot.placeSettlement(_board,_currentPlayer)
             viewModelScope.launch {
@@ -176,7 +186,6 @@ class GameViewModel : ViewModel() {
                 endTurn()
             }
         } else {
-
             resetTurnTimer {
                 endTurn()
             }
@@ -203,9 +212,7 @@ class GameViewModel : ViewModel() {
         // Next Phase
         _gamePhase = GamePhase.END_TURN
 
-        _turnManager.nextTurn()
-        _currentPlayer = _turnManager.getCurrentPlayer()
-        _gameManager.setCurrentPlayer(_currentPlayer)
+        _currentPlayer = _turnManager.nextTurn()
 
         rollDices()
     }
@@ -233,7 +240,7 @@ class GameViewModel : ViewModel() {
                 exposeVertices()
                 _boardClickHandler.value = OnVertex { vertex ->
                     resetExposedVertices()
-                    _gameManager.placeSettlement(vertex)
+                    GameManager.placeSettlement(_board, _currentPlayer, vertex)
                 }
             }
             Building.ROAD -> {
@@ -241,7 +248,7 @@ class GameViewModel : ViewModel() {
                 exposeEdges()
                 _boardClickHandler.value = OnEdge { edge ->
                     resetExposedEdges()
-                    _gameManager.placeRoad(edge)
+                    GameManager.placeRoad(_board, _currentPlayer, edge)
                 }
             }
             Building.CITY -> {
@@ -249,7 +256,7 @@ class GameViewModel : ViewModel() {
                 exposeUpgradeableVertices()
                 _boardClickHandler.value = OnVertex { vertex ->
                     resetExposedVertices()
-                    _gameManager.placeCity(vertex)
+                    GameManager.placeCity(_board, _currentPlayer, vertex)
                 }
             }
         }
@@ -290,6 +297,11 @@ class GameViewModel : ViewModel() {
     }
 
     // State Methods
+
+    private fun updateDice(dices: Pair<Int, Int>){
+        _dice1 = dices.first
+        _dice2 = dices.second
+    }
 
     private fun resetExposedEdges(){ _availableEdges = emptyList() }
 

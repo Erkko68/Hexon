@@ -5,6 +5,7 @@ enum class GamePhase {
     ROLL_DICE,
     END_TURN,
     PLAYER_TURN,
+    BOT_TURN,
     PLAYER_TRADE,
     NONE
 }

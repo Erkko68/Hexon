@@ -29,12 +29,13 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Launch.route) {
                         LaunchScreen(
                             onStartGame = {
+                                val player = Player(Color(0xFFFF5722))
                                 navController.navigate(Screen.Game.route)
                                 viewModel.startNewGame(
-                                    listOf(Player(Color(0xFFFF5722)), Player(Color.Blue,true), Player(Color.Green,true))
+                                    players = listOf(player, Player(Color.Blue,true), Player(Color.Green,true)),
+                                    player = player
                                 )
-                            },
-                            onExit = { finish() }
+                            }
                         )
                     }
                     composable(Screen.Game.route) {
