@@ -1,4 +1,4 @@
-package eric.bitria.hexon.screen
+package eric.bitria.hexon.ui.screen
 
 import androidx.compose.runtime.Composable
 import eric.bitria.hexon.ui.board.BoardRenderer

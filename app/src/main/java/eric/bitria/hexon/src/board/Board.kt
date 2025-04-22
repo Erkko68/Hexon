@@ -13,6 +13,7 @@ import eric.bitria.hexon.src.exceptions.TileNotAddedException
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.src.utils.sortPair
 import eric.bitria.hexon.src.utils.sortTriple
+import kotlin.collections.sortedBy
 import kotlin.math.abs
 
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial
@@ -24,7 +25,10 @@ class Board(val radius: Int) {
 
     // Getters
 
-    fun getTiles(): List<Tile> = tiles.values.toList()
+    fun getTiles(): List<Tile> = tiles
+        .toList()
+        .sortedWith(compareBy({ it.first.q + it.first.r }, { it.first.r }))
+        .map { it.second }
 
     fun getVertices(): List<Vertex> = vertices.values.toList()
 

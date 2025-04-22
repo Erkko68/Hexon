@@ -10,7 +10,6 @@ import eric.bitria.hexon.ui.board.layers.AvailableVertexPositionsLayer
 import eric.bitria.hexon.ui.board.layers.EdgeLayer
 import eric.bitria.hexon.ui.board.layers.HexagonalTileLayer
 import eric.bitria.hexon.ui.board.layers.VertexLayer
-import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.utils.ClickHandler
 
 @Composable

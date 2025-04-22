@@ -53,3 +53,19 @@ fun VertexLayer(
         }
     }
 }
+
+
+/**
+ *                 Box(Modifier.fillMaxSize()) {
+ *                     Canvas(
+ *                         modifier = Modifier
+ *                             .offset(
+ *                                 x = offsetX - (iconSize / 2),
+ *                                 y = offsetY - (iconSize / 2)
+ *                             )
+ *                             .size(iconSize)
+ *                     ) {
+ *                         drawHouse(center = center, size = iconSize.toPx() , color = player.color)
+ *                     }
+ *                 }
+ */

@@ -20,6 +20,14 @@ class Player(
     private val edges: MutableList<Edge> = mutableListOf();
     private val vertices: MutableList<Vertex> = mutableListOf();
 
+    // Stats
+    private val totalResources: MutableMap<Resource, Int> = mutableMapOf()
+    private val totalBuildings: MutableMap<Building, Int> = mutableMapOf()
+
+    fun countTotalBuildings(building: Building) {
+        totalBuildings[building] = totalBuildings.getOrDefault(building, 0) + 1
+    }
+
     fun getVictoryPoints(): Int = _victoryPoints
     fun addVictoryPoints(points: Int) {_victoryPoints += points}
 
@@ -34,6 +42,7 @@ class Player(
      */
     fun addResource(resource: Resource, amount: Int){
         deck.addResource(resource,amount)
+        totalResources[resource] = totalResources.getOrDefault(resource, 0) + amount
     }
 
     /**

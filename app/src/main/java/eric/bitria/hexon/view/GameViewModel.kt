@@ -32,7 +32,7 @@ import kotlinx.coroutines.launch
 class GameViewModel : ViewModel() {
 
     private var _board by mutableStateOf(Board(1))
-    private var _turnManager: TurnManager = TurnManager(emptyList())
+    private var turnManager: TurnManager = TurnManager(emptyList())
     private var _cardClickHandler = mutableStateOf<ClickHandler>(None)
     private var _boardClickHandler = mutableStateOf<ClickHandler>(None)
     private var _gamePhase by mutableStateOf(GamePhase.NONE)
@@ -48,6 +48,7 @@ class GameViewModel : ViewModel() {
     private var timerJob: Job? = null
     private var turnTimeMillis = 30_000L // 30 seconds
     private val _timeLeft = mutableLongStateOf(turnTimeMillis / 1000)
+    private var totalTime = 0L
 
     // Getters
     val board: Board get() = _board
@@ -65,8 +66,8 @@ class GameViewModel : ViewModel() {
     // Initial Placement Round
     fun startNewGame(player: Player, players: List<Player>, timer: Long = 30_000L) {
         _board = BoardBuilder.createInitialBoard()
-        _turnManager = TurnManager(players, onRotationComplete = ::onRotationComplete)
-        _currentPlayer = _turnManager.getCurrentPlayer()
+        turnManager = TurnManager(players, onRotationComplete = ::onRotationComplete)
+        _currentPlayer = turnManager.getCurrentPlayer()
         _player = player // Set non bot player
         turnTimeMillis = timer
 
@@ -125,7 +126,7 @@ class GameViewModel : ViewModel() {
     private fun endInitialPlacementTurn(){
         _gamePhase = GamePhase.INITIAL_PLACEMENT
 
-        _currentPlayer = _turnManager.nextTurn()
+        _currentPlayer = turnManager.nextTurn()
 
         // If nextTurn triggers end round switch to normal game execution
         if(_gamePhase == GamePhase.ROLL_DICE){
@@ -140,7 +141,7 @@ class GameViewModel : ViewModel() {
     private fun rollDices() {
         _gamePhase = GamePhase.ROLL_DICE
 
-        _currentPlayer = _turnManager.getCurrentPlayer()
+        _currentPlayer = turnManager.getCurrentPlayer()
         // Rest click handlers
         _boardClickHandler.value = None
         _cardClickHandler.value = None
@@ -212,7 +213,7 @@ class GameViewModel : ViewModel() {
         // Next Phase
         _gamePhase = GamePhase.END_TURN
 
-        _currentPlayer = _turnManager.nextTurn()
+        _currentPlayer = turnManager.nextTurn()
 
         rollDices()
     }
@@ -221,13 +222,13 @@ class GameViewModel : ViewModel() {
 
     private fun onRotationComplete(){
 
-        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && !_turnManager.hasReversedTurnOrder()){
-            _turnManager.reverseTurnOrder()
+        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && !turnManager.hasReversedTurnOrder()){
+            turnManager.reverseTurnOrder()
             return
         }
 
         // Exit Initial Placement Round
-        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && _turnManager.hasReversedTurnOrder()){
+        if (_gamePhase == GamePhase.INITIAL_PLACEMENT && turnManager.hasReversedTurnOrder()){
             _gamePhase = GamePhase.ROLL_DICE
         }
     }
@@ -328,10 +329,12 @@ class GameViewModel : ViewModel() {
 
                 if (remaining <= 0) {
                     _timeLeft.longValue = 0
+                    totalTime += turnTimeMillis
                     onTimeExpired()
                     break
                 } else {
                     _timeLeft.longValue = remaining / 1000
+                    totalTime += elapsed
                     delay(1000)
                 }
             }

@@ -3,7 +3,6 @@ package eric.bitria.hexon.view.enums
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import eric.bitria.hexon.ui.icons.None
 import eric.bitria.hexon.ui.icons.actions.Cash
 import eric.bitria.hexon.ui.icons.actions.CashCancel
 import eric.bitria.hexon.ui.icons.actions.CashOk
