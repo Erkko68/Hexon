@@ -4,14 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
-import androidx.compose.ui.graphics.Color
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import eric.bitria.hexon.ui.screen.GameScreen
 import eric.bitria.hexon.ui.screen.LaunchScreen
 import eric.bitria.hexon.ui.screen.Screen
-import eric.bitria.hexon.src.player.Player
+import eric.bitria.hexon.ui.screen.SettingsScreen
 import eric.bitria.hexon.ui.theme.HexonTheme
 import eric.bitria.hexon.view.GameViewModel
 
@@ -29,22 +28,29 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Launch.route) {
                         LaunchScreen(
                             onStartGame = {
-                                val player = Player(Color(0xFFFF5722))
-                                navController.navigate(Screen.Game.route)
-                                viewModel.startNewGame(
-                                    players = listOf(player, Player(Color.Blue,true), Player(Color.Green,true)),
-                                    player = player
-                                )
+                                navController.navigate(Screen.Settings.route)
                             }
                         )
                     }
+
+                    composable(Screen.Settings.route) {
+                        SettingsScreen(
+                            initialConfig = viewModel.gameSettings,
+                            onStartGame = { config ->
+                                viewModel.updateConfig(config)
+                                viewModel.startNewGame()
+                                navController.navigate(Screen.Game.route)
+                            },
+                            onBack = { navController.popBackStack() }
+                        )
+                    }
+
                     composable(Screen.Game.route) {
                         GameScreen(
                             viewModel = viewModel,
                             onExitToMenu = { navController.popBackStack() }
                         )
                     }
-
                 }
             }
         }

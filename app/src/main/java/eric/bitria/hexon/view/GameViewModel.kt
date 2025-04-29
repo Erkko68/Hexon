@@ -13,6 +13,7 @@ import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.player.Player
+import eric.bitria.hexon.ui.screen.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.utils.BoardBuilder
@@ -31,6 +32,8 @@ import kotlinx.coroutines.launch
 
 class GameViewModel : ViewModel() {
 
+    private var _gameSettings by mutableStateOf(GameSettings())
+
     private var _board by mutableStateOf(Board(1))
     private var turnManager: TurnManager = TurnManager(emptyList())
     private var _cardClickHandler = mutableStateOf<ClickHandler>(None)
@@ -39,8 +42,8 @@ class GameViewModel : ViewModel() {
     private var _availableVertices by mutableStateOf(emptyList<Vertex>())
     private var _availableEdges by mutableStateOf(emptyList<Edge>())
 
-    private var _player by mutableStateOf(Player(Color.Transparent))
-    private var _currentPlayer by mutableStateOf(Player(Color.Transparent))
+    private var _player by mutableStateOf(Player(color = Color.Transparent))
+    private var _currentPlayer by mutableStateOf(Player(color = Color.Transparent))
     private var _dice1 by mutableIntStateOf(0)
     private var _dice2 by mutableIntStateOf(0)
 
@@ -51,6 +54,7 @@ class GameViewModel : ViewModel() {
     private var totalTime = 0L
 
     // Getters
+    val gameSettings: GameSettings get() = _gameSettings
     val board: Board get() = _board
     val player: Player get() = _player
     val phase: GamePhase get() = _gamePhase
@@ -63,13 +67,37 @@ class GameViewModel : ViewModel() {
     val availableVertices: List<Vertex> get() = _availableVertices
     val availableEdges: List<Edge> get() = _availableEdges
 
+    fun updateConfig(newConfig: GameSettings) {
+        _gameSettings = newConfig
+    }
+
     // Initial Placement Round
-    fun startNewGame(player: Player, players: List<Player>, timer: Long = 30_000L) {
+    fun startNewGame() {
+
+        val player = Player(_gameSettings.playerName,_gameSettings.playerColor)
+
+        val botColors = listOf(
+            Color.Blue,
+            Color.Green,
+            Color.Magenta,
+            Color.Cyan,
+            Color.Red
+        ).shuffled()
+        val bots = List(_gameSettings.numberOfBots) { index ->
+            Player(
+                color = botColors[index % botColors.size],
+                isBot = true,
+                name = "Bot ${index + 1}"
+            )
+        }
+
+        val players = listOf(player) + bots
+
         _board = BoardBuilder.createInitialBoard()
         turnManager = TurnManager(players, onRotationComplete = ::onRotationComplete)
         _currentPlayer = turnManager.getCurrentPlayer()
-        _player = player // Set non bot player
-        turnTimeMillis = timer
+        _player = player
+        turnTimeMillis = _gameSettings.timer
 
         _availableVertices = emptyList()
         _availableEdges = emptyList()

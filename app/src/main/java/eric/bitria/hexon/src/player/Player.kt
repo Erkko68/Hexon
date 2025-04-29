@@ -10,6 +10,7 @@ import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 
 class Player(
+    val name: String = "Bot",
     val color: Color,
     val isBot: Boolean = false
 ) {
