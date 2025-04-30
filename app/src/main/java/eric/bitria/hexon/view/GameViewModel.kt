@@ -34,6 +34,12 @@ class GameViewModel : ViewModel() {
 
     private var _gameSettings by mutableStateOf(GameSettings())
 
+    fun updatePlayerName(name: String) { _gameSettings = _gameSettings.copy(playerName = name) }
+    fun updatePlayerColor(color: Color) { _gameSettings = _gameSettings.copy(playerColor = color) }
+    fun updateNumberOfBots(bots: Int) { _gameSettings = _gameSettings.copy(numberOfBots = bots) }
+    fun updateVictoryPoints(points: Int) { _gameSettings = _gameSettings.copy(victoryPoints = points) }
+    fun updateTimer(timer: Long) { _gameSettings = _gameSettings.copy(timer = timer) }
+
     private var _board by mutableStateOf(Board(1))
     private var turnManager: TurnManager = TurnManager(emptyList())
     private var _cardClickHandler = mutableStateOf<ClickHandler>(None)
@@ -51,15 +57,17 @@ class GameViewModel : ViewModel() {
     private var timerJob: Job? = null
     private var turnTimeMillis = 30_000L // 30 seconds
     private val _timeLeft = mutableLongStateOf(turnTimeMillis / 1000)
-    private var totalTime = 0L
+    private var _totalTime = mutableLongStateOf(0L)
 
     // Getters
     val gameSettings: GameSettings get() = _gameSettings
     val board: Board get() = _board
     val player: Player get() = _player
+    val currentPlayer: Player get() = _currentPlayer
     val phase: GamePhase get() = _gamePhase
     val dices: Pair<Int, Int> get() = Pair(_dice1, _dice2)
     val timeLeft: Long get() = _timeLeft.longValue
+    val totalTime: Long get() = _totalTime.longValue
     val cardClickHandler: ClickHandler get() = _cardClickHandler.value
     val boardClickHandler: ClickHandler get() = _boardClickHandler.value
 
@@ -238,12 +246,17 @@ class GameViewModel : ViewModel() {
         resetExposedEdges()
         resetExposedVertices()
 
+        if(_currentPlayer.getVictoryPoints() >= _gameSettings.victoryPoints){
+            return endGame()
+        }
         // Next Phase
         _gamePhase = GamePhase.END_TURN
-
         _currentPlayer = turnManager.nextTurn()
-
         rollDices()
+    }
+
+    private fun endGame(){
+        _gamePhase = GamePhase.PLAYER_WON
     }
 
     // Turn Methods
@@ -357,12 +370,12 @@ class GameViewModel : ViewModel() {
 
                 if (remaining <= 0) {
                     _timeLeft.longValue = 0
-                    totalTime += turnTimeMillis
+                    _totalTime.longValue += turnTimeMillis
                     onTimeExpired()
                     break
                 } else {
                     _timeLeft.longValue = remaining / 1000
-                    totalTime += elapsed
+                    _totalTime.longValue += elapsed
                     delay(1000)
                 }
             }

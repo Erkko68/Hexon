@@ -11,6 +11,7 @@ object Bot{
         val vertex = GreedyHeuristic.bestInitialSettlement(board, player)
         if (vertex != null) {
             board.placeBuilding(vertex, Building.SETTLEMENT,player)
+            player.addVictoryPoints(1)
             player.addVertex(vertex)
         }
     }
@@ -27,6 +28,7 @@ object Bot{
         val vertex = GreedyHeuristic.bestSettlementPlacement(board, player)
         if (vertex != null) {
             board.placeBuilding(vertex, Building.SETTLEMENT,player)
+            player.addVictoryPoints(1)
             player.addVertex(vertex)
         }
     }

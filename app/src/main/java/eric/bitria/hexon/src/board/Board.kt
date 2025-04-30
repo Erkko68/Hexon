@@ -13,7 +13,6 @@ import eric.bitria.hexon.src.exceptions.TileNotAddedException
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.src.utils.sortPair
 import eric.bitria.hexon.src.utils.sortTriple
-import kotlin.collections.sortedBy
 import kotlin.math.abs
 
 // Board follows Axial Coordinate System: https://www.redblobgames.com/grids/hexagons/#coordinates-axial

@@ -36,7 +36,8 @@ import eric.bitria.hexon.ui.theme.HexonTheme
 fun DiceScreen(
     dice1: Int,
     dice2: Int,
-    onRollClick: () -> Unit
+    onRollClick: () -> Unit,
+    enabled: Boolean = true
 ) {
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -61,8 +62,10 @@ fun DiceScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Button(onClick = onRollClick) {
-            Text("Roll Dice")
+        if(enabled) {
+            Button(onClick = onRollClick) {
+                Text("Roll Dice")
+            }
         }
     }
 }

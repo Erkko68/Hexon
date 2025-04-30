@@ -40,6 +40,7 @@ val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided
 @Composable
 fun GameUIRenderer(
     player: Player,
+    currentPlayer: Player,
     phase: GamePhase,
     dices: Pair<Int, Int>,
     clickHandler: ClickHandler,
@@ -63,6 +64,7 @@ fun GameUIRenderer(
             if (phase == GamePhase.ROLL_DICE) {
                 DiceSection(
                     dices = dices,
+                    enabled = (currentPlayer == player),
                     onRollClick = { (clickHandler as? ClickHandler.NoParam)?.handler?.invoke() },
                     modifier = Modifier.weight(1f)
                 )
@@ -144,12 +146,14 @@ private fun InfoSection(modifier: Modifier = Modifier, timeLeft: Long = 0, playe
 private fun DiceSection(
     dices: Pair<Int, Int>,
     onRollClick: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
     Box(modifier = modifier) {
         DiceScreen(
             dice1 = dices.first,
             dice2 = dices.second,
+            enabled = enabled,
             onRollClick = onRollClick
         )
     }

@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
 
                     composable(Screen.Settings.route) {
                         SettingsScreen(
-                            initialConfig = viewModel.gameSettings,
+                            viewModel = viewModel,
                             onStartGame = { config ->
                                 viewModel.updateConfig(config)
                                 viewModel.startNewGame()
