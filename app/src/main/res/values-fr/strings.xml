@@ -24,4 +24,11 @@
     <string name="number_of_bots">Nombre de Bots</string>
     <string name="player_name">Nom du Joueur</string>
     <string name="welcome_to_hexon">Bienvenue sur Hexon !</string>
+    <string name="help_instructions"><![CDATA[Aide et Instructions]]></string>
+    <string name="take_turns_placing_your_initial_buildings_before_the_game_starts">Prenez chacun votre tour pour placer vos bâtiments initiaux avant le début du jeu.</string>
+    <string name="on_your_turn_roll_the_dice_players_with_buildings_on_tiles_matching_the_roll_collect_resources">À votre tour, lancez les dés. Les joueurs avec des bâtiments sur les tuiles correspondant au lancer collectent des ressources.</string>
+    <string name="trade_4_of_any_resource_for_1_of_your_choice_via_the_trade_icon">Échangez 4 ressources identiques contre 1 de votre choix via l\'icône d\'échange.</string>
+    <string name="produces_1_resource_and_gives_1_victory_point">Produit 1 ressource et donne 1 point de victoire.</string>
+    <string name="produces_2_resources_and_gives_2_victory_points">Produit 2 ressources et donne 2 points de victoire.</string>
+    <string name="close">Fermer</string>
 </resources>

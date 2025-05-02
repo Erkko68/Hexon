@@ -24,4 +24,11 @@
     <string name="number_of_bots">Number of Bots</string>
     <string name="player_name">Player Name</string>
     <string name="welcome_to_hexon">Welcome to Hexon!</string>
+    <string name="help_instructions"><![CDATA[Help & Instructions]]></string>
+    <string name="take_turns_placing_your_initial_buildings_before_the_game_starts">Take turns placing your initial buildings before the game starts.</string>
+    <string name="on_your_turn_roll_the_dice_players_with_buildings_on_tiles_matching_the_roll_collect_resources">On your turn, roll the dice. Players with buildings on tiles matching the roll collect resources.</string>
+    <string name="trade_4_of_any_resource_for_1_of_your_choice_via_the_trade_icon">Trade 4 of any resource for 1 of your choice via the trade icon.</string>
+    <string name="produces_1_resource_and_gives_1_victory_point">Produces 1 resource and gives 1 victory point.</string>
+    <string name="produces_2_resources_and_gives_2_victory_points">Produces 2 resources and gives 2 victory points.</string>
+    <string name="close">Close</string>
 </resources>

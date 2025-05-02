@@ -24,4 +24,11 @@
     <string name="number_of_bots">Número de Bots</string>
     <string name="player_name">Nombre del Jugador</string>
     <string name="welcome_to_hexon">¡Bienvenido a Hexon!</string>
+    <string name="help_instructions"><![CDATA[Ayuda e Instrucciones]]></string>
+    <string name="take_turns_placing_your_initial_buildings_before_the_game_starts">Toma turnos colocando tus edificios iniciales antes de que comience el juego.</string>
+    <string name="on_your_turn_roll_the_dice_players_with_buildings_on_tiles_matching_the_roll_collect_resources">En tu turno, lanza los dados. Los jugadores con edificios en las losetas que coincidan con el resultado reciben recursos.</string>
+    <string name="trade_4_of_any_resource_for_1_of_your_choice_via_the_trade_icon">Intercambia 4 recursos iguales por 1 a tu elección usando el icono de intercambio.</string>
+    <string name="produces_1_resource_and_gives_1_victory_point">Produce 1 recurso y otorga 1 punto de victoria.</string>
+    <string name="produces_2_resources_and_gives_2_victory_points">Produce 2 recursos y otorga 2 puntos de victoria.</string>
+    <string name="close">Cerrar</string>
 </resources>

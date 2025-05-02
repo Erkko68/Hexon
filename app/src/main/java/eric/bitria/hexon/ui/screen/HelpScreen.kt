@@ -25,7 +25,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.R
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.ui.icons.actions.Cash
@@ -55,7 +57,7 @@ fun HelpScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = "Help & Instructions",
+                    text = stringResource(R.string.help_instructions),
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
@@ -73,7 +75,7 @@ fun HelpScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Take turns placing your initial buildings before the game starts.",
+                        text = stringResource(R.string.take_turns_placing_your_initial_buildings_before_the_game_starts),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -91,7 +93,7 @@ fun HelpScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "On your turn, roll the dice. Players with buildings on tiles matching the roll collect resources.",
+                        text = stringResource(R.string.on_your_turn_roll_the_dice_players_with_buildings_on_tiles_matching_the_roll_collect_resources),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -109,7 +111,7 @@ fun HelpScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Trade 4 of any resource for 1 of your choice via the trade icon.",
+                        text = stringResource(R.string.trade_4_of_any_resource_for_1_of_your_choice_via_the_trade_icon),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -133,7 +135,7 @@ fun HelpScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Produces 1 resource and gives 1 victory point.",
+                        text = stringResource(R.string.produces_1_resource_and_gives_1_victory_point),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -150,7 +152,7 @@ fun HelpScreen(
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Text(
-                        text = "Produces 2 resources and gives 2 victory points.",
+                        text = stringResource(R.string.produces_2_resources_and_gives_2_victory_points),
                         style = MaterialTheme.typography.bodyLarge
                     )
                 }
@@ -235,7 +237,7 @@ fun HelpScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(onClick = onBackToMenu) {
-                    Text("Close")
+                    Text(stringResource(R.string.close))
                 }
             }
         }

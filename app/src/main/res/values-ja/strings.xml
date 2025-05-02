@@ -24,4 +24,11 @@
     <string name="number_of_bots">ボットの数</string>
     <string name="player_name">プレイヤー名</string>
     <string name="welcome_to_hexon">Hexonへようこそ！</string>
+    <string name="help_instructions"><![CDATA[ヘルプと説明]]></string>
+    <string name="take_turns_placing_your_initial_buildings_before_the_game_starts">ゲーム開始前に順番に初期建物を配置してください。</string>
+    <string name="on_your_turn_roll_the_dice_players_with_buildings_on_tiles_matching_the_roll_collect_resources">自分のターンではサイコロを振ります。出目に一致するタイルに建物があるプレイヤーは資源を獲得します。</string>
+    <string name="trade_4_of_any_resource_for_1_of_your_choice_via_the_trade_icon">任意の資源4つを、交換アイコンから1つ選んで交換できます。</string>
+    <string name="produces_1_resource_and_gives_1_victory_point">1つの資源を生産し、1つの勝利ポイントを得る。</string>
+    <string name="produces_2_resources_and_gives_2_victory_points">2つの資源を生産し、2つの勝利ポイントを得る。</string>
+    <string name="close">閉じる</string>
 </resources>
