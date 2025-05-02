@@ -12,6 +12,7 @@ import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.screen.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
@@ -29,6 +30,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class GameViewModel : ViewModel() {
 
@@ -67,7 +71,6 @@ class GameViewModel : ViewModel() {
     val phase: GamePhase get() = _gamePhase
     val dices: Pair<Int, Int> get() = Pair(_dice1, _dice2)
     val timeLeft: Long get() = _timeLeft.longValue
-    val totalTime: Long get() = _totalTime.longValue
     val cardClickHandler: ClickHandler get() = _cardClickHandler.value
     val boardClickHandler: ClickHandler get() = _boardClickHandler.value
 

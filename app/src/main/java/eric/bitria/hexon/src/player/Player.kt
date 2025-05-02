@@ -18,12 +18,15 @@ class Player(
     private val deck: Deck = Deck()
     private val shop: Shop = Shop(deck)
 
-    private val edges: MutableList<Edge> = mutableListOf();
-    private val vertices: MutableList<Vertex> = mutableListOf();
+    private val edges: MutableList<Edge> = mutableListOf()
+    private val vertices: MutableList<Vertex> = mutableListOf()
 
     // Stats
     private val totalResources: MutableMap<Resource, Int> = mutableMapOf()
     private val totalBuildings: MutableMap<Building, Int> = mutableMapOf()
+
+    fun getTotalResources(): Map<Resource, Int> = totalResources
+    fun getTotalBuildings(): Map<Building, Int> = totalBuildings
 
     fun countTotalBuildings(building: Building) {
         totalBuildings[building] = totalBuildings.getOrDefault(building, 0) + 1
@@ -32,8 +35,8 @@ class Player(
     fun getVictoryPoints(): Int = _victoryPoints
     fun addVictoryPoints(points: Int) {_victoryPoints += points}
 
-    fun getEdges(): List<Edge> = edges
-    fun getVertices(): List<Vertex> = vertices
+    //fun getEdges(): List<Edge> = edges
+    //fun getVertices(): List<Vertex> = vertices
 
     fun addEdge(edge: Edge) { edges.add(edge) }
     fun addVertex(vertex: Vertex) { vertices.add(vertex) }

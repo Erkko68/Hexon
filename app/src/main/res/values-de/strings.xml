@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hexon</string>
+    <string name="game_results">🏆 Spielergebnisse</string>
+    <string name="played_on">📅 Gespielt am: %1$s</string>
+    <string name="winner">Gewinner: %1$s</string>
+    <string name="your_stats">Deine Statistik:</string>
+    <string name="buildings">🏠 Gebäude:</string>
+    <string name="resources">📦 Ressourcen:</string>
+    <string name="thanks_for_playing">Danke fürs Spielen!</string>
+    <string name="send_game_results">Spielergebnisse Senden</string>
+    <string name="wins">%1$s Gewinnt!</string>
+    <string name="winner_color">Farbe des Gewinners</string>
+    <string name="your_stats_end_screen_msg">Deine Statistik</string>
+    <string name="buildings_end_screen_msg">Gebäude</string>
+    <string name="resources_end_screen_msg">Ressourcen</string>
+    <string name="exit_to_menu_msg">Zurück zum Menü</string>
+    <string name="share_results_msg">Ergebnisse Teilen</string>
+    <string name="player_color">Spielerfarbe</string>
+    <string name="start_game">Spiel Starten</string>
+    <string name="back">Zurück</string>
+    <string name="victory_points">Siegpunkte</string>
+    <string name="game_timer_seconds">Spielzeit (Sekunden)</string>
+    <string name="number_of_bots">Anzahl der Bots</string>
+    <string name="player_name">Spielername</string>
+    <string name="welcome_to_hexon">Willkommen bei Hexon!</string>
+</resources>

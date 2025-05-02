@@ -20,28 +20,33 @@ object GameManager {
     // Initial Placements
     fun placeInitialSettlement(board: Board, currentPlayer: Player, item: Vertex) {
         board.placeBuilding(item, Building.SETTLEMENT, currentPlayer)
+        currentPlayer.countTotalBuildings(Building.SETTLEMENT)
         currentPlayer.addVictoryPoints(1)
         board.givePlacementResources(item)
     }
 
     fun placeInitialRoad(board: Board, currentPlayer: Player, item: Edge) {
+        currentPlayer.countTotalBuildings(Building.ROAD)
         board.placeRoad(item, currentPlayer)
     }
 
     // Normal Placements
     fun placeSettlement(board: Board, currentPlayer: Player, item: Vertex) {
+        currentPlayer.countTotalBuildings(Building.SETTLEMENT)
         board.placeBuilding(item, Building.SETTLEMENT, currentPlayer)
         currentPlayer.addVictoryPoints(1)
         currentPlayer.removeBuildingResources(Building.SETTLEMENT)
     }
 
     fun placeCity(board: Board, currentPlayer: Player, item: Vertex) {
+        currentPlayer.countTotalBuildings(Building.CITY)
         board.placeBuilding(item, Building.CITY, currentPlayer)
         currentPlayer.addVictoryPoints(1)
         currentPlayer.removeBuildingResources(Building.CITY)
     }
 
     fun placeRoad(board: Board, currentPlayer: Player, item: Edge) {
+        currentPlayer.countTotalBuildings(Building.ROAD)
         board.placeRoad(item, currentPlayer)
         currentPlayer.removeBuildingResources(Building.ROAD)
     }

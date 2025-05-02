@@ -48,7 +48,10 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Game.route) {
                         GameScreen(
                             viewModel = viewModel,
-                            onExitToMenu = { navController.popBackStack() }
+                            onExitToMenu = {
+                                navController.popBackStack()
+                                navController.popBackStack()
+                            }
                         )
                     }
                 }

@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.R
 import eric.bitria.hexon.src.data.AxialCoord
 import eric.bitria.hexon.ui.utils.geometry.HexConversions.axialToPixel
 import eric.bitria.hexon.ui.utils.geometry.drawHexagon
@@ -33,7 +35,7 @@ fun LaunchScreen(onStartGame: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Welcome to Hexon!",
+            text = stringResource(R.string.welcome_to_hexon),
             style = MaterialTheme.typography.headlineLarge.copy(
                 shadow = Shadow(
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
@@ -78,7 +80,7 @@ fun LaunchScreen(onStartGame: () -> Unit) {
             modifier = Modifier.padding(vertical = 24.dp)
         ) {
             Text(
-                "Start Game",
+                text = stringResource(R.string.start_game),
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 8.dp)
             )

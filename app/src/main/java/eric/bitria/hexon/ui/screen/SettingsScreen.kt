@@ -28,7 +28,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.R
 import eric.bitria.hexon.view.GameViewModel
 
 @Composable
@@ -52,7 +54,7 @@ fun SettingsScreen(
         OutlinedTextField(
             value = viewModel.gameSettings.playerName,
             onValueChange = { (viewModel::updatePlayerName)(it) },
-            label = { Text("Player Name") },
+            label = { Text(stringResource(R.string.player_name)) },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -63,14 +65,14 @@ fun SettingsScreen(
 
 
         SettingsOptionGroup(
-            title = "Number of Bots",
+            title = stringResource(R.string.number_of_bots),
             options = listOf(1, 2, 3),
             selected = viewModel.gameSettings.numberOfBots,
             onSelected = { (viewModel::updateNumberOfBots)(it) }
         )
 
         SettingsOptionGroup(
-            title = "Game Timer (seconds)",
+            title = stringResource(R.string.game_timer_seconds),
             options = listOf(30, 60, 90),
             selected = (viewModel.gameSettings.timer / 1000).toInt(),
             optionFormatter = { "$it" },
@@ -78,7 +80,7 @@ fun SettingsScreen(
         )
 
         SettingsOptionGroup(
-            title = "Victory Points",
+            title = stringResource(R.string.victory_points),
             options = listOf(5, 8, 10, 12),
             selected = (viewModel.gameSettings.victoryPoints).toInt(),
             optionFormatter = { "$it" },
@@ -95,7 +97,7 @@ fun SettingsScreen(
                 onClick = onBack,
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Back")
+                Text(stringResource(R.string.back))
             }
 
             Spacer(modifier = Modifier.width(16.dp))
@@ -104,7 +106,7 @@ fun SettingsScreen(
                 onClick = { onStartGame(viewModel.gameSettings) },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Start Game")
+                Text(stringResource(R.string.start_game))
             }
         }
     }
@@ -168,7 +170,7 @@ private fun ColorPicker(
 
 
     Column(modifier = Modifier.padding(vertical = 16.dp)) {
-        Text("Player Color", style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.player_color), style = MaterialTheme.typography.titleMedium)
 
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),

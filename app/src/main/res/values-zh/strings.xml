@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Hexon</string>
+    <string name="game_results">🏆 游戏结果</string>
+    <string name="played_on">📅 游戏时间：%1$s</string>
+    <string name="winner">获胜者：%1$s</string>
+    <string name="your_stats">你的统计信息：</string>
+    <string name="buildings">🏠 建筑：</string>
+    <string name="resources">📦 资源：</string>
+    <string name="thanks_for_playing">感谢游玩！</string>
+    <string name="send_game_results">发送游戏结果</string>
+    <string name="wins">%1$s 获胜！</string>
+    <string name="winner_color">获胜颜色</string>
+    <string name="your_stats_end_screen_msg">你的统计</string>
+    <string name="buildings_end_screen_msg">建筑</string>
+    <string name="resources_end_screen_msg">资源</string>
+    <string name="exit_to_menu_msg">返回菜单</string>
+    <string name="share_results_msg">分享结果</string>
+    <string name="player_color">玩家颜色</string>
+    <string name="start_game">开始游戏</string>
+    <string name="back">返回</string>
+    <string name="victory_points">胜利点数</string>
+    <string name="game_timer_seconds">游戏计时器（秒）</string>
+    <string name="number_of_bots">机器人数量</string>
+    <string name="player_name">玩家姓名</string>
+    <string name="welcome_to_hexon">欢迎来到 Hexon！</string>
+</resources>
