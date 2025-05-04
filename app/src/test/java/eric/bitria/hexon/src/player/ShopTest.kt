@@ -19,6 +19,7 @@ class ShopTest {
     @Test
     fun testCanAcceptTrade_Valid() {
         // Setup: Player offers 4 resources for 1 shop resource
+        playerDeck.addResource(Resource.WOOD, 4)
         repeat(4) { shop.addTradingResource(Resource.WOOD) }
         shop.selectTradingResource(Resource.BRICK)
 

@@ -23,7 +23,7 @@ class BoardTest {
     @Before
     fun setUp() {
         board = Board(3)
-        player = Player(Color.Red)
+        player = Player("Juan",Color.Red)
     }
 
     // AddTile
@@ -136,7 +136,7 @@ class BoardTest {
         board.addTile(tile)
 
         val vertex = tile.vertices[Direction.NORTHEAST]!!
-        vertex.placeBuilding(Building.SETTLEMENT,Player(Color.Red)) // Force road on this edge
+        vertex.placeBuilding(Building.SETTLEMENT,Player("Juan",Color.Red)) // Force road on this edge
 
         val edge1 = tile.edges[Direction.NORTHEAST]!!
         assertFalse(board.canPlaceRoad(edge1, player)) // Should return false, since Building is from another player
@@ -148,7 +148,7 @@ class BoardTest {
         board.addTile(tile)
 
         val edge = tile.edges[Direction.NORTHEAST]!!
-        edge.placeBuilding(Building.ROAD,Player(Color.Red)) // Force road on this edge
+        edge.placeBuilding(Building.ROAD,Player("Juan",Color.Red)) // Force road on this edge
 
         val edge1 = tile.edges[Direction.EAST]!!
         assertFalse(board.canPlaceRoad(edge1, player)) // Should return false, since Road is from another player
@@ -216,7 +216,7 @@ class BoardTest {
 
         val vertex = tile.vertices[Direction.NORTHEAST]!!
         val edge = tile.edges[Direction.NORTHEAST]!!
-        edge.placeBuilding(Building.ROAD, Player(Color.Red)) // Force ROAD on adjacent edge owned by another player
+        edge.placeBuilding(Building.ROAD, Player("Juan",Color.Red)) // Force ROAD on adjacent edge owned by another player
 
         assertFalse(board.canPlaceBuilding(vertex, player)) // Should return false if adjacent edge has a road not owned by the player
     }
@@ -230,7 +230,7 @@ class BoardTest {
         val vertex1 = tile.vertices[Direction.EAST]!!
 
         board.placeBuilding(vertex,Building.SETTLEMENT,player)
-        board.placeBuilding(vertex1,Building.SETTLEMENT,Player(Color.Red))
+        board.placeBuilding(vertex1,Building.SETTLEMENT,Player("Juan",Color.Red))
 
         // Empty resource
         assertEquals(player.getDeckResources()[Resource.WOOD],null)
@@ -248,7 +248,7 @@ class BoardTest {
         val vertex1 = tile.vertices[Direction.EAST]!!
 
         board.placeBuilding(vertex,Building.CITY,player)
-        board.placeBuilding(vertex1,Building.SETTLEMENT,Player(Color.Red))
+        board.placeBuilding(vertex1,Building.SETTLEMENT,Player("Juan",Color.Red))
 
         // Empty resource
         assertEquals(player.getDeckResources()[Resource.WOOD],null)
