@@ -1,23 +1,27 @@
 package eric.bitria.hexon.ui.board
 
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.TransformOrigin
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.src.board.Board
-import eric.bitria.hexon.ui.utils.modifier.ZoomState
-import eric.bitria.hexon.ui.utils.modifier.zoomable
-import kotlin.math.roundToInt
+import kotlin.math.min
+
+// Constants for zoom limits
+private const val MIN_ZOOM = 1f
+private const val MAX_ZOOM = 2f
 
 val LocalTileSize = staticCompositionLocalOf<Dp> { error("Tile size not provided") }
 
@@ -26,47 +30,72 @@ fun ZoomContainer(
     board: Board,
     content: @Composable () -> Unit
 ) {
-    val zoomState = remember { ZoomState() }
     val density = LocalDensity.current
-    val configuration = LocalConfiguration.current
+    var containerSize by remember { mutableStateOf(Size.Zero) }
+    var scale by remember { mutableFloatStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
 
-    val baseTileSize = with(density) {
-        minOf(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp) / ((board.radius + 1) * 4)
-    }
-
-    val scaledTileSize = baseTileSize * zoomState.zoomLevel
-
-    // Calculate center and max offset
-    LaunchedEffect(configuration, scaledTileSize, board.radius) {
-        with(density) {
-            val (sw, sh) = configuration.run { screenWidthDp.dp.toPx() to screenHeightDp.dp.toPx() }
-            val maxOffset = (scaledTileSize.toPx() * board.radius) * 1.5f
-
-            zoomState.apply {
-                centerX = sw / 2
-                centerY = sh / 2
-                this.maxOffset = maxOffset
-            }
+    // Calculate the tile size dynamically based on scale and container dimensions
+    val tileDp = with(density) {
+        if (containerSize == Size.Zero) 0.dp
+        else {
+            val minDim = min(containerSize.width, containerSize.height)
+            (minDim / density.density).dp / ((board.radius + 1) * 4) * scale
         }
     }
 
-    // Initial centering
-    LaunchedEffect(Unit) {
-        with(density) {
-            val (sw, sh) = configuration.run { screenWidthDp.dp.toPx() to screenHeightDp.dp.toPx() }
-            zoomState.apply {
-                offsetX = sw / 2
-                offsetY = sh / 2
-            }
+    // Center content when the container size changes
+    LaunchedEffect(containerSize) {
+        if (containerSize != Size.Zero) {
+            offset = Offset(containerSize.width / 2, containerSize.height / 2)
         }
     }
 
-    CompositionLocalProvider(LocalTileSize provides scaledTileSize) {
+    CompositionLocalProvider(LocalTileSize provides tileDp) {
         Box(
             Modifier
                 .fillMaxSize()
-                .zoomable(zoomState)
-                .offset { IntOffset(zoomState.offsetX.roundToInt(), zoomState.offsetY.roundToInt()) }
+                .onSizeChanged { size ->
+                    containerSize = Size(size.width.toFloat(), size.height.toFloat())
+                }
+                .pointerInput(containerSize, board.radius) {
+                    detectTransformGestures { centroid, pan, zoom, _ ->
+
+                        // Clamped scale calculation
+                        val newScale = (scale * zoom).coerceIn(MIN_ZOOM, MAX_ZOOM)
+
+                        // Maintain focal point under centroid while zooming
+                        val zoomedOffset = (offset - centroid) * (newScale / scale) + centroid
+
+                        // Apply panning to maintain the content's position
+                        var newOffset = zoomedOffset + pan / newScale
+
+                        // Calculate the max offset to avoid content going off-screen
+                        val maxOffset = tileDp.toPx() * board.radius * 1.5f
+                        val center = Offset(containerSize.width / 2, containerSize.height / 2)
+
+                        // Clamp the offset within the allowed range
+                        newOffset = Offset(
+                            x = (newOffset.x - center.x).coerceIn(-maxOffset, maxOffset) + center.x,
+                            y = (newOffset.y - center.y).coerceIn(-maxOffset, maxOffset) + center.y
+                        )
+
+                        // Update scale and offset state
+                        scale = newScale
+                        offset = newOffset
+                    }
+                }
+                .pointerInput(Unit) {
+                    detectTapGestures(onDoubleTap = {
+                        // Reset scale and position on double tap
+                        scale = 1f
+                        offset = Offset(containerSize.width / 2, containerSize.height / 2)
+                    })
+                }
+                .offset(
+                    x = with(density) { offset.x.toDp() },
+                    y = with(density) { offset.y.toDp() }
+                )
         ) {
             content()
         }

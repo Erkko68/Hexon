@@ -9,12 +9,13 @@ import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import eric.bitria.hexon.src.board.Board
+import eric.bitria.hexon.src.board.tile.Tile
 import eric.bitria.hexon.ui.board.LocalTileSize
 import eric.bitria.hexon.ui.utils.geometry.HexConversions
 import eric.bitria.hexon.ui.utils.geometry.drawHexagon
 
 @Composable
-fun HexagonalTileLayer(board: Board) {
+fun HexagonalTileLayer(tiles: List<Tile>) {
     val tileSizePx = with(LocalDensity.current) { LocalTileSize.current.toPx() }
 
     // Tile Number
@@ -34,7 +35,7 @@ fun HexagonalTileLayer(board: Board) {
     }
 
     Canvas(modifier = Modifier.fillMaxSize()) {
-        board.getTiles().forEach { tile ->
+        tiles.forEach { tile ->
             val center = HexConversions.axialToPixel(tile.coords.q, tile.coords.r, tileSizePx)
 
             drawHexagon(center, tileSizePx, tile.resource.color)

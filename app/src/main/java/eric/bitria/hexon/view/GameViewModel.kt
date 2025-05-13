@@ -12,7 +12,6 @@ import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.ui.screen.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
@@ -30,12 +29,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class GameViewModel : ViewModel() {
-
+    // TODO: Refactor in multiple view models, and follow the Room architecture.
+    // Repository Layer: This way when we change the DataBase we have a layer of abstraction this way we can change the database for a remote database etc.
+    // For the data base we need a viewmodelprovider que es una factoria.
+    // Classe Aplication: Context es local,, Aplication té el contexte global de la aplicació. Ho feiam servir per a dades persistents.
+    // El DatabaseCallback no l'hem fet servir a la pràctica ja que es fa servir per cridar mètodes per defecte com afegir instàncies ja existents a la base de dades.
     private var _gameSettings by mutableStateOf(GameSettings())
 
     fun updatePlayerName(name: String) { _gameSettings = _gameSettings.copy(playerName = name) }

@@ -21,7 +21,7 @@ fun BoardRenderer(
 ) {
     Box {
         // Base Hexagonal Tiles Layer
-        HexagonalTileLayer(board)
+        HexagonalTileLayer(board.getTiles())
 
         // Existing Buildings Layer
         EdgeLayer(board.getEdges().filter { it.hasBuilding() })
