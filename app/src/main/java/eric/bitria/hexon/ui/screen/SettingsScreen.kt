@@ -31,11 +31,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.R
-import eric.bitria.hexon.view.GameViewModel
+import eric.bitria.hexon.view.MainGameViewModel
 
 @Composable
 fun SettingsScreen(
-    viewModel: GameViewModel,
+    viewModel: MainGameViewModel,
     onStartGame: (GameSettings) -> Unit,
     onBack: () -> Unit
 ) {

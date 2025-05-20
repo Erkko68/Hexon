@@ -12,10 +12,12 @@ import eric.bitria.hexon.ui.screen.LaunchScreen
 import eric.bitria.hexon.ui.screen.Screen
 import eric.bitria.hexon.ui.screen.SettingsScreen
 import eric.bitria.hexon.ui.theme.HexonTheme
-import eric.bitria.hexon.view.GameViewModel
+import eric.bitria.hexon.view.MainGameViewModel
 
 class MainActivity : ComponentActivity() {
-    private val viewModel: GameViewModel by viewModels()
+    private val viewModel: MainGameViewModel by viewModels()
+    // No ho podrem fer al tenir la base de dades ja que tindrem una dependència, obligant a fer servir una factoria
+    // O fes servir HILT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,7 +39,7 @@ class MainActivity : ComponentActivity() {
                         SettingsScreen(
                             viewModel = viewModel,
                             onStartGame = { config ->
-                                viewModel.updateConfig(config)
+                                viewModel.updateGameConfig(config)
                                 viewModel.startNewGame()
                                 navController.navigate(Screen.Game.route)
                             },
