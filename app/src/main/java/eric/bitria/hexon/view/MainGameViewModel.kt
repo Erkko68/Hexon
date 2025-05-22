@@ -305,7 +305,7 @@ class MainGameViewModel : ViewModel() {
         }
     }
 
-    fun processTurnEnd() { // Public for UI to call directly e.g. "End Turn" button
+    private fun processTurnEnd() {
         timerViewModel.stopTimer()
         playerViewModel.cancelCurrentPlayerTrade() // Ensure trade is cancelled
         interactionViewModel.resetClickHandlers()
