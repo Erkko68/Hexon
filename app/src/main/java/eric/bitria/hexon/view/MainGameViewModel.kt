@@ -1,8 +1,11 @@
 package eric.bitria.hexon.view
 
+import eric.bitria.hexon.view.models.GameSettingsViewModel
+import android.app.Application
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import eric.bitria.hexon.dataStore
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
@@ -12,7 +15,6 @@ import eric.bitria.hexon.ui.screen.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.models.BoardViewModel
-import eric.bitria.hexon.view.models.GameSettingsViewModel
 import eric.bitria.hexon.view.models.GameStatusViewModel
 import eric.bitria.hexon.view.models.InteractionViewModel
 import eric.bitria.hexon.view.models.PlayerViewModel
@@ -23,8 +25,10 @@ import eric.bitria.hexon.view.utils.ClickHandler
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class MainGameViewModel : ViewModel() {
-    val settingsViewModel = GameSettingsViewModel()
+class MainGameViewModel(application: Application) : AndroidViewModel(application) {
+    private val dataStore = application.dataStore
+    val settingsViewModel = GameSettingsViewModel(dataStore, viewModelScope)
+
     val boardViewModel = BoardViewModel()
     val playerViewModel = PlayerViewModel()
     val gameStatusViewModel = GameStatusViewModel()
@@ -188,12 +192,11 @@ class MainGameViewModel : ViewModel() {
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000)
-                Bot.placeRoad(boardViewModel.board, currentP) // Example bot actions
+                Bot.placeRoad(boardViewModel.board, currentP)
                 boardViewModel.updateBoardSnapshot()
                 delay(500)
                 Bot.placeSettlement(boardViewModel.board, currentP)
                 boardViewModel.updateBoardSnapshot()
-                // Add more bot logic (upgrade, dev cards, trade etc.)
                 delay(1000)
                 processTurnEnd()
             }
@@ -210,7 +213,7 @@ class MainGameViewModel : ViewModel() {
         val currentP = playerViewModel.currentPlayer
         if (currentP.isBot) return // Should not happen if UI is disabled for bots
 
-        boardViewModel.clearHighlights() // Clear previous highlights before new action
+        boardViewModel.clearHighlights()
 
         when (card) {
             is CardType.BuildingCard -> {
