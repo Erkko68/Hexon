@@ -1,23 +1,25 @@
 package eric.bitria.hexon.view.models
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.persistent.datastore.PreferencesKeys
-import eric.bitria.hexon.ui.screen.GameSettings
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class GameSettingsViewModel(
     private val dataStore: DataStore<Preferences>,
     private val scope: CoroutineScope
 ) {
-    var settings by mutableStateOf(GameSettings())
-        private set
+    private val _settings = MutableStateFlow<GameSettings?>(null)
+    val settings: StateFlow<GameSettings?> = _settings.asStateFlow()
 
     init {
         loadSettings()
@@ -25,52 +27,56 @@ class GameSettingsViewModel(
 
     private fun loadSettings() {
         scope.launch {
-            dataStore.data.collect { preferences ->
-                settings = GameSettings(
-                    playerName = preferences[PreferencesKeys.PLAYER_NAME] ?: "",
-                    playerColor = preferences[PreferencesKeys.PLAYER_COLOR]?.let { Color(it) } ?: Color.Blue,
-                    numberOfBots = preferences[PreferencesKeys.NUMBER_OF_BOTS] ?: 1,
-                    victoryPoints = preferences[PreferencesKeys.VICTORY_POINTS] ?: 8,
-                    timer = preferences[PreferencesKeys.TIMER] ?: 60000L
-                )
-            }
+            dataStore.data
+                .map { preferences ->
+                    GameSettings(
+                        playerName = preferences[PreferencesKeys.PLAYER_NAME] ?: "Player",
+                        playerColor = preferences[PreferencesKeys.PLAYER_COLOR]?.let { Color(it) } ?: Color.Blue,
+                        numberOfBots = preferences[PreferencesKeys.NUMBER_OF_BOTS] ?: 3,
+                        victoryPoints = preferences[PreferencesKeys.VICTORY_POINTS] ?: 10,
+                        timer = preferences[PreferencesKeys.TIMER] ?: 30_000L
+                    )
+                }
+                .collect { loadedSettings ->
+                    _settings.value = loadedSettings
+                }
         }
     }
 
-    // Update functions call saveSettings()
     fun updatePlayerName(name: String) {
-        settings = settings.copy(playerName = name)
+        _settings.value = _settings.value?.copy(playerName = name)
         saveSettings()
     }
 
     fun updatePlayerColor(color: Color) {
-        settings = settings.copy(playerColor = color)
+        _settings.value = _settings.value?.copy(playerColor = color)
         saveSettings()
     }
 
     fun updateNumberOfBots(bots: Int) {
-        settings = settings.copy(numberOfBots = bots)
+        _settings.value = _settings.value?.copy(numberOfBots = bots)
         saveSettings()
     }
 
     fun updateVictoryPoints(points: Int) {
-        settings = settings.copy(victoryPoints = points)
+        _settings.value = _settings.value?.copy(victoryPoints = points)
         saveSettings()
     }
 
     fun updateTimer(timer: Long) {
-        settings = settings.copy(timer = timer)
+        _settings.value = _settings.value?.copy(timer = timer)
         saveSettings()
     }
 
     private fun saveSettings() {
+        val current = _settings.value ?: return
         scope.launch {
             dataStore.edit { preferences ->
-                preferences[PreferencesKeys.PLAYER_NAME] = settings.playerName
-                preferences[PreferencesKeys.PLAYER_COLOR] = settings.playerColor.toArgb().toLong()
-                preferences[PreferencesKeys.NUMBER_OF_BOTS] = settings.numberOfBots
-                preferences[PreferencesKeys.VICTORY_POINTS] = settings.victoryPoints
-                preferences[PreferencesKeys.TIMER] = settings.timer
+                preferences[PreferencesKeys.PLAYER_NAME] = current.playerName
+                preferences[PreferencesKeys.PLAYER_COLOR] = current.playerColor.toArgb().toLong()
+                preferences[PreferencesKeys.NUMBER_OF_BOTS] = current.numberOfBots
+                preferences[PreferencesKeys.VICTORY_POINTS] = current.victoryPoints
+                preferences[PreferencesKeys.TIMER] = current.timer
             }
         }
     }

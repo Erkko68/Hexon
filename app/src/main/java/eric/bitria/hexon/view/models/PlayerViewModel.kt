@@ -6,7 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.ui.screen.GameSettings
+import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.utils.DeckType
 
 class PlayerViewModel {

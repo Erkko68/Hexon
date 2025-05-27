@@ -64,7 +64,6 @@ class MainActivity : ComponentActivity() {
                             viewModel = viewModel,
                             onExitToMenu = {
                                 navController.popBackStack()
-                                navController.popBackStack()
                             }
                         )
                     }

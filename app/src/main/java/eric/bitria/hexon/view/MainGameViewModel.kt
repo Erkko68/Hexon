@@ -6,12 +6,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import eric.bitria.hexon.dataStore
+import eric.bitria.hexon.persistent.database.GameResult
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
+import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.ui.screen.GameSettings
+import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.models.BoardViewModel
@@ -23,7 +25,12 @@ import eric.bitria.hexon.view.utils.Bot
 import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class MainGameViewModel(application: Application) : AndroidViewModel(application) {
     private val dataStore = application.dataStore
@@ -38,7 +45,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     private lateinit var turnManager: TurnManager
 
     // Expose states for the UI from sub-ViewModels
-    val gameSettings: GameSettings get() = settingsViewModel.settings
+    val gameSettings: GameSettings get() = settingsViewModel.settings.value ?: GameSettings()
     val board: Board get() = boardViewModel.board
     val humanPlayer: Player get() = playerViewModel.humanPlayer
     val currentPlayer: Player get() = playerViewModel.currentPlayer
@@ -50,18 +57,16 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     val availableVertices: List<Vertex> get() = boardViewModel.availableVertices
     val availableEdges: List<Edge> get() = boardViewModel.availableEdges
 
-
     fun updatePlayerName(name: String) = settingsViewModel.updatePlayerName(name)
     fun updatePlayerColor(color: Color) = settingsViewModel.updatePlayerColor(color)
     fun updateNumberOfBots(bots: Int) = settingsViewModel.updateNumberOfBots(bots)
     fun updateVictoryPoints(points: Int) = settingsViewModel.updateVictoryPoints(points)
     fun updateTimer(timer: Long) = settingsViewModel.updateTimer(timer)
 
-
     fun startNewGame() {
-        playerViewModel.setupPlayers(settingsViewModel.settings)
+        playerViewModel.setupPlayers(gameSettings)
         boardViewModel.initializeBoard()
-        timerViewModel.setTurnDuration(settingsViewModel.settings.timer)
+        timerViewModel.setTurnDuration(gameSettings.timer)
         timerViewModel.resetTotalTime()
 
         turnManager = TurnManager(playerViewModel.allPlayers, onRotationComplete = ::handleRotationComplete)
@@ -313,7 +318,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         interactionViewModel.resetClickHandlers()
         boardViewModel.clearHighlights()
 
-        if (playerViewModel.getCurrentPlayerVictoryPoints() >= settingsViewModel.settings.victoryPoints) {
+        if (playerViewModel.getCurrentPlayerVictoryPoints() >= gameSettings.victoryPoints) {
             gameStatusViewModel.setPhase(GamePhase.PLAYER_WON)
             // Handle game over screen display
             return
@@ -323,4 +328,26 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         playerViewModel.updateCurrentPlayer(turnManager.nextTurn())
         proceedToDiceRollPhase()
     }
+
+    fun generateGameResult(): GameResult {
+        val dateFormat = SimpleDateFormat("MMMM d, yyyy 'at' h:mm a", Locale.getDefault())
+        val currentTime = dateFormat.format(Date())
+
+        val buildings = humanPlayer.getTotalBuildings()
+            .filterKeys { it != Building.NONE }
+            .mapKeys { it.key.name }
+
+        val resources = humanPlayer.getTotalResources()
+            .filterKeys { it != Resource.NONE }
+            .mapKeys { it.key.name }
+
+        return GameResult(
+            datePlayed = currentTime,
+            winnerName = currentPlayer.name,
+            playerName = humanPlayer.name,
+            buildingStats = buildings,
+            resourceStats = resources
+        )
+    }
+
 }
