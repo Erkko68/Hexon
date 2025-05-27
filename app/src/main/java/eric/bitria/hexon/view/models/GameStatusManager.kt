@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import eric.bitria.hexon.view.enums.GamePhase
 
-class GameStatusViewModel {
+class GameStatusManager {
     var gamePhase by mutableStateOf(GamePhase.NONE)
         private set
     var dice1 by mutableIntStateOf(0)

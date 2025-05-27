@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class GameSettingsViewModel(
+class GameSettingsManager(
     private val dataStore: DataStore<Preferences>,
     private val scope: CoroutineScope
 ) {

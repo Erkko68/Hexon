@@ -8,7 +8,7 @@ import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 
-class InteractionViewModel {
+class InteractionManager {
     var cardClickHandler by mutableStateOf<ClickHandler>(ClickHandler.None)
         private set
     var boardClickHandler by mutableStateOf<ClickHandler>(ClickHandler.None)

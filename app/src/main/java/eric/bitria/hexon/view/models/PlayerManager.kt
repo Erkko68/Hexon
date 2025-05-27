@@ -9,7 +9,7 @@ import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.utils.DeckType
 
-class PlayerViewModel {
+class PlayerManager {
     var humanPlayer by mutableStateOf<Player>(Player("Dummy", Color.Black))
         private set
     var bots by mutableStateOf<List<Player>>(emptyList())

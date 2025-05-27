@@ -9,7 +9,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-class TurnTimerViewModel(private val coroutineScope: CoroutineScope) {
+class TurnTimerManager(private val coroutineScope: CoroutineScope) {
     private var timerJob: Job? = null
     private var turnTimeMillis by mutableLongStateOf(30_000L) // Default, will be updated
 

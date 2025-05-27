@@ -9,7 +9,7 @@ import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.view.utils.BoardBuilder
 
-class BoardViewModel {
+class BoardManager {
     var board by mutableStateOf(Board(1)) // Initial default board
         private set
     var availableVertices by mutableStateOf(emptyList<Vertex>())

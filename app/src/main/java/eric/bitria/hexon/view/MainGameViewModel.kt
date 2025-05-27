@@ -1,6 +1,6 @@
 package eric.bitria.hexon.view
 
-import eric.bitria.hexon.view.models.GameSettingsViewModel
+import eric.bitria.hexon.view.models.GameSettingsManager
 import android.app.Application
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
@@ -16,17 +16,15 @@ import eric.bitria.hexon.src.player.Player
 import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
-import eric.bitria.hexon.view.models.BoardViewModel
-import eric.bitria.hexon.view.models.GameStatusViewModel
-import eric.bitria.hexon.view.models.InteractionViewModel
-import eric.bitria.hexon.view.models.PlayerViewModel
-import eric.bitria.hexon.view.models.TurnTimerViewModel
+import eric.bitria.hexon.view.models.BoardManager
+import eric.bitria.hexon.view.models.GameStatusManager
+import eric.bitria.hexon.view.models.InteractionManager
+import eric.bitria.hexon.view.models.PlayerManager
+import eric.bitria.hexon.view.models.TurnTimerManager
 import eric.bitria.hexon.view.utils.Bot
 import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -34,100 +32,100 @@ import java.util.Locale
 
 class MainGameViewModel(application: Application) : AndroidViewModel(application) {
     private val dataStore = application.dataStore
-    val settingsViewModel = GameSettingsViewModel(dataStore, viewModelScope)
+    val settingsManager = GameSettingsManager(dataStore, viewModelScope)
 
-    val boardViewModel = BoardViewModel()
-    val playerViewModel = PlayerViewModel()
-    val gameStatusViewModel = GameStatusViewModel()
-    val timerViewModel = TurnTimerViewModel(viewModelScope)
-    val interactionViewModel = InteractionViewModel()
+    val boardManager = BoardManager()
+    val playerManager = PlayerManager()
+    val gameStatusManager = GameStatusManager()
+    val timerViewModel = TurnTimerManager(viewModelScope)
+    val interactionManager = InteractionManager()
 
     private lateinit var turnManager: TurnManager
 
     // Expose states for the UI from sub-ViewModels
-    val gameSettings: GameSettings get() = settingsViewModel.settings.value ?: GameSettings()
-    val board: Board get() = boardViewModel.board
-    val humanPlayer: Player get() = playerViewModel.humanPlayer
-    val currentPlayer: Player get() = playerViewModel.currentPlayer
-    val gamePhase: GamePhase get() = gameStatusViewModel.gamePhase
-    val dices: Pair<Int, Int> get() = gameStatusViewModel.dices
+    val gameSettings: GameSettings get() = settingsManager.settings.value ?: GameSettings()
+    val board: Board get() = boardManager.board
+    val humanPlayer: Player get() = playerManager.humanPlayer
+    val currentPlayer: Player get() = playerManager.currentPlayer
+    val gamePhase: GamePhase get() = gameStatusManager.gamePhase
+    val dices: Pair<Int, Int> get() = gameStatusManager.dices
     val timeLeft: Long get() = timerViewModel.timeLeftSeconds
-    val cardClickHandler: ClickHandler get() = interactionViewModel.cardClickHandler
-    val boardClickHandler: ClickHandler get() = interactionViewModel.boardClickHandler
-    val availableVertices: List<Vertex> get() = boardViewModel.availableVertices
-    val availableEdges: List<Edge> get() = boardViewModel.availableEdges
+    val cardClickHandler: ClickHandler get() = interactionManager.cardClickHandler
+    val boardClickHandler: ClickHandler get() = interactionManager.boardClickHandler
+    val availableVertices: List<Vertex> get() = boardManager.availableVertices
+    val availableEdges: List<Edge> get() = boardManager.availableEdges
 
-    fun updatePlayerName(name: String) = settingsViewModel.updatePlayerName(name)
-    fun updatePlayerColor(color: Color) = settingsViewModel.updatePlayerColor(color)
-    fun updateNumberOfBots(bots: Int) = settingsViewModel.updateNumberOfBots(bots)
-    fun updateVictoryPoints(points: Int) = settingsViewModel.updateVictoryPoints(points)
-    fun updateTimer(timer: Long) = settingsViewModel.updateTimer(timer)
+    fun updatePlayerName(name: String) = settingsManager.updatePlayerName(name)
+    fun updatePlayerColor(color: Color) = settingsManager.updatePlayerColor(color)
+    fun updateNumberOfBots(bots: Int) = settingsManager.updateNumberOfBots(bots)
+    fun updateVictoryPoints(points: Int) = settingsManager.updateVictoryPoints(points)
+    fun updateTimer(timer: Long) = settingsManager.updateTimer(timer)
 
     fun startNewGame() {
-        playerViewModel.setupPlayers(gameSettings)
-        boardViewModel.initializeBoard()
+        playerManager.setupPlayers(gameSettings)
+        boardManager.initializeBoard()
         timerViewModel.setTurnDuration(gameSettings.timer)
         timerViewModel.resetTotalTime()
 
-        turnManager = TurnManager(playerViewModel.allPlayers, onRotationComplete = ::handleRotationComplete)
-        playerViewModel.updateCurrentPlayer(turnManager.getCurrentPlayer())
+        turnManager = TurnManager(playerManager.allPlayers, onRotationComplete = ::handleRotationComplete)
+        playerManager.updateCurrentPlayer(turnManager.getCurrentPlayer())
 
-        interactionViewModel.resetClickHandlers()
-        boardViewModel.clearHighlights()
+        interactionManager.resetClickHandlers()
+        boardManager.clearHighlights()
 
         proceedToInitialSettlementPlacement()
     }
 
     private fun proceedToInitialSettlementPlacement() {
-        gameStatusViewModel.setPhase(GamePhase.INITIAL_PLACEMENT)
-        val currentP = playerViewModel.currentPlayer
+        gameStatusManager.setPhase(GamePhase.INITIAL_PLACEMENT)
+        val currentP = playerManager.currentPlayer
 
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000) // Bot thinking time
-                Bot.initialSettlementPlacement(boardViewModel.board, currentP)
-                boardViewModel.updateBoardSnapshot() // Reflect changes if any
+                Bot.initialSettlementPlacement(boardManager.board, currentP)
+                boardManager.updateBoardSnapshot() // Reflect changes if any
                 proceedToInitialRoadPlacement()
             }
         } else {
-            boardViewModel.highlightInitialSettlementVertices()
-            interactionViewModel.setOnVertexBoardClickHandler { vertex ->
-                interactionViewModel.resetClickHandlers()
-                boardViewModel.clearHighlights()
-                GameManager.placeInitialSettlement(boardViewModel.board, currentP, vertex)
-                boardViewModel.updateBoardSnapshot()
+            boardManager.highlightInitialSettlementVertices()
+            interactionManager.setOnVertexBoardClickHandler { vertex ->
+                interactionManager.resetClickHandlers()
+                boardManager.clearHighlights()
+                GameManager.placeInitialSettlement(boardManager.board, currentP, vertex)
+                boardManager.updateBoardSnapshot()
                 proceedToInitialRoadPlacement()
             }
         }
     }
 
     private fun proceedToInitialRoadPlacement() {
-        gameStatusViewModel.setPhase(GamePhase.INITIAL_PLACEMENT) // Still initial placement
-        val currentP = playerViewModel.currentPlayer
+        gameStatusManager.setPhase(GamePhase.INITIAL_PLACEMENT) // Still initial placement
+        val currentP = playerManager.currentPlayer
 
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000) // Bot thinking time
-                Bot.placeRoad(boardViewModel.board, currentP) // Assuming Bot.placeRoad exists for initial
-                boardViewModel.updateBoardSnapshot()
+                Bot.placeRoad(boardManager.board, currentP) // Assuming Bot.placeRoad exists for initial
+                boardManager.updateBoardSnapshot()
                 endInitialPlacementTurn()
             }
         } else {
-            boardViewModel.highlightRoadEdgesForInitialPlacement(currentP) // Use specific or general highlighting
-            interactionViewModel.setOnEdgeBoardClickHandler { edge ->
-                interactionViewModel.resetClickHandlers()
-                boardViewModel.clearHighlights()
-                GameManager.placeInitialRoad(boardViewModel.board, currentP, edge)
-                boardViewModel.updateBoardSnapshot()
+            boardManager.highlightRoadEdgesForInitialPlacement(currentP) // Use specific or general highlighting
+            interactionManager.setOnEdgeBoardClickHandler { edge ->
+                interactionManager.resetClickHandlers()
+                boardManager.clearHighlights()
+                GameManager.placeInitialRoad(boardManager.board, currentP, edge)
+                boardManager.updateBoardSnapshot()
                 endInitialPlacementTurn()
             }
         }
     }
 
     private fun endInitialPlacementTurn() {
-        playerViewModel.updateCurrentPlayer(turnManager.nextTurn())
+        playerManager.updateCurrentPlayer(turnManager.nextTurn())
         // onRotationComplete callback in TurnManager will handle phase transition or next player's placement
-        if (gameStatusViewModel.gamePhase != GamePhase.ROLL_DICE) { // If not transitioned by onRotationComplete
+        if (gameStatusManager.gamePhase != GamePhase.ROLL_DICE) { // If not transitioned by onRotationComplete
             proceedToInitialSettlementPlacement()
         } else { // Transitioned to normal game
             proceedToDiceRollPhase()
@@ -135,16 +133,16 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun handleRotationComplete() {
-        if (gameStatusViewModel.gamePhase == GamePhase.INITIAL_PLACEMENT) {
+        if (gameStatusManager.gamePhase == GamePhase.INITIAL_PLACEMENT) {
             if (!turnManager.hasReversedTurnOrder()) {
                 turnManager.reverseTurnOrder()
                 // The turn manager might automatically set the next player, or we might need to update it.
-                playerViewModel.updateCurrentPlayer(turnManager.getCurrentPlayer())
+                playerManager.updateCurrentPlayer(turnManager.getCurrentPlayer())
                 // Continue placement with reversed order
             } else {
                 // Both forward and reverse initial placements are done
-                gameStatusViewModel.setPhase(GamePhase.ROLL_DICE)
-                playerViewModel.updateCurrentPlayer(turnManager.getCurrentPlayer()) // First player of normal round
+                gameStatusManager.setPhase(GamePhase.ROLL_DICE)
+                playerManager.updateCurrentPlayer(turnManager.getCurrentPlayer()) // First player of normal round
                 // proceedToDiceRollPhase() will be called by endInitialPlacementTurn's logic
             }
         }
@@ -152,103 +150,103 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     }
 
     private fun proceedToDiceRollPhase() {
-        gameStatusViewModel.setPhase(GamePhase.ROLL_DICE)
-        playerViewModel.updateCurrentPlayer(turnManager.getCurrentPlayer())
-        interactionViewModel.resetClickHandlers()
-        boardViewModel.clearHighlights()
+        gameStatusManager.setPhase(GamePhase.ROLL_DICE)
+        playerManager.updateCurrentPlayer(turnManager.getCurrentPlayer())
+        interactionManager.resetClickHandlers()
+        boardManager.clearHighlights()
         timerViewModel.stopTimer() // Stop previous timer if any
 
-        val currentP = playerViewModel.currentPlayer
+        val currentP = playerManager.currentPlayer
 
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000)
-                val (d1, d2) = GameManager.rollDice(boardViewModel.board)
-                gameStatusViewModel.updateDiceRoll(d1, d2)
-                boardViewModel.updateBoardSnapshot() // Resource distribution might change board view
+                val (d1, d2) = GameManager.rollDice(boardManager.board)
+                gameStatusManager.updateDiceRoll(d1, d2)
+                boardManager.updateBoardSnapshot() // Resource distribution might change board view
                 delay(1000)
                 proceedToPlayerTurnPhase()
             }
         } else {
             timerViewModel.startTimer { // Timer for dice roll action
                 // Auto-roll if player doesn't click in time
-                val (d1, d2) = GameManager.rollDice(boardViewModel.board)
-                gameStatusViewModel.updateDiceRoll(d1, d2)
-                boardViewModel.updateBoardSnapshot()
-                interactionViewModel.resetClickHandlers() // Important
+                val (d1, d2) = GameManager.rollDice(boardManager.board)
+                gameStatusManager.updateDiceRoll(d1, d2)
+                boardManager.updateBoardSnapshot()
+                interactionManager.resetClickHandlers() // Important
                 viewModelScope.launch { delay(500); proceedToPlayerTurnPhase() }
             }
-            interactionViewModel.setNoParamCardClickHandler { // For clicking the dice UI
+            interactionManager.setNoParamCardClickHandler { // For clicking the dice UI
                 timerViewModel.stopTimer()
-                val (d1, d2) = GameManager.rollDice(boardViewModel.board)
-                gameStatusViewModel.updateDiceRoll(d1, d2)
-                boardViewModel.updateBoardSnapshot()
-                interactionViewModel.resetClickHandlers() // Only one roll
+                val (d1, d2) = GameManager.rollDice(boardManager.board)
+                gameStatusManager.updateDiceRoll(d1, d2)
+                boardManager.updateBoardSnapshot()
+                interactionManager.resetClickHandlers() // Only one roll
                 viewModelScope.launch { delay(500); proceedToPlayerTurnPhase() }
             }
         }
     }
 
     private fun proceedToPlayerTurnPhase() {
-        val currentP = playerViewModel.currentPlayer
-        gameStatusViewModel.setPhase(if (currentP.isBot) GamePhase.BOT_TURN else GamePhase.PLAYER_TURN)
+        val currentP = playerManager.currentPlayer
+        gameStatusManager.setPhase(if (currentP.isBot) GamePhase.BOT_TURN else GamePhase.PLAYER_TURN)
 
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000)
-                Bot.placeRoad(boardViewModel.board, currentP)
-                boardViewModel.updateBoardSnapshot()
+                Bot.placeRoad(boardManager.board, currentP)
+                boardManager.updateBoardSnapshot()
                 delay(500)
-                Bot.placeSettlement(boardViewModel.board, currentP)
-                boardViewModel.updateBoardSnapshot()
+                Bot.placeSettlement(boardManager.board, currentP)
+                boardManager.updateBoardSnapshot()
                 delay(1000)
                 processTurnEnd()
             }
         } else {
             timerViewModel.startTimer { processTurnEnd() } // Start main turn timer
             // Setup card click handlers for player actions
-            interactionViewModel.setOnCardClickHandler { cardType ->
+            interactionManager.setOnCardClickHandler { cardType ->
                 handleCardTypeClick(cardType)
             }
         }
     }
 
     private fun handleCardTypeClick(card: CardType) {
-        val currentP = playerViewModel.currentPlayer
+        val currentP = playerManager.currentPlayer
         if (currentP.isBot) return // Should not happen if UI is disabled for bots
 
-        boardViewModel.clearHighlights()
+        boardManager.clearHighlights()
 
         when (card) {
             is CardType.BuildingCard -> {
                 when (card.building) {
                     Building.SETTLEMENT -> {
-                        boardViewModel.highlightSettlementVertices(currentP)
-                        interactionViewModel.setOnVertexBoardClickHandler { vertex ->
-                            GameManager.placeSettlement(boardViewModel.board, currentP, vertex)
-                            boardViewModel.updateBoardSnapshot()
-                            interactionViewModel.resetClickHandlers() // Or return to main turn action handlers
-                            boardViewModel.clearHighlights()
+                        boardManager.highlightSettlementVertices(currentP)
+                        interactionManager.setOnVertexBoardClickHandler { vertex ->
+                            GameManager.placeSettlement(boardManager.board, currentP, vertex)
+                            boardManager.updateBoardSnapshot()
+                            interactionManager.resetClickHandlers() // Or return to main turn action handlers
+                            boardManager.clearHighlights()
                             setupPlayerTurnInteractions() // Re-setup general turn interactions
                         }
                     }
                     Building.ROAD -> {
-                        boardViewModel.highlightRoadEdges(currentP)
-                        interactionViewModel.setOnEdgeBoardClickHandler { edge ->
-                            GameManager.placeRoad(boardViewModel.board, currentP, edge)
-                            boardViewModel.updateBoardSnapshot()
-                            interactionViewModel.resetClickHandlers()
-                            boardViewModel.clearHighlights()
+                        boardManager.highlightRoadEdges(currentP)
+                        interactionManager.setOnEdgeBoardClickHandler { edge ->
+                            GameManager.placeRoad(boardManager.board, currentP, edge)
+                            boardManager.updateBoardSnapshot()
+                            interactionManager.resetClickHandlers()
+                            boardManager.clearHighlights()
                             setupPlayerTurnInteractions()
                         }
                     }
                     Building.CITY -> {
-                        boardViewModel.highlightCityUpgradableVertices(currentP)
-                        interactionViewModel.setOnVertexBoardClickHandler { vertex ->
-                            GameManager.placeCity(boardViewModel.board, currentP, vertex)
-                            boardViewModel.updateBoardSnapshot()
-                            interactionViewModel.resetClickHandlers()
-                            boardViewModel.clearHighlights()
+                        boardManager.highlightCityUpgradableVertices(currentP)
+                        interactionManager.setOnVertexBoardClickHandler { vertex ->
+                            GameManager.placeCity(boardManager.board, currentP, vertex)
+                            boardManager.updateBoardSnapshot()
+                            interactionManager.resetClickHandlers()
+                            boardManager.clearHighlights()
                             setupPlayerTurnInteractions()
                         }
                     }
@@ -260,8 +258,8 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
             }
             is CardType.ResourceCard -> {
                 // This is usually for trading context
-                if (gameStatusViewModel.gamePhase == GamePhase.PLAYER_TRADE) {
-                    playerViewModel.handleResourceClickForTrade(card.resource, card.deck)
+                if (gameStatusManager.gamePhase == GamePhase.PLAYER_TRADE) {
+                    playerManager.handleResourceClickForTrade(card.resource, card.deck)
                     // UI should update based on playerViewModel.currentPlayer's trading state
                 }
             }
@@ -270,7 +268,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
 
     private fun setupPlayerTurnInteractions() {
         // Re-establishes the general click handler for cards during a player's turn
-        interactionViewModel.setOnCardClickHandler { cardType ->
+        interactionManager.setOnCardClickHandler { cardType ->
             handleCardTypeClick(cardType)
         }
         // Ensure board click handler is None unless a specific action (like placing a building) sets it.
@@ -278,31 +276,31 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         // If not, ensure it's reset or set to a default "do nothing" or "select tile" handler if desired.
         // For now, we assume handleCardTypeClick sets specific board handlers, and otherwise it should be None.
         // If no specific sub-action is active, board clicks do nothing.
-        if (interactionViewModel.boardClickHandler !is ClickHandler.OnVertex && interactionViewModel.boardClickHandler !is ClickHandler.OnEdge) {
-            interactionViewModel.boardClickHandler = ClickHandler.None
+        if (interactionManager.boardClickHandler !is ClickHandler.OnVertex && interactionManager.boardClickHandler !is ClickHandler.OnEdge) {
+            interactionManager.boardClickHandler = ClickHandler.None
         }
     }
 
 
     private fun handleGameAction(action: GameActions) {
-        boardViewModel.clearHighlights()
-        interactionViewModel.resetClickHandlers() // Reset board click first
+        boardManager.clearHighlights()
+        interactionManager.resetClickHandlers() // Reset board click first
 
         when (action) {
             GameActions.OPEN_TRADE -> {
-                gameStatusViewModel.setPhase(GamePhase.PLAYER_TRADE)
+                gameStatusManager.setPhase(GamePhase.PLAYER_TRADE)
                 // UI should now show trading interface. Resource card clicks are handled by handleCardTypeClick
                 // Still need to set up general turn interactions for other cards
                 setupPlayerTurnInteractions()
             }
             GameActions.CLOSE_TRADE -> {
-                playerViewModel.cancelCurrentPlayerTrade()
-                gameStatusViewModel.setPhase(GamePhase.PLAYER_TURN)
+                playerManager.cancelCurrentPlayerTrade()
+                gameStatusManager.setPhase(GamePhase.PLAYER_TURN)
                 setupPlayerTurnInteractions()
             }
             GameActions.ACCEPT_TRADE -> {
-                playerViewModel.acceptCurrentPlayerTrade()
-                gameStatusViewModel.setPhase(GamePhase.PLAYER_TURN)
+                playerManager.acceptCurrentPlayerTrade()
+                gameStatusManager.setPhase(GamePhase.PLAYER_TURN)
                 // Potentially update board/player states if trade affected something visible beyond resources
                 setupPlayerTurnInteractions()
             }
@@ -314,18 +312,18 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
 
     private fun processTurnEnd() {
         timerViewModel.stopTimer()
-        playerViewModel.cancelCurrentPlayerTrade() // Ensure trade is cancelled
-        interactionViewModel.resetClickHandlers()
-        boardViewModel.clearHighlights()
+        playerManager.cancelCurrentPlayerTrade() // Ensure trade is cancelled
+        interactionManager.resetClickHandlers()
+        boardManager.clearHighlights()
 
-        if (playerViewModel.getCurrentPlayerVictoryPoints() >= gameSettings.victoryPoints) {
-            gameStatusViewModel.setPhase(GamePhase.PLAYER_WON)
+        if (playerManager.getCurrentPlayerVictoryPoints() >= gameSettings.victoryPoints) {
+            gameStatusManager.setPhase(GamePhase.PLAYER_WON)
             // Handle game over screen display
             return
         }
 
-        gameStatusViewModel.setPhase(GamePhase.END_TURN) // Brief phase
-        playerViewModel.updateCurrentPlayer(turnManager.nextTurn())
+        gameStatusManager.setPhase(GamePhase.END_TURN) // Brief phase
+        playerManager.updateCurrentPlayer(turnManager.nextTurn())
         proceedToDiceRollPhase()
     }
 
