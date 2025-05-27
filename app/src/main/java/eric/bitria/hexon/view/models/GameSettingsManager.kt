@@ -18,8 +18,8 @@ class GameSettingsManager(
     private val dataStore: DataStore<Preferences>,
     private val scope: CoroutineScope
 ) {
-    private val _settings = MutableStateFlow<GameSettings?>(null)
-    val settings: StateFlow<GameSettings?> = _settings.asStateFlow()
+    private val _settings = MutableStateFlow<GameSettings>(GameSettings())
+    val settings: StateFlow<GameSettings> = _settings.asStateFlow()
 
     init {
         loadSettings()
@@ -44,32 +44,32 @@ class GameSettingsManager(
     }
 
     fun updatePlayerName(name: String) {
-        _settings.value = _settings.value?.copy(playerName = name)
+        _settings.value = _settings.value.copy(playerName = name)
         saveSettings()
     }
 
     fun updatePlayerColor(color: Color) {
-        _settings.value = _settings.value?.copy(playerColor = color)
+        _settings.value = _settings.value.copy(playerColor = color)
         saveSettings()
     }
 
     fun updateNumberOfBots(bots: Int) {
-        _settings.value = _settings.value?.copy(numberOfBots = bots)
+        _settings.value = _settings.value.copy(numberOfBots = bots)
         saveSettings()
     }
 
     fun updateVictoryPoints(points: Int) {
-        _settings.value = _settings.value?.copy(victoryPoints = points)
+        _settings.value = _settings.value.copy(victoryPoints = points)
         saveSettings()
     }
 
     fun updateTimer(timer: Long) {
-        _settings.value = _settings.value?.copy(timer = timer)
+        _settings.value = _settings.value.copy(timer = timer)
         saveSettings()
     }
 
     private fun saveSettings() {
-        val current = _settings.value ?: return
+        val current = _settings.value
         scope.launch {
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.PLAYER_NAME] = current.playerName

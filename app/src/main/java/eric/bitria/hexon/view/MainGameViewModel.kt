@@ -6,6 +6,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import eric.bitria.hexon.dataStore
+import kotlinx.coroutines.flow.Flow
 import eric.bitria.hexon.persistent.database.GameResult
 import eric.bitria.hexon.persistent.database.GameResultDatabase
 import eric.bitria.hexon.persistent.database.GameResultRepository
@@ -48,7 +49,8 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     private lateinit var turnManager: TurnManager
 
     // Expose states for the UI from sub-ViewModels
-    val gameSettings: GameSettings get() = settingsManager.settings.value ?: GameSettings()
+    val gameSettingsFlow: Flow<GameSettings> get() = settingsManager.settings
+    val history: Flow<List<GameResult>> get() = db.getAllResults()
     val board: Board get() = boardManager.board
     val humanPlayer: Player get() = playerManager.humanPlayer
     val currentPlayer: Player get() = playerManager.currentPlayer
@@ -67,9 +69,9 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     fun updateTimer(timer: Long) = settingsManager.updateTimer(timer)
 
     fun startNewGame() {
-        playerManager.setupPlayers(gameSettings)
+        playerManager.setupPlayers(settingsManager.settings.value)
         boardManager.initializeBoard()
-        timerViewModel.setTurnDuration(gameSettings.timer)
+        timerViewModel.setTurnDuration(settingsManager.settings.value.timer)
         timerViewModel.resetTotalTime()
 
         turnManager = TurnManager(playerManager.allPlayers, onRotationComplete = ::handleRotationComplete)
@@ -321,7 +323,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         interactionManager.resetClickHandlers()
         boardManager.clearHighlights()
 
-        if (playerManager.getCurrentPlayerVictoryPoints() >= gameSettings.victoryPoints) {
+        if (playerManager.getCurrentPlayerVictoryPoints() >= settingsManager.settings.value.victoryPoints) {
             gameStatusManager.setPhase(GamePhase.PLAYER_WON)
             saveCurrentGameResult()
             return

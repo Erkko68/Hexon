@@ -24,6 +24,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,6 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.R
+import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.MainGameViewModel
 
 @Composable
@@ -42,7 +44,10 @@ fun SettingsScreen(
     viewModel: MainGameViewModel,
     onExitToMenu: () -> Unit
 ) {
-    val playerName = viewModel.gameSettings.playerName
+
+    val gameSettings by viewModel.settingsManager.settings.collectAsState()
+
+    val playerName = gameSettings.playerName
     val isNameValid = playerName.trim().isNotEmpty()
     var showWarning by remember { mutableStateOf(true) }
     val configuration = LocalConfiguration.current
@@ -90,7 +95,7 @@ fun SettingsScreen(
                     }
 
                     ColorPicker(
-                        selectedColor = viewModel.gameSettings.playerColor,
+                        selectedColor = gameSettings.playerColor,
                         onColorSelected = { viewModel.updatePlayerColor(it) }
                     )
                 }
@@ -102,14 +107,14 @@ fun SettingsScreen(
                     SettingsOptionGroup(
                         title = stringResource(R.string.number_of_bots),
                         options = listOf(1, 2, 3),
-                        selected = viewModel.gameSettings.numberOfBots,
+                        selected = gameSettings.numberOfBots,
                         onSelected = { viewModel.updateNumberOfBots(it) }
                     )
 
                     SettingsOptionGroup(
                         title = stringResource(R.string.game_timer_seconds),
                         options = listOf(30, 60, 90),
-                        selected = (viewModel.gameSettings.timer / 1000).toInt(),
+                        selected = (gameSettings.timer / 1000).toInt(),
                         optionFormatter = { "$it" },
                         onSelected = { viewModel.updateTimer(it * 1000L) }
                     )
@@ -117,7 +122,7 @@ fun SettingsScreen(
                     SettingsOptionGroup(
                         title = stringResource(R.string.victory_points),
                         options = listOf(5, 8, 10, 12),
-                        selected = viewModel.gameSettings.victoryPoints.toInt(),
+                        selected = gameSettings.victoryPoints.toInt(),
                         optionFormatter = { "$it" },
                         onSelected = { viewModel.updateVictoryPoints(it) }
                     )
@@ -146,21 +151,21 @@ fun SettingsScreen(
                 }
 
                 ColorPicker(
-                    selectedColor = viewModel.gameSettings.playerColor,
+                    selectedColor = gameSettings.playerColor,
                     onColorSelected = { viewModel.updatePlayerColor(it) }
                 )
 
                 SettingsOptionGroup(
                     title = stringResource(R.string.number_of_bots),
                     options = listOf(1, 2, 3),
-                    selected = viewModel.gameSettings.numberOfBots,
+                    selected = gameSettings.numberOfBots,
                     onSelected = { viewModel.updateNumberOfBots(it) }
                 )
 
                 SettingsOptionGroup(
                     title = stringResource(R.string.game_timer_seconds),
                     options = listOf(30, 60, 90),
-                    selected = (viewModel.gameSettings.timer / 1000).toInt(),
+                    selected = (gameSettings.timer / 1000).toInt(),
                     optionFormatter = { "$it" },
                     onSelected = { viewModel.updateTimer(it * 1000L) }
                 )
@@ -168,7 +173,7 @@ fun SettingsScreen(
                 SettingsOptionGroup(
                     title = stringResource(R.string.victory_points),
                     options = listOf(5, 8, 10, 12),
-                    selected = viewModel.gameSettings.victoryPoints.toInt(),
+                    selected = gameSettings.victoryPoints.toInt(),
                     optionFormatter = { "$it" },
                     onSelected = { viewModel.updateVictoryPoints(it) }
                 )

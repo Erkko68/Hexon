@@ -10,6 +10,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import eric.bitria.hexon.ui.screen.GameScreen
+import eric.bitria.hexon.ui.screen.HistoryScreen
 import eric.bitria.hexon.ui.screen.LaunchScreen
 import eric.bitria.hexon.ui.screen.Screen
 import eric.bitria.hexon.ui.screen.SettingsScreen
@@ -48,6 +49,9 @@ class MainActivity : ComponentActivity() {
                             },
                             onOpenSettings = {
                                 navController.navigate(Screen.Settings.route)
+                            },
+                            onOpenHistory = {
+                                navController.navigate(Screen.History.route)
                             }
                         )
                     }
@@ -67,6 +71,12 @@ class MainActivity : ComponentActivity() {
                             onExitToMenu = {
                                 navController.popBackStack()
                             }
+                        )
+                    }
+
+                    composable(Screen.History.route) {
+                        HistoryScreen(
+                            viewModel = viewModel
                         )
                     }
                 }
