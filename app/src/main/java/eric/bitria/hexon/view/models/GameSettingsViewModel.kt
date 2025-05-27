@@ -63,11 +63,6 @@ class GameSettingsViewModel(
         saveSettings()
     }
 
-    fun updateGameSettings(newSettings: GameSettings) {
-        settings = newSettings
-        saveSettings()
-    }
-
     private fun saveSettings() {
         scope.launch {
             dataStore.edit { preferences ->

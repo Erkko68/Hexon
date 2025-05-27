@@ -56,7 +56,6 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     fun updateNumberOfBots(bots: Int) = settingsViewModel.updateNumberOfBots(bots)
     fun updateVictoryPoints(points: Int) = settingsViewModel.updateVictoryPoints(points)
     fun updateTimer(timer: Long) = settingsViewModel.updateTimer(timer)
-    fun updateGameConfig(newConfig: GameSettings) = settingsViewModel.updateGameSettings(newConfig)
 
 
     fun startNewGame() {

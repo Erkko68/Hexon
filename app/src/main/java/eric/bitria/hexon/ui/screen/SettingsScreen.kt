@@ -13,14 +13,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
@@ -36,8 +34,7 @@ import eric.bitria.hexon.view.MainGameViewModel
 @Composable
 fun SettingsScreen(
     viewModel: MainGameViewModel,
-    onStartGame: (GameSettings) -> Unit,
-    onBack: () -> Unit
+    onExitToMenu: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -93,20 +90,11 @@ fun SettingsScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            OutlinedButton(
-                onClick = onBack,
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(stringResource(R.string.back))
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
             Button(
-                onClick = { onStartGame(viewModel.gameSettings) },
+                onClick = onExitToMenu,
                 modifier = Modifier.weight(1f)
             ) {
-                Text(stringResource(R.string.start_game))
+                Text(stringResource(R.string.exit_to_menu_msg))
             }
         }
     }

@@ -31,4 +31,6 @@
     <string name="produces_1_resource_and_gives_1_victory_point">产出1个资源并获得1个胜利点。</string>
     <string name="produces_2_resources_and_gives_2_victory_points">产出2个资源并获得2个胜利点。</string>
     <string name="close">关闭</string>
+    <string name="return_to_menu">Return to menu</string>
+    <string name="cancel">Cancel</string>
 </resources>

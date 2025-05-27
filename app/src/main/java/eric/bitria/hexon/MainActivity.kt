@@ -41,6 +41,10 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Launch.route) {
                         LaunchScreen(
                             onStartGame = {
+                                viewModel.startNewGame()
+                                navController.navigate(Screen.Game.route)
+                            },
+                            onOpenSettings = {
                                 navController.navigate(Screen.Settings.route)
                             }
                         )
@@ -49,12 +53,9 @@ class MainActivity : ComponentActivity() {
                     composable(Screen.Settings.route) {
                         SettingsScreen(
                             viewModel = viewModel,
-                            onStartGame = { config ->
-                                viewModel.updateGameConfig(config)
-                                viewModel.startNewGame()
-                                navController.navigate(Screen.Game.route)
-                            },
-                            onBack = { navController.popBackStack() }
+                            onExitToMenu = {
+                                navController.popBackStack()
+                            }
                         )
                     }
 

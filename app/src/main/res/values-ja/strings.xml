@@ -31,4 +31,6 @@
     <string name="produces_1_resource_and_gives_1_victory_point">1つの資源を生産し、1つの勝利ポイントを得る。</string>
     <string name="produces_2_resources_and_gives_2_victory_points">2つの資源を生産し、2つの勝利ポイントを得る。</string>
     <string name="close">閉じる</string>
+    <string name="return_to_menu">Return to menu</string>
+    <string name="cancel">Cancel</string>
 </resources>

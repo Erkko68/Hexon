@@ -31,4 +31,6 @@
     <string name="produces_1_resource_and_gives_1_victory_point">Produces 1 resource and gives 1 victory point.</string>
     <string name="produces_2_resources_and_gives_2_victory_points">Produces 2 resources and gives 2 victory points.</string>
     <string name="close">Close</string>
+    <string name="return_to_menu">Return to menu</string>
+    <string name="cancel">Cancel</string>
 </resources>
