@@ -7,6 +7,9 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import eric.bitria.hexon.dataStore
 import eric.bitria.hexon.persistent.database.GameResult
+import eric.bitria.hexon.persistent.database.GameResultDatabase
+import eric.bitria.hexon.persistent.database.GameResultRepository
+import eric.bitria.hexon.persistent.database.toEntity
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
@@ -33,6 +36,8 @@ import java.util.Locale
 class MainGameViewModel(application: Application) : AndroidViewModel(application) {
     private val dataStore = application.dataStore
     val settingsManager = GameSettingsManager(dataStore, viewModelScope)
+
+    private val db = GameResultRepository(GameResultDatabase.getDB(getApplication()).gameResultDao())
 
     val boardManager = BoardManager()
     val playerManager = PlayerManager()
@@ -318,7 +323,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
 
         if (playerManager.getCurrentPlayerVictoryPoints() >= gameSettings.victoryPoints) {
             gameStatusManager.setPhase(GamePhase.PLAYER_WON)
-            // Handle game over screen display
+            saveCurrentGameResult()
             return
         }
 
@@ -346,6 +351,13 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
             buildingStats = buildings,
             resourceStats = resources
         )
+    }
+
+    fun saveCurrentGameResult() {
+        val result = generateGameResult()
+        viewModelScope.launch {
+            db.saveGameResult(result)
+        }
     }
 
 }

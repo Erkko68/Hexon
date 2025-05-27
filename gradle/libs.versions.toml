@@ -2,6 +2,8 @@
 agp = "8.9.2"
 composeBomVersion = "2025.03.00"
 datastorePreferences = "1.1.7"
+gson = "2.10.1"
+gsonVersion = "2.11.0"
 junitJupiterApi = "5.12.0"
 junitJupiterEngine = "5.12.0"
 kotlin = "2.1.10"
@@ -16,6 +18,7 @@ composeBom = "2025.03.00"
 junitJupiter = "5.12.0"
 material3IconsExtended = "1.2.0"
 navigationCompose = "2.8.9"
+roomRuntime = "2.7.1"
 
 [libraries]
 androidx-compose-bom-v20230800 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
@@ -24,6 +27,11 @@ androidx-datastore-preferences = { module = "androidx.datastore:datastore-prefer
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
 androidx-material3-icons-extended = { module = "androidx.compose.material3:material3-icons-extended", version.ref = "material3IconsExtended" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }
+google-gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
+gson = { module = "com.google.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
