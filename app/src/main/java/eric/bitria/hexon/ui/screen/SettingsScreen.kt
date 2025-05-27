@@ -1,5 +1,6 @@
 package eric.bitria.hexon.ui.screen
 
+import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,9 +24,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.R
@@ -36,6 +42,12 @@ fun SettingsScreen(
     viewModel: MainGameViewModel,
     onExitToMenu: () -> Unit
 ) {
+    val playerName = viewModel.gameSettings.playerName
+    val isNameValid = playerName.trim().isNotEmpty()
+    var showWarning by remember { mutableStateOf(true) }
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -48,41 +60,120 @@ fun SettingsScreen(
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        OutlinedTextField(
-            value = viewModel.gameSettings.playerName,
-            onValueChange = { (viewModel::updatePlayerName)(it) },
-            label = { Text(stringResource(R.string.player_name)) },
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (isLandscape) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(24.dp)
+            ) {
+                // Left Panel
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    OutlinedTextField(
+                        value = playerName,
+                        onValueChange = {
+                            viewModel.updatePlayerName(it)
+                            if (it.trim().isNotEmpty()) showWarning = false
+                        },
+                        label = { Text(stringResource(R.string.player_name)) },
+                        modifier = Modifier.fillMaxWidth(),
+                        isError = showWarning && !isNameValid
+                    )
 
-        ColorPicker(
-            selectedColor = viewModel.gameSettings.playerColor,
-            onColorSelected = { (viewModel::updatePlayerColor)(it) }
-        )
+                    if (showWarning && !isNameValid) {
+                        Text(
+                            text = "Player name cannot be empty",
+                            color = Color.Red,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                        )
+                    }
 
+                    ColorPicker(
+                        selectedColor = viewModel.gameSettings.playerColor,
+                        onColorSelected = { viewModel.updatePlayerColor(it) }
+                    )
+                }
 
-        SettingsOptionGroup(
-            title = stringResource(R.string.number_of_bots),
-            options = listOf(1, 2, 3),
-            selected = viewModel.gameSettings.numberOfBots,
-            onSelected = { (viewModel::updateNumberOfBots)(it) }
-        )
+                // Right Panel
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
+                    SettingsOptionGroup(
+                        title = stringResource(R.string.number_of_bots),
+                        options = listOf(1, 2, 3),
+                        selected = viewModel.gameSettings.numberOfBots,
+                        onSelected = { viewModel.updateNumberOfBots(it) }
+                    )
 
-        SettingsOptionGroup(
-            title = stringResource(R.string.game_timer_seconds),
-            options = listOf(30, 60, 90),
-            selected = (viewModel.gameSettings.timer / 1000).toInt(),
-            optionFormatter = { "$it" },
-            onSelected = { (viewModel::updateTimer)(it * 1000L) }
-        )
+                    SettingsOptionGroup(
+                        title = stringResource(R.string.game_timer_seconds),
+                        options = listOf(30, 60, 90),
+                        selected = (viewModel.gameSettings.timer / 1000).toInt(),
+                        optionFormatter = { "$it" },
+                        onSelected = { viewModel.updateTimer(it * 1000L) }
+                    )
 
-        SettingsOptionGroup(
-            title = stringResource(R.string.victory_points),
-            options = listOf(5, 8, 10, 12),
-            selected = (viewModel.gameSettings.victoryPoints).toInt(),
-            optionFormatter = { "$it" },
-            onSelected = { (viewModel::updateVictoryPoints)(it) }
-        )
+                    SettingsOptionGroup(
+                        title = stringResource(R.string.victory_points),
+                        options = listOf(5, 8, 10, 12),
+                        selected = viewModel.gameSettings.victoryPoints.toInt(),
+                        optionFormatter = { "$it" },
+                        onSelected = { viewModel.updateVictoryPoints(it) }
+                    )
+                }
+            }
+        } else {
+            Column {
+                OutlinedTextField(
+                    value = playerName,
+                    onValueChange = {
+                        viewModel.updatePlayerName(it)
+                        if (it.trim().isNotEmpty()) showWarning = false
+                    },
+                    label = { Text(stringResource(R.string.player_name)) },
+                    modifier = Modifier.fillMaxWidth(),
+                    isError = showWarning && !isNameValid
+                )
+
+                if (showWarning && !isNameValid) {
+                    Text(
+                        text = "Player name cannot be empty",
+                        color = Color.Red,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                    )
+                }
+
+                ColorPicker(
+                    selectedColor = viewModel.gameSettings.playerColor,
+                    onColorSelected = { viewModel.updatePlayerColor(it) }
+                )
+
+                SettingsOptionGroup(
+                    title = stringResource(R.string.number_of_bots),
+                    options = listOf(1, 2, 3),
+                    selected = viewModel.gameSettings.numberOfBots,
+                    onSelected = { viewModel.updateNumberOfBots(it) }
+                )
+
+                SettingsOptionGroup(
+                    title = stringResource(R.string.game_timer_seconds),
+                    options = listOf(30, 60, 90),
+                    selected = (viewModel.gameSettings.timer / 1000).toInt(),
+                    optionFormatter = { "$it" },
+                    onSelected = { viewModel.updateTimer(it * 1000L) }
+                )
+
+                SettingsOptionGroup(
+                    title = stringResource(R.string.victory_points),
+                    options = listOf(5, 8, 10, 12),
+                    selected = viewModel.gameSettings.victoryPoints.toInt(),
+                    optionFormatter = { "$it" },
+                    onSelected = { viewModel.updateVictoryPoints(it) }
+                )
+            }
+        }
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -91,14 +182,22 @@ fun SettingsScreen(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
-                onClick = onExitToMenu,
-                modifier = Modifier.weight(1f)
+                onClick = {
+                    if (isNameValid) {
+                        onExitToMenu()
+                    } else {
+                        showWarning = true
+                    }
+                },
+                modifier = Modifier.weight(1f),
+                enabled = isNameValid
             ) {
                 Text(stringResource(R.string.exit_to_menu_msg))
             }
         }
     }
 }
+
 
 @Composable
 private fun <T> SettingsOptionGroup(
