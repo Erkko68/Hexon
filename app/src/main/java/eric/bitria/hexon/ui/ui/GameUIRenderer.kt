@@ -9,9 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -19,8 +25,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.persistent.datastore.GameSettings
@@ -38,12 +46,13 @@ import eric.bitria.hexon.view.utils.DeckType.PlayerDeck
 import eric.bitria.hexon.view.utils.DeckType.SystemDeck
 import kotlinx.coroutines.flow.Flow
 
-val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
+val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 @Composable
 fun GameUIRenderer(
     player: Player,
     currentPlayer: Player,
+    players: List<Player>,
     phase: GamePhase,
     dices: Pair<Int, Int>,
     clickHandler: ClickHandler,
@@ -57,22 +66,34 @@ fun GameUIRenderer(
     CompositionLocalProvider(LocalCardSize provides localCardSize) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center
         ) {
-            // Temporal
-            InfoSection(
-                timeLeft = timeLeft,
-                player = player,
-                modifier = Modifier.weight(1f),
-                settings = settings
-            )
+            // Top info section: players + info
+            Row(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                PlayersColumn(
+                    players = players,
+                    currentPlayer = currentPlayer
+                )
 
+                InfoSection(
+                    timeLeft = timeLeft,
+                    player = player,
+                    settings = settings,
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
+            // Spacer fills remaining space pushing actions to bottom
+            Spacer(modifier = Modifier.weight(1f))
+
+            // Bottom actions section
             if (phase == GamePhase.ROLL_DICE) {
                 DiceSection(
                     dices = dices,
                     enabled = (currentPlayer == player),
                     onRollClick = { (clickHandler as? ClickHandler.NoParam)?.handler?.invoke() },
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.fillMaxWidth()
                 )
             } else {
                 Column(
@@ -82,8 +103,7 @@ fun GameUIRenderer(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth()
                     ) {
                         CardsContent(
                             player = player,
@@ -104,6 +124,7 @@ fun GameUIRenderer(
     }
 }
 
+
 @Composable
 private fun InfoSection(
     modifier: Modifier = Modifier,
@@ -116,11 +137,11 @@ private fun InfoSection(
 
     val formattedTime = String.format("%d:%02d", minutes, seconds)
 
-    Box(
+    Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(16.dp),
-        contentAlignment = Alignment.TopEnd
+        horizontalAlignment = Alignment.End
     ) {
         Box(
             modifier = Modifier
@@ -135,17 +156,57 @@ private fun InfoSection(
                 )
                 .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
-            // Use a Row to display the time and victory points side by side
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = formattedTime,
                     color = Color.Black
                 )
                 Spacer(modifier = Modifier.width(16.dp))
-                // Add trophy emoji alongside the player's victory points
                 Text(
                     text = "🏆 ${player.getVictoryPoints()} / ${settings.victoryPoints}",
                     color = Color.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun PlayersColumn(
+    players: List<Player>,
+    currentPlayer: Player,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalAlignment = Alignment.Start
+    ) {
+        players.forEach { p ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(if (p == currentPlayer) 40.dp else 36.dp)
+                        .clip(CircleShape)
+                        .background(p.color),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.AccountCircle,
+                        contentDescription = "Player Icon",
+                        tint = Color.White,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+                Text(
+                    text = p.name,
+                    modifier = Modifier.padding(start = 12.dp),
+                    color = if (p == currentPlayer) Color.Black else Color.DarkGray,
+                    fontWeight = if (p == currentPlayer) FontWeight.Bold else FontWeight.Normal
                 )
             }
         }

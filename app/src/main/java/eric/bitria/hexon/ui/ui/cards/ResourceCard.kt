@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.sp
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.ui.utils.Color.calculateBorderColor
 
+
 @Composable
 fun ResourceCard(
     resource: Resource,
@@ -57,21 +58,24 @@ fun ResourceCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    textAlign = TextAlign.Start,
-                    text = "${count - selected}",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                )
-
-                if (selected > 0) {
+                Box(modifier = Modifier.weight(1f)){
                     Text(
-                        textAlign = TextAlign.End,
-                        text = "$selected",
-                        color = Color.Red,
+                        textAlign = TextAlign.Start,
+                        text = "${count - selected}",
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                     )
+                }
+                if (selected > 0) {
+                    Box(modifier = Modifier.weight(1f)){
+                        Text(
+                            textAlign = TextAlign.End,
+                            text = "$selected",
+                            color = Color.Red,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
             Box(

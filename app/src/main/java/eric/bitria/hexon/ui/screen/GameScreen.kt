@@ -32,6 +32,7 @@ fun GameScreen(
     GameUIRenderer(
         player = viewModel.humanPlayer,
         currentPlayer = viewModel.currentPlayer,
+        players = viewModel.playerManager.allPlayers,
         phase = viewModel.gamePhase,
         clickHandler = viewModel.cardClickHandler,
         dices = viewModel.dices,
