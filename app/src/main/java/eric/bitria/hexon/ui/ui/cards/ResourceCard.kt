@@ -1,13 +1,16 @@
 package eric.bitria.hexon.ui.ui.cards
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -24,7 +27,7 @@ import androidx.compose.ui.unit.sp
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.ui.utils.Color.calculateBorderColor
 
-
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ResourceCard(
     resource: Resource,
@@ -47,48 +50,54 @@ fun ResourceCard(
         border = BorderStroke(2.dp, borderColor),
         elevation = CardDefaults.cardElevation(4.dp),
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 4.dp, horizontal = 8.dp),
-            verticalArrangement = Arrangement.SpaceBetween
+        BoxWithConstraints(
+            modifier = Modifier.fillMaxSize()
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            val maxTextSize = (maxHeight * 0.2f).coerceAtMost(80.dp).value.sp
+            val iconSize = maxHeight * 0.5f
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 4.dp, horizontal = 8.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Box(modifier = Modifier.weight(1f)){
-                    Text(
-                        textAlign = TextAlign.Start,
-                        text = "${count - selected}",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                    )
-                }
-                if (selected > 0) {
-                    Box(modifier = Modifier.weight(1f)){
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(modifier = Modifier.weight(1f)) {
                         Text(
-                            textAlign = TextAlign.End,
-                            text = "$selected",
-                            color = Color.Red,
-                            fontSize = 20.sp,
+                            textAlign = TextAlign.Start,
+                            text = "${count - selected}",
+                            fontSize = maxTextSize,
                             fontWeight = FontWeight.Bold,
                         )
                     }
+                    if (selected > 0) {
+                        Box(modifier = Modifier.weight(1f)) {
+                            Text(
+                                textAlign = TextAlign.End,
+                                text = "$selected",
+                                color = Color.Red,
+                                fontSize = maxTextSize,
+                                fontWeight = FontWeight.Bold,
+                            )
+                        }
+                    }
                 }
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                Icon(
-                    imageVector = resource.icon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center),
-                )
+                Box(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Icon(
+                        imageVector = resource.icon,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(iconSize)
+                            .align(Alignment.Center),
+                    )
+                }
             }
         }
     }

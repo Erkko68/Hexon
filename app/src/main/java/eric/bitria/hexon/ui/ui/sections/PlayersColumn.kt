@@ -64,7 +64,7 @@ fun PlayersColumn(
 
         // Clamp the icon size to stay within good-looking bounds
         val minIconSize = 32.dp
-        val maxIconSize = 70.dp
+        val maxIconSize = 56.dp
         val baseIconSize = idealIconSize.coerceIn(minIconSize, maxIconSize)
 
         val currentPlayerSize = baseIconSize * 1.1f
