@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import eric.bitria.hexon.persistent.database.GameResult
 import eric.bitria.hexon.persistent.database.GameResultDatabase
 import eric.bitria.hexon.persistent.database.GameResultRepository
+import eric.bitria.hexon.persistent.database.PlayerStats
 import eric.bitria.hexon.persistent.database.toEntity
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
@@ -338,20 +339,28 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         val dateFormat = SimpleDateFormat("MMMM d, yyyy 'at' h:mm a", Locale.getDefault())
         val currentTime = dateFormat.format(Date())
 
-        val buildings = humanPlayer.getTotalBuildings()
-            .filterKeys { it != Building.NONE }
-            .mapKeys { it.key.name }
+        val allStats = playerManager.allPlayers.map { player ->
 
-        val resources = humanPlayer.getTotalResources()
-            .filterKeys { it != Resource.NONE }
-            .mapKeys { it.key.name }
+            val buildings = player.getTotalBuildings()
+                .filterKeys { it != Building.NONE }
+                .mapKeys { it.key.name }
+
+            val resources = player.getTotalResources()
+                .filterKeys { it != Resource.NONE }
+                .mapKeys { it.key.name }
+
+            PlayerStats(
+                playerName = player.name,
+                playerColor = player.color,
+                buildingStats = buildings,
+                resourceStats = resources
+            )
+        }
 
         return GameResult(
             datePlayed = currentTime,
             winnerName = currentPlayer.name,
-            playerName = humanPlayer.name,
-            buildingStats = buildings,
-            resourceStats = resources
+            playerStats = allStats
         )
     }
 

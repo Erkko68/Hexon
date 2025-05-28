@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -51,9 +53,11 @@ fun HistoryScreen(viewModel: MainGameViewModel) {
     }
 }
 
+
 @Composable
 fun ExpandableGameResultItem(result: GameResult) {
     var expanded by rememberSaveable { mutableStateOf(false) }
+    var selectedPlayerIndex by rememberSaveable { mutableIntStateOf(-1) } // No player selected by default
 
     Surface(
         modifier = Modifier
@@ -64,62 +68,91 @@ fun ExpandableGameResultItem(result: GameResult) {
         tonalElevation = 4.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            // Summary Line
+            // Summary Row
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text("Date: ${result.datePlayed}", style = MaterialTheme.typography.titleSmall)
                 Text("Winner: ${result.winnerName}", style = MaterialTheme.typography.titleSmall)
-                Text("You: ${result.playerName}", style = MaterialTheme.typography.titleSmall)
             }
 
-            // Expandable detail
+            // Expandable Content
             AnimatedVisibility(visible = expanded) {
                 Column(modifier = Modifier.padding(top = 12.dp)) {
-                    // --- Buildings ---
-                    Text("Buildings", style = MaterialTheme.typography.titleMedium)
+                    Text("View Player Stats", style = MaterialTheme.typography.titleMedium)
+
+                    // Player Selection Buttons
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
                         horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
-                        result.buildingStats.forEach { (key, count) ->
-                            val building = runCatching { Building.valueOf(key) }.getOrNull()
-                            if (building != null && building != Building.NONE) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(
-                                        imageVector = building.icon,
-                                        contentDescription = key,
-                                        tint = building.color,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                    Text("$count", style = MaterialTheme.typography.bodyMedium)
-                                }
+                        result.playerStats.forEachIndexed { index, player ->
+                            IconButton(onClick = {
+                                selectedPlayerIndex = if (selectedPlayerIndex == index) -1 else index
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = player.playerName,
+                                    tint = player.playerColor,
+                                    modifier = Modifier.size(32.dp)
+                                )
                             }
                         }
                     }
 
-                    // --- Resources ---
-                    Text("Resources", style = MaterialTheme.typography.titleMedium)
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceEvenly
-                    ) {
-                        result.resourceStats.forEach { (key, count) ->
-                            val resource = runCatching { Resource.valueOf(key) }.getOrNull()
-                            if (resource != null && resource != Resource.NONE) {
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Icon(
-                                        imageVector = resource.icon,
-                                        contentDescription = key,
-                                        tint = resource.color,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                    Text("$count", style = MaterialTheme.typography.bodyMedium)
+                    // Show Selected Player Stats
+                    if (selectedPlayerIndex != -1) {
+                        val player = result.playerStats[selectedPlayerIndex]
+
+                        Text("Stats for: ${player.playerName}", style = MaterialTheme.typography.titleMedium)
+
+                        // --- Buildings ---
+                        Text("Buildings", style = MaterialTheme.typography.titleSmall)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            player.buildingStats.forEach { (key, count) ->
+                                val building = runCatching { Building.valueOf(key) }.getOrNull()
+                                if (building != null && building != Building.NONE) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Icon(
+                                            imageVector = building.icon,
+                                            contentDescription = key,
+                                            tint = building.color,
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                        Text("$count", style = MaterialTheme.typography.bodyMedium)
+                                    }
+                                }
+                            }
+                        }
+
+                        // --- Resources ---
+                        Text("Resources", style = MaterialTheme.typography.titleSmall)
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            player.resourceStats.forEach { (key, count) ->
+                                val resource = runCatching { Resource.valueOf(key) }.getOrNull()
+                                if (resource != null && resource != Resource.NONE) {
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        Icon(
+                                            imageVector = resource.icon,
+                                            contentDescription = key,
+                                            tint = resource.color,
+                                            modifier = Modifier.size(32.dp)
+                                        )
+                                        Text("$count", style = MaterialTheme.typography.bodyMedium)
+                                    }
                                 }
                             }
                         }
@@ -129,4 +162,3 @@ fun ExpandableGameResultItem(result: GameResult) {
         }
     }
 }
-
