@@ -52,6 +52,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.material3.window.size.class1)
     implementation(libs.google.gson)
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
