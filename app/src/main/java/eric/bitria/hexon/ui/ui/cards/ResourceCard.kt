@@ -53,8 +53,16 @@ fun ResourceCard(
         BoxWithConstraints(
             modifier = Modifier.fillMaxSize()
         ) {
-            val maxTextSize = (maxHeight * 0.2f).coerceAtMost(80.dp).value.sp
-            val iconSize = maxHeight * 0.5f
+            val minTextSize = 12.sp
+            val maxTextSize = 36.sp
+
+            val iconSizePx = maxHeight * 0.7f
+            val iconSize = iconSizePx.coerceIn(24.dp, 120.dp) // clamp icon size too
+
+            // The text has roughly 30% of maxHeight available (since icon is 70%)
+            val rawTextSizePx = maxHeight * 0.25f
+            val rawTextSizeDp = rawTextSizePx.coerceIn(16.dp, 48.dp)
+            val textSize = rawTextSizeDp.value.coerceIn(minTextSize.value, maxTextSize.value).sp
 
             Column(
                 modifier = Modifier
@@ -71,7 +79,7 @@ fun ResourceCard(
                         Text(
                             textAlign = TextAlign.Start,
                             text = "${count - selected}",
-                            fontSize = maxTextSize,
+                            fontSize = textSize,
                             fontWeight = FontWeight.Bold,
                         )
                     }
@@ -81,7 +89,7 @@ fun ResourceCard(
                                 textAlign = TextAlign.End,
                                 text = "$selected",
                                 color = Color.Red,
-                                fontSize = maxTextSize,
+                                fontSize = textSize,
                                 fontWeight = FontWeight.Bold,
                             )
                         }

@@ -36,15 +36,15 @@ fun InfoSection(
 
     BoxWithConstraints(modifier = modifier) {
         val maxW = maxWidth
-        val maxH = maxHeight
 
         // Scale base text size with width
         val baseFontSize = (maxW.value * 0.045f)
-        val clampedFontSize = baseFontSize.coerceIn(14F, 30F).sp
+        val clampedFontSizeSp = baseFontSize.coerceIn(14f, 30f)
+        val clampedFontSize = clampedFontSizeSp.sp
 
-        // Responsive padding inside the box
-        val horizontalPadding = (maxW * 0.05f).coerceIn(8.dp, 30.dp)
-        val verticalPadding = (maxH * 0.05f).coerceIn(4.dp, 22.dp)
+        // Use font size to calculate padding instead of container height/width
+        val horizontalPadding = (clampedFontSizeSp * 0.6f).dp.coerceIn(6.dp, 24.dp)
+        val verticalPadding = (clampedFontSizeSp * 0.4f).dp.coerceIn(4.dp, 16.dp)
 
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -71,7 +71,7 @@ fun InfoSection(
                         color = Color.Black,
                         fontSize = clampedFontSize
                     )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Spacer(modifier = Modifier.width((clampedFontSizeSp * 0.5f).dp.coerceIn(8.dp, 16.dp)))
                     Text(
                         text = "🏆 ${player.getVictoryPoints()} / ${settings.victoryPoints}",
                         color = Color.Black,
