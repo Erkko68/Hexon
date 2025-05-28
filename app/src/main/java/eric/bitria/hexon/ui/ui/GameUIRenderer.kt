@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
@@ -34,6 +36,7 @@ import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 import eric.bitria.hexon.view.utils.DeckType.PlayerDeck
 import eric.bitria.hexon.view.utils.DeckType.SystemDeck
+import kotlinx.coroutines.flow.Flow
 
 val LocalCardSize = staticCompositionLocalOf<Dp> { error("Card size not provided") }
 
@@ -44,8 +47,10 @@ fun GameUIRenderer(
     phase: GamePhase,
     dices: Pair<Int, Int>,
     clickHandler: ClickHandler,
-    timeLeft: Long
+    timeLeft: Long,
+    settingsFlow: Flow<GameSettings>
 ) {
+    val settings = settingsFlow.collectAsState(initial = GameSettings()).value
     val configuration = LocalConfiguration.current
     val localCardSize = minOf(configuration.screenWidthDp.dp, configuration.screenHeightDp.dp) / 8f
 
@@ -58,7 +63,8 @@ fun GameUIRenderer(
             InfoSection(
                 timeLeft = timeLeft,
                 player = player,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier.weight(1f),
+                settings = settings
             )
 
             if (phase == GamePhase.ROLL_DICE) {
@@ -99,7 +105,12 @@ fun GameUIRenderer(
 }
 
 @Composable
-private fun InfoSection(modifier: Modifier = Modifier, timeLeft: Long = 0, player: Player) {
+private fun InfoSection(
+    modifier: Modifier = Modifier,
+    timeLeft: Long = 0,
+    player: Player,
+    settings: GameSettings
+) {
     val minutes = timeLeft / 60
     val seconds = timeLeft % 60
 
@@ -133,7 +144,7 @@ private fun InfoSection(modifier: Modifier = Modifier, timeLeft: Long = 0, playe
                 Spacer(modifier = Modifier.width(16.dp))
                 // Add trophy emoji alongside the player's victory points
                 Text(
-                    text = "🏆 ${player.getVictoryPoints()}",
+                    text = "🏆 ${player.getVictoryPoints()} / ${settings.victoryPoints}",
                     color = Color.Black
                 )
             }

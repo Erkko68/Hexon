@@ -35,7 +35,8 @@ fun GameScreen(
         phase = viewModel.gamePhase,
         clickHandler = viewModel.cardClickHandler,
         dices = viewModel.dices,
-        timeLeft = viewModel.timeLeft
+        timeLeft = viewModel.timeLeft,
+        settingsFlow = viewModel.gameSettingsFlow
     )
 
     if (viewModel.gamePhase == GamePhase.PLAYER_WON) {
