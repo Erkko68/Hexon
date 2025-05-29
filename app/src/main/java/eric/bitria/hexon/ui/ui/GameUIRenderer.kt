@@ -20,8 +20,10 @@ import eric.bitria.hexon.ui.ui.sections.ActionsSection
 import eric.bitria.hexon.ui.ui.sections.CardsSection
 import eric.bitria.hexon.ui.ui.sections.DiceSection
 import eric.bitria.hexon.ui.ui.sections.InfoSection
+import eric.bitria.hexon.ui.ui.sections.LogSection
 import eric.bitria.hexon.ui.ui.sections.PlayersColumn
 import eric.bitria.hexon.view.enums.GamePhase
+import eric.bitria.hexon.view.models.LogEntry
 import eric.bitria.hexon.view.utils.ClickHandler
 import kotlinx.coroutines.flow.Flow
 
@@ -35,7 +37,8 @@ fun GameUIRenderer(
     dices: Pair<Int, Int>,
     clickHandler: ClickHandler,
     timeLeft: Long,
-    settingsFlow: Flow<GameSettings>
+    settingsFlow: Flow<GameSettings>,
+    gameLogs: List<LogEntry>
 ) {
     val settings = settingsFlow.collectAsState(initial = GameSettings()).value
 
@@ -64,7 +67,7 @@ fun GameUIRenderer(
                     )
                 }
 
-                Box(
+                Column(
                     modifier = Modifier
                         .width(sectionWidth)
                         .height(sectionHeight)
@@ -74,7 +77,13 @@ fun GameUIRenderer(
                         timeLeft = timeLeft,
                         player = player,
                         settings = settings,
-                        modifier = Modifier.fillMaxSize()
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    LogSection(
+                        logs = gameLogs,
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
                     )
                 }
             }

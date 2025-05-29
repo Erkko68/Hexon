@@ -12,6 +12,11 @@ import eric.bitria.hexon.src.utils.sortTriple
 class Vertex(
     private val coords: Triple<AxialCoord, AxialCoord, AxialCoord>
 ) {
+
+    override fun toString(): String {
+        return "Vertex${getCoords()}"
+    }
+
     internal var building by mutableStateOf(Building.NONE)
     internal var player by mutableStateOf<Player?>(null)
 

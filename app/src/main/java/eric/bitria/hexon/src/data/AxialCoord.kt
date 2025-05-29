@@ -6,6 +6,10 @@ data class AxialCoord(
     internal val r: Int
 ) : Comparable<AxialCoord> {
 
+    override fun toString(): String {
+        return "($q, $r)"
+    }
+
     override fun compareTo(other: AxialCoord): Int {
         return compareValuesBy(this, other, { it.q }, { it.r })
     }

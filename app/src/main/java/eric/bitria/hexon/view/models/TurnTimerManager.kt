@@ -15,8 +15,6 @@ class TurnTimerManager(private val coroutineScope: CoroutineScope) {
 
     var timeLeftSeconds by mutableLongStateOf(0L)
         private set
-    var totalTimeElapsed by mutableLongStateOf(0L) // Not used in original, but good for stats
-        private set
 
 
     fun setTurnDuration(durationMillis: Long) {
@@ -38,12 +36,10 @@ class TurnTimerManager(private val coroutineScope: CoroutineScope) {
 
                 if (remaining <= 0) {
                     timeLeftSeconds = 0
-                    // totalTimeElapsed += turnTimeMillis // If you want to track total time spent actively in turns
                     onTimeExpired()
                     break
                 } else {
                     timeLeftSeconds = remaining / 1000
-                    // totalTimeElapsed += 1000 (or actual delay time) // More accurate to sum up actual elapsed per turn
                     delay(1000) // Check every second
                 }
             }
@@ -53,9 +49,5 @@ class TurnTimerManager(private val coroutineScope: CoroutineScope) {
     fun stopTimer() {
         timerJob?.cancel()
         timerJob = null
-    }
-
-    fun resetTotalTime() {
-        totalTimeElapsed = 0L
     }
 }

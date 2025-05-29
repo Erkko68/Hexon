@@ -22,6 +22,8 @@ import eric.bitria.hexon.view.models.BoardManager
 import eric.bitria.hexon.view.models.GameSettingsManager
 import eric.bitria.hexon.view.models.GameStatusManager
 import eric.bitria.hexon.view.models.InteractionManager
+import eric.bitria.hexon.view.models.LogEntry
+import eric.bitria.hexon.view.models.LogManager
 import eric.bitria.hexon.view.models.PlayerManager
 import eric.bitria.hexon.view.models.TurnTimerManager
 import eric.bitria.hexon.view.utils.Bot
@@ -45,10 +47,12 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     val gameStatusManager = GameStatusManager()
     val timerViewModel = TurnTimerManager(viewModelScope)
     val interactionManager = InteractionManager()
+    private val logManager = LogManager()
 
     private lateinit var turnManager: TurnManager
 
     // Expose states for the UI from sub-ViewModels
+    val gameLogs: List<LogEntry> get() = logManager.logs
     val gameSettingsFlow: Flow<GameSettings> get() = settingsManager.settings
     val history: Flow<List<GameResult>> get() = repository.getAllResults()
     val board: Board get() = boardManager.board
@@ -69,10 +73,10 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     fun updateTimer(timer: Long) = settingsManager.updateTimer(timer)
 
     fun startNewGame() {
+        logManager.clearLogs()
         playerManager.setupPlayers(settingsManager.settings.value)
         boardManager.initializeBoard()
         timerViewModel.setTurnDuration(settingsManager.settings.value.timer)
-        timerViewModel.resetTotalTime()
 
         turnManager = TurnManager(playerManager.allPlayers, onRotationComplete = ::handleRotationComplete)
         playerManager.updateCurrentPlayer(turnManager.getCurrentPlayer())
@@ -90,8 +94,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000) // Bot thinking time
-                Bot.initialSettlementPlacement(boardManager.board, currentP)
-                boardManager.updateBoardSnapshot() // Reflect changes if any
+                Bot.initialSettlementPlacement(boardManager.board, currentP, logManager)
                 proceedToInitialRoadPlacement()
             }
         } else {
@@ -99,8 +102,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
             interactionManager.setOnVertexBoardClickHandler { vertex ->
                 interactionManager.resetClickHandlers()
                 boardManager.clearHighlights()
-                GameManager.placeInitialSettlement(boardManager.board, currentP, vertex)
-                boardManager.updateBoardSnapshot()
+                GameManager.placeInitialSettlement(boardManager.board, currentP, vertex, logManager)
                 proceedToInitialRoadPlacement()
             }
         }
@@ -113,8 +115,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000) // Bot thinking time
-                Bot.placeRoad(boardManager.board, currentP) // Assuming Bot.placeRoad exists for initial
-                boardManager.updateBoardSnapshot()
+                Bot.placeRoad(boardManager.board, currentP, logManager) // Assuming Bot.placeRoad exists for initial
                 endInitialPlacementTurn()
             }
         } else {
@@ -122,8 +123,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
             interactionManager.setOnEdgeBoardClickHandler { edge ->
                 interactionManager.resetClickHandlers()
                 boardManager.clearHighlights()
-                GameManager.placeInitialRoad(boardManager.board, currentP, edge)
-                boardManager.updateBoardSnapshot()
+                GameManager.placeInitialRoad(boardManager.board, currentP, edge, logManager)
                 endInitialPlacementTurn()
             }
         }
@@ -170,7 +170,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
                 delay(1000)
                 val (d1, d2) = GameManager.rollDice(boardManager.board)
                 gameStatusManager.updateDiceRoll(d1, d2)
-                boardManager.updateBoardSnapshot() // Resource distribution might change board view
+                logManager.addLog("[${currentP.name}] rolled dice: ${d1+d2}", currentP.color)
                 delay(1000)
                 proceedToPlayerTurnPhase()
             }
@@ -179,7 +179,6 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
                 // Auto-roll if player doesn't click in time
                 val (d1, d2) = GameManager.rollDice(boardManager.board)
                 gameStatusManager.updateDiceRoll(d1, d2)
-                boardManager.updateBoardSnapshot()
                 interactionManager.resetClickHandlers() // Important
                 viewModelScope.launch { delay(500); proceedToPlayerTurnPhase() }
             }
@@ -187,7 +186,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
                 timerViewModel.stopTimer()
                 val (d1, d2) = GameManager.rollDice(boardManager.board)
                 gameStatusManager.updateDiceRoll(d1, d2)
-                boardManager.updateBoardSnapshot()
+                logManager.addLog("[${currentP.name}] rolled dice: ${d1+d2}", currentP.color)
                 interactionManager.resetClickHandlers() // Only one roll
                 viewModelScope.launch { delay(500); proceedToPlayerTurnPhase() }
             }
@@ -201,11 +200,9 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         if (currentP.isBot) {
             viewModelScope.launch {
                 delay(1000)
-                Bot.placeRoad(boardManager.board, currentP)
-                boardManager.updateBoardSnapshot()
+                Bot.placeRoad(boardManager.board, currentP, logManager)
                 delay(500)
-                Bot.placeSettlement(boardManager.board, currentP)
-                boardManager.updateBoardSnapshot()
+                Bot.placeSettlement(boardManager.board, currentP, logManager)
                 delay(1000)
                 processTurnEnd()
             }
@@ -230,8 +227,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
                     Building.SETTLEMENT -> {
                         boardManager.highlightSettlementVertices(currentP)
                         interactionManager.setOnVertexBoardClickHandler { vertex ->
-                            GameManager.placeSettlement(boardManager.board, currentP, vertex)
-                            boardManager.updateBoardSnapshot()
+                            GameManager.placeSettlement(boardManager.board, currentP, vertex, logManager)
                             interactionManager.resetClickHandlers() // Or return to main turn action handlers
                             boardManager.clearHighlights()
                             setupPlayerTurnInteractions() // Re-setup general turn interactions
@@ -240,8 +236,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
                     Building.ROAD -> {
                         boardManager.highlightRoadEdges(currentP)
                         interactionManager.setOnEdgeBoardClickHandler { edge ->
-                            GameManager.placeRoad(boardManager.board, currentP, edge)
-                            boardManager.updateBoardSnapshot()
+                            GameManager.placeRoad(boardManager.board, currentP, edge, logManager)
                             interactionManager.resetClickHandlers()
                             boardManager.clearHighlights()
                             setupPlayerTurnInteractions()
@@ -250,8 +245,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
                     Building.CITY -> {
                         boardManager.highlightCityUpgradableVertices(currentP)
                         interactionManager.setOnVertexBoardClickHandler { vertex ->
-                            GameManager.placeCity(boardManager.board, currentP, vertex)
-                            boardManager.updateBoardSnapshot()
+                            GameManager.placeCity(boardManager.board, currentP, vertex, logManager)
                             interactionManager.resetClickHandlers()
                             boardManager.clearHighlights()
                             setupPlayerTurnInteractions()
