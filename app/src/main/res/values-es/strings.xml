@@ -31,7 +31,22 @@
     <string name="produces_1_resource_and_gives_1_victory_point">Produce 1 recurso y otorga 1 punto de victoria.</string>
     <string name="produces_2_resources_and_gives_2_victory_points">Produce 2 recursos y otorga 2 puntos de victoria.</string>
     <string name="close">Cerrar</string>
-    <string name="return_to_menu">Return to menu</string>
-    <string name="cancel">Cancel</string>
-    <string name="stats_for">Stats for %1$s</string>
+    <string name="return_to_menu">Volver al menú</string>
+    <string name="cancel">Cancelar</string>
+    <string name="stats_for">Estadísticas de %1$s</string>
+    <string name="select_a_game_to_see_details">Selecciona una partida para ver los detalles</string>
+    <string name="tap_a_player_icon_above_to_view_their_stats">Toca un ícono de jugador arriba para ver sus estadísticas</string>
+    <string name="place_initial_buildings">Coloca los edificios iniciales</string>
+    <string name="roll_dice">Lanzar dados</string>
+    <string name="trade_resources">Intercambiar recursos</string>
+    <string name="building_production_victory"><![CDATA[Producción de Edificios y Victoria:]]></string>
+    <string name="settlement">Poblado</string>
+    <string name="city">Ciudad</string>
+    <string name="building_recipes">Recetas de construcción:</string>
+    <string name="road">Camino</string>
+    <string name="ore">Mineral</string>
+    <string name="wheat">Trigo</string>
+    <string name="brick">Ladrillo</string>
+    <string name="wood">Madera</string>
+    <string name="no_game_results_found">No se encontraron resultados de partidas.</string>
 </resources>

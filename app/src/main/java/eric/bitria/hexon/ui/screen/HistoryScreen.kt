@@ -35,8 +35,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import eric.bitria.hexon.R
 import eric.bitria.hexon.persistent.database.GameResult
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
@@ -54,7 +56,7 @@ fun HistoryScreen(viewModel: MainGameViewModel) {
 
     if (gameResults.isEmpty()) {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No game results found.", style = MaterialTheme.typography.bodyMedium)
+            Text(stringResource(R.string.no_game_results_found), style = MaterialTheme.typography.bodyMedium)
         }
         return
     }
@@ -70,13 +72,21 @@ fun HistoryScreen(viewModel: MainGameViewModel) {
 
         if (isTablet) {
             Row(Modifier.fillMaxSize()) {
-                GameResultList(
-                    results = gameResults,
-                    selectedDateKey = selectedDateKey,
-                    onSelect = { selectedDateKey = it },
-                    modifier = Modifier
+                LazyColumn(
+                    Modifier
                         .weight(1f)
-                )
+                ) {
+                    items(gameResults) { result ->
+                        GameResultListItem(
+                            result = result,
+                            isSelected = result.datePlayed == selectedDateKey,
+                            onClick = {
+                                selectedDateKey =
+                                    if (selectedDateKey == result.datePlayed) null else result.datePlayed
+                            }
+                        )
+                    }
+                }
                 Box(Modifier
                     .weight(1f)
                 ) {
@@ -84,7 +94,7 @@ fun HistoryScreen(viewModel: MainGameViewModel) {
                         gameResults.find { it.datePlayed == key }?.let {
                             GameResultDetail(it)
                         }
-                    } ?: CenteredMessage("Select a game to see details")
+                    } ?: CenteredMessage(stringResource(R.string.select_a_game_to_see_details))
                 }
             }
         } else {
@@ -110,26 +120,6 @@ fun HistoryScreen(viewModel: MainGameViewModel) {
 }
 
 @Composable
-private fun GameResultList(
-    results: List<GameResult>,
-    selectedDateKey: String?,
-    onSelect: (String?) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(modifier) {
-        items(results) { result ->
-            GameResultListItem(
-                result = result,
-                isSelected = result.datePlayed == selectedDateKey,
-                onClick = {
-                    onSelect(if (selectedDateKey == result.datePlayed) null else result.datePlayed)
-                }
-            )
-        }
-    }
-}
-
-@Composable
 private fun GameResultListItem(
     result: GameResult,
     isSelected: Boolean,
@@ -150,8 +140,8 @@ private fun GameResultListItem(
             Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Date: ${result.datePlayed}", style = MaterialTheme.typography.bodyLarge)
-            Text("Winner: ${result.winnerName}", style = MaterialTheme.typography.bodyLarge)
+            Text(result.datePlayed, style = MaterialTheme.typography.bodyLarge)
+            Text(stringResource(R.string.winner,result.winnerName), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -171,12 +161,9 @@ private fun GameResultDetail(result: GameResult) {
             modifier = Modifier
                 .padding(16.dp)
         ) {
-            InfoRow("Date: ${result.datePlayed}", "Winner: ${result.winnerName}")
-
             Row(
                 Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 12.dp),
+                    .fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
             ) {
                 result.playerStats.forEachIndexed { index, player ->
@@ -187,7 +174,6 @@ private fun GameResultDetail(result: GameResult) {
                                 MaterialTheme.colorScheme.secondaryContainer,
                                 shape = MaterialTheme.shapes.small
                             )
-                            .padding(6.dp)
                     } else Modifier
 
                     Column(
@@ -218,10 +204,10 @@ private fun GameResultDetail(result: GameResult) {
             ) {
                 if (selectedPlayer != -1) {
                     val player = result.playerStats[selectedPlayer]
-                    StatSection("Buildings", player.buildingStats) { Building.valueOf(it) }
-                    StatSection("Resources", player.resourceStats) { Resource.valueOf(it) }
+                    StatSection(stringResource(R.string.buildings), player.buildingStats) { Building.valueOf(it) }
+                    StatSection(stringResource(R.string.resources), player.resourceStats) { Resource.valueOf(it) }
                 } else {
-                    CenteredMessage("Tap a player icon above to view their stats")
+                    CenteredMessage(stringResource(R.string.tap_a_player_icon_above_to_view_their_stats))
                 }
             }
         }
@@ -247,7 +233,7 @@ private fun StatSection(
         Text(title, style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(bottom = 8.dp))
         Row(
             Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
             stats.forEach { (key, value) ->
                 val entry = runCatching { resolve(key) }.getOrNull()
@@ -273,18 +259,6 @@ private fun StatSection(
                 }
             }
         }
-    }
-}
-
-
-@Composable
-private fun InfoRow(left: String, right: String) {
-    Row(
-        Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(left, style = MaterialTheme.typography.labelLarge)
-        Text(right, style = MaterialTheme.typography.labelLarge)
     }
 }
 

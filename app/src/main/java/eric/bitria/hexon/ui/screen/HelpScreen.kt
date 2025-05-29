@@ -69,7 +69,7 @@ fun HelpScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Place,
-                        contentDescription = "Place initial buildings",
+                        contentDescription = stringResource(R.string.place_initial_buildings),
                         tint = Color.Gray,
                         modifier = Modifier.size(32.dp)
                     )
@@ -87,7 +87,7 @@ fun HelpScreen(
                 ) {
                     Icon(
                         imageVector = Icons._1,
-                        contentDescription = "Roll dice",
+                        contentDescription = stringResource(R.string.roll_dice),
                         tint = Color(0xFF6A1B9A),
                         modifier = Modifier.size(32.dp)
                     )
@@ -105,7 +105,7 @@ fun HelpScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Cash,
-                        contentDescription = "Trade resources",
+                        contentDescription = stringResource(R.string.trade_resources),
                         tint = Color(0xFF8D6E63),
                         modifier = Modifier.size(32.dp)
                     )
@@ -118,7 +118,7 @@ fun HelpScreen(
 
                 // Production & Victory Points
                 Text(
-                    text = "Building Production & Victory:",
+                    text = stringResource(R.string.building_production_victory),
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.padding(vertical = 12.dp)
                 )
@@ -129,7 +129,7 @@ fun HelpScreen(
                 ) {
                     Icon(
                         imageVector = Building.SETTLEMENT.icon,
-                        contentDescription = "Settlement",
+                        contentDescription = stringResource(R.string.settlement),
                         tint = Building.SETTLEMENT.color,
                         modifier = Modifier.size(28.dp)
                     )
@@ -146,7 +146,7 @@ fun HelpScreen(
                 ) {
                     Icon(
                         imageVector = Building.CITY.icon,
-                        contentDescription = "City",
+                        contentDescription = stringResource(R.string.city),
                         tint = Building.CITY.color,
                         modifier = Modifier.size(28.dp)
                     )
@@ -164,7 +164,7 @@ fun HelpScreen(
                         .padding(vertical = 16.dp)
                 ) {
                     Text(
-                        text = "Building Recipes:",
+                        text = stringResource(R.string.building_recipes),
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.padding(bottom = 8.dp)
                     )
@@ -173,11 +173,11 @@ fun HelpScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
-                        Text(text = "Road", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = stringResource(R.string.road), style = MaterialTheme.typography.bodyLarge)
                         Spacer(modifier = Modifier.width(12.dp))
                         Icon(
                             imageVector = Resource.BRICK.icon,
-                            contentDescription = "Brick",
+                            contentDescription = stringResource(R.string.brick),
                             tint = Resource.BRICK.color,
                             modifier = Modifier.size(24.dp)
                         )
@@ -185,7 +185,7 @@ fun HelpScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             imageVector = Resource.WOOD.icon,
-                            contentDescription = "Wood",
+                            contentDescription = stringResource(R.string.wood),
                             tint = Resource.WOOD.color,
                             modifier = Modifier.size(24.dp)
                         )
@@ -196,7 +196,7 @@ fun HelpScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
-                        Text(text = "Settlement", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = stringResource(R.string.settlement), style = MaterialTheme.typography.bodyLarge)
                         Spacer(modifier = Modifier.width(12.dp))
                         listOf(Resource.BRICK, Resource.WOOD, Resource.WHEAT, Resource.SHEEP).forEach { res ->
                             Icon(
@@ -214,11 +214,11 @@ fun HelpScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(vertical = 4.dp)
                     ) {
-                        Text(text = "City", style = MaterialTheme.typography.bodyLarge)
+                        Text(text = stringResource(R.string.city), style = MaterialTheme.typography.bodyLarge)
                         Spacer(modifier = Modifier.width(12.dp))
                         Icon(
                             imageVector = Resource.ORE.icon,
-                            contentDescription = "Ore",
+                            contentDescription = stringResource(R.string.ore),
                             tint = Resource.ORE.color,
                             modifier = Modifier.size(24.dp)
                         )
@@ -226,7 +226,7 @@ fun HelpScreen(
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             imageVector = Resource.WHEAT.icon,
-                            contentDescription = "Wheat",
+                            contentDescription = stringResource(R.string.wheat),
                             tint = Resource.WHEAT.color,
                             modifier = Modifier.size(24.dp)
                         )

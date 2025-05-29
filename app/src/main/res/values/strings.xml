@@ -34,4 +34,19 @@
     <string name="return_to_menu">Return to menu</string>
     <string name="cancel">Cancel</string>
     <string name="stats_for">Stats for %1$s</string>
+    <string name="select_a_game_to_see_details">Select a game to see details</string>
+    <string name="tap_a_player_icon_above_to_view_their_stats">Tap a player icon above to view their stats</string>
+    <string name="place_initial_buildings">Place initial buildings</string>
+    <string name="roll_dice">Roll dice</string>
+    <string name="trade_resources">Trade resources</string>
+    <string name="building_production_victory"><![CDATA[Building Production & Victory:]]></string>
+    <string name="settlement">Settlement</string>
+    <string name="city">City</string>
+    <string name="building_recipes">Building Recipes:</string>
+    <string name="road">Road</string>
+    <string name="ore">Ore</string>
+    <string name="wheat">Wheat</string>
+    <string name="brick">Brick</string>
+    <string name="wood">Wood</string>
+    <string name="no_game_results_found">No game results found.</string>
 </resources>

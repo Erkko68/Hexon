@@ -31,7 +31,22 @@
     <string name="produces_1_resource_and_gives_1_victory_point">Produziert 1 Ressource und gibt 1 Siegpunkt.</string>
     <string name="produces_2_resources_and_gives_2_victory_points">Produziert 2 Ressourcen und gibt 2 Siegpunkte.</string>
     <string name="close">Schließen</string>
-    <string name="return_to_menu">Return to menu</string>
-    <string name="cancel">Cancel</string>
-    <string name="stats_for">Stats for %1$s</string>
+    <string name="return_to_menu">Zurück zum Menü</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="stats_for">Statistiken für %1$s</string>
+    <string name="select_a_game_to_see_details">Wähle ein Spiel aus, um Details zu sehen</string>
+    <string name="tap_a_player_icon_above_to_view_their_stats">Tippe auf ein Spielersymbol oben, um dessen Statistik anzuzeigen</string>
+    <string name="place_initial_buildings">Startgebäude platzieren</string>
+    <string name="roll_dice">Würfeln</string>
+    <string name="trade_resources">Ressourcen tauschen</string>
+    <string name="building_production_victory"><![CDATA[Gebäudeproduktion & Siegpunkte:]]></string>
+    <string name="settlement">Siedlung</string>
+    <string name="city">Stadt</string>
+    <string name="building_recipes">Baupläne:</string>
+    <string name="road">Straße</string>
+    <string name="ore">Erz</string>
+    <string name="wheat">Weizen</string>
+    <string name="brick">Ziegel</string>
+    <string name="wood">Holz</string>
+    <string name="no_game_results_found">Keine Spielergebnisse gefunden.</string>
 </resources>

@@ -31,7 +31,22 @@
     <string name="produces_1_resource_and_gives_1_victory_point">Produit 1 ressource et donne 1 point de victoire.</string>
     <string name="produces_2_resources_and_gives_2_victory_points">Produit 2 ressources et donne 2 points de victoire.</string>
     <string name="close">Fermer</string>
-    <string name="return_to_menu">Return to menu</string>
-    <string name="cancel">Cancel</string>
-    <string name="stats_for">Stats for %1$s</string>
+    <string name="return_to_menu">Retour au menu</string>
+    <string name="cancel">Annuler</string>
+    <string name="stats_for">Statistiques pour %1$s</string>
+    <string name="select_a_game_to_see_details">Sélectionnez une partie pour voir les détails</string>
+    <string name="tap_a_player_icon_above_to_view_their_stats">Appuyez sur une icône de joueur ci-dessus pour voir ses statistiques</string>
+    <string name="place_initial_buildings">Placer les bâtiments initiaux</string>
+    <string name="roll_dice">Lancer les dés</string>
+    <string name="trade_resources">Échanger des ressources</string>
+    <string name="building_production_victory"><![CDATA[Production & Victoire des bâtiments :]]></string>
+    <string name="settlement">Village</string>
+    <string name="city">Ville</string>
+    <string name="building_recipes">Recettes de construction :</string>
+    <string name="road">Route</string>
+    <string name="ore">Minerai</string>
+    <string name="wheat">Blé</string>
+    <string name="brick">Brique</string>
+    <string name="wood">Bois</string>
+    <string name="no_game_results_found">Aucun résultat de jeu trouvé.</string>
 </resources>

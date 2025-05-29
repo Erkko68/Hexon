@@ -8,5 +8,5 @@ data class GameResultEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val datePlayed: String,
     val winnerName: String,
-    val playerStatsJson: String // Store JSON here
+    val playerStatsJson: String
 )

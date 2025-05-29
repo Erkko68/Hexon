@@ -1,27 +1,25 @@
 package eric.bitria.hexon.view
 
-import eric.bitria.hexon.view.models.GameSettingsManager
 import android.app.Application
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import eric.bitria.hexon.dataStore
-import kotlinx.coroutines.flow.Flow
 import eric.bitria.hexon.persistent.database.GameResult
 import eric.bitria.hexon.persistent.database.GameResultDatabase
 import eric.bitria.hexon.persistent.database.GameResultRepository
 import eric.bitria.hexon.persistent.database.PlayerStats
-import eric.bitria.hexon.persistent.database.toEntity
+import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.src.board.Board
 import eric.bitria.hexon.src.board.tile.Edge
 import eric.bitria.hexon.src.board.tile.Vertex
 import eric.bitria.hexon.src.data.game.Building
 import eric.bitria.hexon.src.data.game.Resource
 import eric.bitria.hexon.src.player.Player
-import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.enums.GameActions
 import eric.bitria.hexon.view.enums.GamePhase
 import eric.bitria.hexon.view.models.BoardManager
+import eric.bitria.hexon.view.models.GameSettingsManager
 import eric.bitria.hexon.view.models.GameStatusManager
 import eric.bitria.hexon.view.models.InteractionManager
 import eric.bitria.hexon.view.models.PlayerManager
@@ -30,6 +28,7 @@ import eric.bitria.hexon.view.utils.Bot
 import eric.bitria.hexon.view.utils.CardType
 import eric.bitria.hexon.view.utils.ClickHandler
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -39,7 +38,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     private val dataStore = application.dataStore
     val settingsManager = GameSettingsManager(dataStore, viewModelScope)
 
-    private val db = GameResultRepository(GameResultDatabase.getDB(getApplication()).gameResultDao())
+    private val repository = GameResultRepository(GameResultDatabase.getDB(getApplication()).gameResultDao())
 
     val boardManager = BoardManager()
     val playerManager = PlayerManager()
@@ -51,7 +50,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
 
     // Expose states for the UI from sub-ViewModels
     val gameSettingsFlow: Flow<GameSettings> get() = settingsManager.settings
-    val history: Flow<List<GameResult>> get() = db.getAllResults()
+    val history: Flow<List<GameResult>> get() = repository.getAllResults()
     val board: Board get() = boardManager.board
     val humanPlayer: Player get() = playerManager.humanPlayer
     val currentPlayer: Player get() = playerManager.currentPlayer
@@ -279,10 +278,6 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
         interactionManager.setOnCardClickHandler { cardType ->
             handleCardTypeClick(cardType)
         }
-        // Ensure board click handler is None unless a specific action (like placing a building) sets it.
-        // If a building card was clicked, that specific board handler is already set.
-        // If not, ensure it's reset or set to a default "do nothing" or "select tile" handler if desired.
-        // For now, we assume handleCardTypeClick sets specific board handlers, and otherwise it should be None.
         // If no specific sub-action is active, board clicks do nothing.
         if (interactionManager.boardClickHandler !is ClickHandler.OnVertex && interactionManager.boardClickHandler !is ClickHandler.OnEdge) {
             interactionManager.boardClickHandler = ClickHandler.None
@@ -298,7 +293,6 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
             GameActions.OPEN_TRADE -> {
                 gameStatusManager.setPhase(GamePhase.PLAYER_TRADE)
                 // UI should now show trading interface. Resource card clicks are handled by handleCardTypeClick
-                // Still need to set up general turn interactions for other cards
                 setupPlayerTurnInteractions()
             }
             GameActions.CLOSE_TRADE -> {
@@ -309,7 +303,6 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
             GameActions.ACCEPT_TRADE -> {
                 playerManager.acceptCurrentPlayerTrade()
                 gameStatusManager.setPhase(GamePhase.PLAYER_TURN)
-                // Potentially update board/player states if trade affected something visible beyond resources
                 setupPlayerTurnInteractions()
             }
             GameActions.END_TURN -> {
@@ -367,7 +360,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
     fun saveCurrentGameResult() {
         val result = generateGameResult()
         viewModelScope.launch {
-            db.saveGameResult(result)
+            repository.saveGameResult(result)
         }
     }
 

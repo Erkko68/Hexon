@@ -11,6 +11,7 @@ object Bot{
         val vertex = GreedyHeuristic.bestInitialSettlement(board, player)
         if (vertex != null) {
             board.placeBuilding(vertex, Building.SETTLEMENT,player)
+            player.countTotalBuildings(Building.SETTLEMENT)
             player.addVictoryPoints(1)
             player.addVertex(vertex)
         }
@@ -20,6 +21,7 @@ object Bot{
         val edge = GreedyHeuristic.bestRoadPlacement(board, player)
         if (edge != null) {
             board.placeRoad(edge,player)
+            player.countTotalBuildings(Building.ROAD)
             player.addEdge(edge)
         }
     }
@@ -28,6 +30,7 @@ object Bot{
         val vertex = GreedyHeuristic.bestSettlementPlacement(board, player)
         if (vertex != null) {
             board.placeBuilding(vertex, Building.SETTLEMENT,player)
+            player.countTotalBuildings(Building.SETTLEMENT)
             player.addVictoryPoints(1)
             player.addVertex(vertex)
         }

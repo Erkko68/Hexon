@@ -36,7 +36,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.R
-import eric.bitria.hexon.persistent.datastore.GameSettings
 import eric.bitria.hexon.view.MainGameViewModel
 
 @Composable
@@ -48,8 +47,7 @@ fun SettingsScreen(
     val gameSettings by viewModel.settingsManager.settings.collectAsState()
 
     val playerName = gameSettings.playerName
-    val isNameValid = playerName.trim().isNotEmpty()
-    var showWarning by remember { mutableStateOf(true) }
+    var showWarning by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -78,14 +76,14 @@ fun SettingsScreen(
                         value = playerName,
                         onValueChange = {
                             viewModel.updatePlayerName(it)
-                            if (it.trim().isNotEmpty()) showWarning = false
+                            showWarning = it.trim().isEmpty()
                         },
                         label = { Text(stringResource(R.string.player_name)) },
                         modifier = Modifier.fillMaxWidth(),
-                        isError = showWarning && !isNameValid
+                        isError = showWarning
                     )
 
-                    if (showWarning && !isNameValid) {
+                    if (showWarning) {
                         Text(
                             text = "Player name cannot be empty",
                             color = Color.Red,
@@ -134,14 +132,14 @@ fun SettingsScreen(
                     value = playerName,
                     onValueChange = {
                         viewModel.updatePlayerName(it)
-                        if (it.trim().isNotEmpty()) showWarning = false
+                        showWarning = it.trim().isEmpty()
                     },
                     label = { Text(stringResource(R.string.player_name)) },
                     modifier = Modifier.fillMaxWidth(),
-                    isError = showWarning && !isNameValid
+                    isError = showWarning
                 )
 
-                if (showWarning && !isNameValid) {
+                if (showWarning) {
                     Text(
                         text = "Player name cannot be empty",
                         color = Color.Red,
@@ -188,14 +186,10 @@ fun SettingsScreen(
         ) {
             Button(
                 onClick = {
-                    if (isNameValid) {
-                        onExitToMenu()
-                    } else {
-                        showWarning = true
-                    }
+                    onExitToMenu()
                 },
                 modifier = Modifier.weight(1f),
-                enabled = isNameValid
+                enabled = !showWarning
             ) {
                 Text(stringResource(R.string.exit_to_menu_msg))
             }

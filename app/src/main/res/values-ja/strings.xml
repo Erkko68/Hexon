@@ -31,7 +31,22 @@
     <string name="produces_1_resource_and_gives_1_victory_point">1つの資源を生産し、1つの勝利ポイントを得る。</string>
     <string name="produces_2_resources_and_gives_2_victory_points">2つの資源を生産し、2つの勝利ポイントを得る。</string>
     <string name="close">閉じる</string>
-    <string name="return_to_menu">Return to menu</string>
-    <string name="cancel">Cancel</string>
-    <string name="stats_for">Stats for %1$s</string>
+    <string name="return_to_menu">メニューに戻る</string>
+    <string name="cancel">キャンセル</string>
+    <string name="stats_for">%1$s の統計</string>
+    <string name="select_a_game_to_see_details">詳細を見るゲームを選択してください</string>
+    <string name="tap_a_player_icon_above_to_view_their_stats">上のプレイヤーアイコンをタップして統計を見る</string>
+    <string name="place_initial_buildings">初期建物を配置する</string>
+    <string name="roll_dice">サイコロを振る</string>
+    <string name="trade_resources">資源を交換する</string>
+    <string name="building_production_victory"><![CDATA[建物の生産と勝利ポイント:]]></string>
+    <string name="settlement">集落</string>
+    <string name="city">都市</string>
+    <string name="building_recipes">建設レシピ:</string>
+    <string name="road">道</string>
+    <string name="ore">鉱石</string>
+    <string name="wheat">小麦</string>
+    <string name="brick">レンガ</string>
+    <string name="wood">木材</string>
+    <string name="no_game_results_found">ゲーム結果が見つかりませんでした。</string>
 </resources>
