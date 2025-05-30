@@ -25,7 +25,7 @@ fun LogSection(
     BoxWithConstraints(modifier = modifier) {
         val isVertical = maxHeight > maxWidth
         val logHeight = if (isVertical) maxHeight * 0.5f else maxHeight
-        val maxLines = if (maxWidth > 300.dp) 1 else 2
+        val maxLines = if (maxWidth > 300.dp) 1 else 3
 
         LazyColumn(
             modifier = Modifier

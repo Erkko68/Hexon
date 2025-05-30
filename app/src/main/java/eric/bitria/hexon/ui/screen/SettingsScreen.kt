@@ -47,6 +47,7 @@ fun SettingsScreen(
     val gameSettings by viewModel.settingsManager.settings.collectAsState()
 
     val playerName = gameSettings.playerName
+    val email = gameSettings.playerEmail
     var showWarning by remember { mutableStateOf(false) }
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -80,7 +81,8 @@ fun SettingsScreen(
                         },
                         label = { Text(stringResource(R.string.player_name)) },
                         modifier = Modifier.fillMaxWidth(),
-                        isError = showWarning
+                        isError = showWarning,
+                        singleLine = true
                     )
 
                     if (showWarning) {
@@ -95,6 +97,16 @@ fun SettingsScreen(
                     ColorPicker(
                         selectedColor = gameSettings.playerColor,
                         onColorSelected = { viewModel.updatePlayerColor(it) }
+                    )
+
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = {
+                            viewModel.updatePlayerEmail(it)
+                        },
+                        label = { Text("Email") },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
                     )
                 }
 
@@ -151,6 +163,16 @@ fun SettingsScreen(
                 ColorPicker(
                     selectedColor = gameSettings.playerColor,
                     onColorSelected = { viewModel.updatePlayerColor(it) }
+                )
+
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = {
+                        viewModel.updatePlayerEmail(it)
+                    },
+                    label = { Text("Email") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true
                 )
 
                 SettingsOptionGroup(

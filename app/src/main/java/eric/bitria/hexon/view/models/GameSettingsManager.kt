@@ -32,6 +32,7 @@ class GameSettingsManager(
                     GameSettings(
                         playerName = preferences[PreferencesKeys.PLAYER_NAME] ?: "Player",
                         playerColor = preferences[PreferencesKeys.PLAYER_COLOR]?.let { Color(it) } ?: Color.Blue,
+                        playerEmail = preferences[PreferencesKeys.PLAYER_EMAIL] ?: "",
                         numberOfBots = preferences[PreferencesKeys.NUMBER_OF_BOTS] ?: 3,
                         victoryPoints = preferences[PreferencesKeys.VICTORY_POINTS] ?: 10,
                         timer = preferences[PreferencesKeys.TIMER] ?: 30_000L
@@ -50,6 +51,11 @@ class GameSettingsManager(
 
     fun updatePlayerColor(color: Color) {
         _settings.value = _settings.value.copy(playerColor = color)
+        saveSettings()
+    }
+
+    fun updatePlayerEmail(email: String) {
+        _settings.value = _settings.value.copy(playerEmail = email)
         saveSettings()
     }
 
@@ -74,6 +80,7 @@ class GameSettingsManager(
             dataStore.edit { preferences ->
                 preferences[PreferencesKeys.PLAYER_NAME] = current.playerName
                 preferences[PreferencesKeys.PLAYER_COLOR] = current.playerColor.toArgb().toLong()
+                preferences[PreferencesKeys.PLAYER_EMAIL] = current.playerEmail
                 preferences[PreferencesKeys.NUMBER_OF_BOTS] = current.numberOfBots
                 preferences[PreferencesKeys.VICTORY_POINTS] = current.victoryPoints
                 preferences[PreferencesKeys.TIMER] = current.timer

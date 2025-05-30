@@ -3,6 +3,8 @@ package eric.bitria.hexon.ui.screen
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.net.toUri
 import eric.bitria.hexon.R
@@ -12,6 +14,7 @@ import eric.bitria.hexon.ui.board.ZoomContainer
 import eric.bitria.hexon.ui.ui.GameUIRenderer
 import eric.bitria.hexon.view.MainGameViewModel
 import eric.bitria.hexon.view.enums.GamePhase
+import eric.bitria.hexon.view.models.LogManager
 
 @Composable
 fun GameScreen(
@@ -19,6 +22,8 @@ fun GameScreen(
     onExitToMenu: () -> Unit
 ) {
     val context = LocalContext.current
+    val gameSettings by viewModel.settingsManager.settings.collectAsState()
+    val log = LogManager.logsToString(viewModel.gameLogs)
 
     ZoomContainer(viewModel.board) {
         BoardRenderer(
@@ -44,12 +49,12 @@ fun GameScreen(
     if (viewModel.gamePhase == GamePhase.PLAYER_WON) {
         EndScreen(
             onExitToMenu = onExitToMenu,
-            onShareResults = { email ->
+            onShareResults = {
                 val gameResult = viewModel.generateGameResult()
-                val emailText = gameResult.toEmailString(context)
+                val emailText = gameResult.toEmailString(context) + log
 
                 val uri =
-                    "mailto:$email?subject=${Uri.encode("Game Results")}&body=${Uri.encode(emailText)}".toUri()
+                    "mailto:${gameSettings.playerEmail}?subject=${Uri.encode("Game Results")}&body=${Uri.encode(emailText)}".toUri()
                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                     data = uri
                 }

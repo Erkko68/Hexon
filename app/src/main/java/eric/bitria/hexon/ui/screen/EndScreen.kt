@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -19,19 +18,13 @@ import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.R
@@ -42,7 +35,7 @@ import eric.bitria.hexon.src.player.Player
 @Composable
 fun EndScreen(
     onExitToMenu: () -> Unit,
-    onShareResults: (String) -> Unit,
+    onShareResults: () -> Unit,
     player: Player,
     winner: Player
 ) {
@@ -165,18 +158,8 @@ fun EndScreen(
                     Text(stringResource(R.string.exit_to_menu_msg))
                 }
 
-                var emailText by rememberSaveable { mutableStateOf("") }
-
-                OutlinedTextField(
-                    value = emailText,
-                    onValueChange = { emailText = it },
-                    label = { Text("yourmail@mail.com") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email)
-                )
-
                 Button(
-                    onClick = { onShareResults(emailText) },
+                    onClick = { onShareResults() },
                     modifier = Modifier.padding(top = 16.dp)
                 ) {
                     Icon(

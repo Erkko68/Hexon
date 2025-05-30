@@ -68,6 +68,7 @@ class MainGameViewModel(application: Application) : AndroidViewModel(application
 
     fun updatePlayerName(name: String) = settingsManager.updatePlayerName(name)
     fun updatePlayerColor(color: Color) = settingsManager.updatePlayerColor(color)
+    fun updatePlayerEmail(email: String) = settingsManager.updatePlayerEmail(email)
     fun updateNumberOfBots(bots: Int) = settingsManager.updateNumberOfBots(bots)
     fun updateVictoryPoints(points: Int) = settingsManager.updateVictoryPoints(points)
     fun updateTimer(timer: Long) = settingsManager.updateTimer(timer)
