@@ -47,23 +47,24 @@ fun GameScreen(
     )
 
     if (viewModel.gamePhase == GamePhase.PLAYER_WON) {
+        val gameResult = viewModel.generateGameResult()
+
         EndScreen(
             onExitToMenu = onExitToMenu,
             onShareResults = {
-                val gameResult = viewModel.generateGameResult()
                 val emailText = gameResult.toEmailString(context) + log
-
                 val uri =
                     "mailto:${gameSettings.playerEmail}?subject=${Uri.encode("Game Results")}&body=${Uri.encode(emailText)}".toUri()
                 val intent = Intent(Intent.ACTION_SENDTO).apply {
                     data = uri
                 }
 
-                context.startActivity(Intent.createChooser(intent,
-                    context.getString(R.string.send_game_results)))
+                context.startActivity(
+                    Intent.createChooser(intent, context.getString(R.string.send_game_results))
+                )
             },
-            player = viewModel.humanPlayer,
-            winner = viewModel.currentPlayer
+            gameResult = gameResult
         )
     }
+
 }

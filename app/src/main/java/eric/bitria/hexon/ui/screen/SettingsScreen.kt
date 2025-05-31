@@ -71,7 +71,10 @@ fun SettingsScreen(
             ) {
                 // Left Panel
                 Column(
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     OutlinedTextField(
                         value = playerName,
@@ -108,6 +111,15 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
+
+                    Button(
+                        onClick = {
+                            onExitToMenu()
+                        },
+                        enabled = !showWarning
+                    ) {
+                        Text(stringResource(R.string.exit_to_menu_msg))
+                    }
                 }
 
                 // Right Panel
@@ -139,7 +151,10 @@ fun SettingsScreen(
                 }
             }
         } else {
-            Column {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 OutlinedTextField(
                     value = playerName,
                     onValueChange = {
@@ -197,23 +212,15 @@ fun SettingsScreen(
                     optionFormatter = { "$it" },
                     onSelected = { viewModel.updateVictoryPoints(it) }
                 )
-            }
-        }
 
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    onExitToMenu()
-                },
-                modifier = Modifier.weight(1f),
-                enabled = !showWarning
-            ) {
-                Text(stringResource(R.string.exit_to_menu_msg))
+                Button(
+                    onClick = {
+                        onExitToMenu()
+                    },
+                    enabled = !showWarning
+                ) {
+                    Text(stringResource(R.string.exit_to_menu_msg))
+                }
             }
         }
     }

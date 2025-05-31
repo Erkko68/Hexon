@@ -1,12 +1,15 @@
 package eric.bitria.hexon.ui.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -25,19 +28,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import eric.bitria.hexon.R
-import eric.bitria.hexon.src.data.game.Building
-import eric.bitria.hexon.src.data.game.Resource
-import eric.bitria.hexon.src.player.Player
+import eric.bitria.hexon.persistent.database.GameResult
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun EndScreen(
     onExitToMenu: () -> Unit,
     onShareResults: () -> Unit,
-    player: Player,
-    winner: Player
+    gameResult: GameResult
 ) {
     Box(
         modifier = Modifier
@@ -51,146 +51,120 @@ fun EndScreen(
             shape = RoundedCornerShape(16.dp),
             tonalElevation = 8.dp,
         ) {
-            val scrollState = rememberScrollState()
-            Column(
-                modifier = Modifier
-                    .padding(24.dp)
-                    .verticalScroll(scrollState),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                // Winner Section
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(bottom = 24.dp)
-                ) {
-                    Text(
-                        text = stringResource(R.string.wins, winner.name),
-                        style = MaterialTheme.typography.headlineMedium
-                    )
-                    Icon(
-                        imageVector = Icons.Default.AccountCircle,
-                        contentDescription = stringResource(R.string.winner_color),
-                        tint = winner.color,
-                        modifier = Modifier
-                            .size(48.dp)
-                            .padding(top = 8.dp)
-                    )
-                }
+            BoxWithConstraints {
+                val isLandscape = maxWidth > maxHeight
 
-                // Player Stats
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.your_stats_end_screen_msg),
-                        style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(bottom = 16.dp)
-                    )
-
-                    // Buildings Section
-                    Text(
-                        text = stringResource(R.string.buildings_end_screen_msg),
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
+                if (isLandscape) {
+                    // 🌄 Landscape Layout (Side-by-side)
                     Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
                         modifier = Modifier
+                            .padding(24.dp)
                             .fillMaxWidth()
-                            .padding(bottom = 16.dp)
+                            .heightIn(min = 300.dp)
                     ) {
-                        Building.entries.filter { it != Building.NONE }.forEach { building ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.padding(horizontal = 8.dp)
+                        // Winner Info
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 12.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(R.string.wins, gameResult.winnerName),
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = stringResource(R.string.winner_color),
+                                tint = gameResult.playerStats.firstOrNull {
+                                    it.playerName == gameResult.winnerName
+                                }?.playerColor ?: Color.Gray,
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .padding(top = 8.dp)
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp),
+                                horizontalArrangement = Arrangement.SpaceEvenly
+                            ) {
+                                Button(onClick = onExitToMenu) {
+                                    Text(stringResource(R.string.exit_to_menu_msg))
+                                }
+                                Button(onClick = onShareResults) {
+                                    Icon(
+                                        imageVector = Icons.Default.Share,
+                                        contentDescription = stringResource(R.string.share_results_msg),
+                                    )
+                                }
+                            }
+                        }
+
+                        // Stats and Actions
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .verticalScroll(rememberScrollState()),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            GameResultDetail(result = gameResult)
+                        }
+                    }
+                } else {
+                    // 📱 Portrait Layout (Single column)
+                    Column(
+                        modifier = Modifier
+                            .padding(24.dp)
+                            .verticalScroll(rememberScrollState()),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // Winner Section
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = stringResource(R.string.wins, gameResult.winnerName),
+                                style = MaterialTheme.typography.headlineMedium
+                            )
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = stringResource(R.string.winner_color),
+                                tint = gameResult.playerStats.firstOrNull {
+                                    it.playerName == gameResult.winnerName
+                                }?.playerColor ?: Color.Gray,
+                                modifier = Modifier
+                                    .size(48.dp)
+                                    .padding(top = 8.dp)
+                            )
+                        }
+
+                        GameResultDetail(result = gameResult)
+
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceEvenly
+                        ) {
+                            Button(
+                                onClick = onExitToMenu,
+                                modifier = Modifier.padding(top = 16.dp)
+                            ) {
+                                Text(stringResource(R.string.exit_to_menu_msg))
+                            }
+
+                            Button(
+                                onClick = onShareResults,
+                                modifier = Modifier.padding(top = 16.dp)
                             ) {
                                 Icon(
-                                    imageVector = building.icon,
-                                    contentDescription = building.name,
-                                    tint = building.color,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                                Text(
-                                    text = player.getTotalBuildings().getOrDefault(building, 0).toString(),
-                                    style = MaterialTheme.typography.bodyLarge
+                                    imageVector = Icons.Default.Share,
+                                    contentDescription = stringResource(R.string.share_results_msg),
                                 )
                             }
                         }
                     }
-
-                    // Resources Section
-                    Text(
-                        text = stringResource(R.string.resources_end_screen_msg),
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 24.dp)
-                    ) {
-                        Resource.entries.filter { it != Resource.NONE }.forEach { resource ->
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                modifier = Modifier.padding(horizontal = 8.dp)
-                            ) {
-                                Icon(
-                                    imageVector = resource.icon,
-                                    contentDescription = resource.name,
-                                    tint = resource.color,
-                                    modifier = Modifier.size(32.dp)
-                                )
-                                Text(
-                                    text = player.getTotalResources().getOrDefault(resource, 0).toString(),
-                                    style = MaterialTheme.typography.bodyLarge
-                                )
-                            }
-                        }
-                    }
-                }
-
-                Button(
-                    onClick = onExitToMenu,
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Text(stringResource(R.string.exit_to_menu_msg))
-                }
-
-                Button(
-                    onClick = { onShareResults() },
-                    modifier = Modifier.padding(top = 16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Share,
-                        contentDescription = stringResource(R.string.share_results_msg),
-                    )
                 }
             }
-        }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun EndScreenPreview() {
-    MaterialTheme {
-        Surface(modifier = Modifier.fillMaxSize()) {
-            // Simulate game screen content
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.LightGray)
-            )
-
-            // Show end screen overlay
-            EndScreen(
-                onExitToMenu = {},
-                onShareResults = {},
-                player = Player("Player", Color.Red),
-                winner = Player("Winner", Color.Green)
-            )
         }
     }
 }

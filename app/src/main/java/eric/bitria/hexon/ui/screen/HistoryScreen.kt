@@ -147,7 +147,7 @@ private fun GameResultListItem(
 }
 
 @Composable
-private fun GameResultDetail(result: GameResult) {
+public fun GameResultDetail(result: GameResult) {
     var selectedPlayer by remember { mutableIntStateOf(-1) }
 
     Surface(
